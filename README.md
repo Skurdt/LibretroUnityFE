@@ -7,9 +7,9 @@ The goal is to have this fully integrated within the [3DArcade](http://3darcade.
 ### To get started:
 Download some cores from http://buildbot.libretro.com/nightly/windows/x86_64/latest/ and place them under **Assets/StreamingAssets/Data~/Cores**.
 
-Unlike cores, roms can be setup with absolute paths. So it doesn't really matter where they are, as long as the path is setup in the configuration file (**Assets/StreamingAssets/Data~/Games.json**).
+Unlike cores, roms can be setup with absolute paths. So it doesn't really matter where they are, as long as the path is setup in the **Assets/StreamingAssets/Data~/Games.json** configuration file.
 
-The **Assets/StreamingAssets/Data~/Roms~** folder is just there for convenience, if you prefer absolute paths.
+The **Assets/StreamingAssets/Data~/Roms** folder is just there for convenience, if you prefer absolute paths.
 
 ### To start a game:
 - Select the arcade cab model in the scene
