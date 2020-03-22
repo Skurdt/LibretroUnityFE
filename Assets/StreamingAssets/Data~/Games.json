@@ -1,0 +1,9 @@
+{
+    "Games": [
+        {
+            "Core": "mame",
+            "Directory": "W:/complete/roms/MAME 0.219 ROMs (merged)",
+            "Name": "mslug"
+        }
+    ]
+}
