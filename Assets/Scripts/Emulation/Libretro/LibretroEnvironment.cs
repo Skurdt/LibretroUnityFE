@@ -98,7 +98,7 @@ namespace SK.Emulation.Libretro
                         uint index = inInputDescriptors->index;
                         uint id = inInputDescriptors->id;
                         string descText = Marshal.PtrToStringAnsi((IntPtr)inInputDescriptors->desc);
-                        Log.Info($"### Port: {port} Device: {device} Index: {index} Id: {id} Desc: {descText}", "SET_INPUT_DESCRIPTORS");
+                        Log.Info($"### Port: {port} Device: {(RetroDevice)device} Index: {index} Id: {id} Desc: {descText}", "SET_INPUT_DESCRIPTORS");
                         inInputDescriptors++;
                     }
                     return false; //TODO: Remove when implemented!

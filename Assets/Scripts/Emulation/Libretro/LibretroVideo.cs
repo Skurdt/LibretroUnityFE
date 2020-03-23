@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Runtime.InteropServices;
 using Unity.Burst;
 using Unity.Collections;
@@ -12,11 +11,10 @@ namespace SK.Emulation.Libretro
     {
         public Texture2D Texture { get; private set; }
 
-        private byte[] _srcPixels565;
         private byte[] _dstPixels565;
-        private Color32[] _dstPixels8888;
 
-        public RenderTexture rt;
+        private int[] _srcPixels8888;
+        private Color32[] _dstPixels8888;
 
         private unsafe void RetroVideoRefreshCallback(void* data, uint width, uint height, uint pitch)
         {
@@ -27,13 +25,6 @@ namespace SK.Emulation.Libretro
 
             int intWidth = Convert.ToInt32(width);
             int intHeight = Convert.ToInt32(height);
-
-            rt = new RenderTexture(new RenderTextureDescriptor
-            {
-                colorFormat = RenderTextureFormat.RGB565,
-                width = intWidth,
-                height = intHeight
-            });
 
             switch (_pixelFormat)
             {
@@ -52,22 +43,26 @@ namespace SK.Emulation.Libretro
                         };
                     }
 
-                    int size = intWidth * intHeight;
-                    int[] pixelarr = new int[size];
-                    Marshal.Copy((IntPtr)data, pixelarr, 0, intWidth * intHeight);
-                    if (_dstPixels8888 == null || _dstPixels8888.Length != size)
+                    int arrayLength = intWidth * intHeight;
+                    if (_srcPixels8888 == null || _srcPixels8888.Length != arrayLength)
                     {
-                        _dstPixels8888 = new Color32[size];
+                        _srcPixels8888 = new int[arrayLength];
+                    }
+                    Marshal.Copy((IntPtr)data, _srcPixels8888, 0, arrayLength);
+
+                    if (_dstPixels8888 == null || _dstPixels8888.Length != arrayLength)
+                    {
+                        _dstPixels8888 = new Color32[arrayLength];
                     }
 
-                    NativeArray<int> nativePixelArray = new NativeArray<int>(pixelarr, Allocator.TempJob);
+                    NativeArray<int> nativePixelArray = new NativeArray<int>(_srcPixels8888, Allocator.TempJob);
                     NativeArray<Color32> nativeColorArray = new NativeArray<Color32>(_dstPixels8888, Allocator.TempJob);
 
                     JobHandle jobHandle = new RGB8888Job
                     {
                         PixelArray = nativePixelArray,
                         Color32Array = nativeColorArray
-                    }.Schedule(pixelarr.Length, 1000);
+                    }.Schedule(_srcPixels8888.Length, 1000);
 
                     jobHandle.Complete();
                     nativeColorArray.CopyTo(_dstPixels8888);
@@ -89,30 +84,19 @@ namespace SK.Emulation.Libretro
                         };
                     }
 
-                    int intPitch = Convert.ToInt32(pitch);
-                    int srcSize = 2 * (intPitch * intHeight);
-                    if (_srcPixels565 == null || _srcPixels565.Length != srcSize)
-                    {
-                        _srcPixels565 = new byte[srcSize];
-                    }
-
-                    using (UnmanagedMemoryStream readStream = new UnmanagedMemoryStream((byte*)data, srcSize, srcSize, FileAccess.Read))
-                    {
-                        _ = readStream.Read(_srcPixels565, 0, srcSize);
-                    }
-
                     int dstSize = 2 * (intWidth * intHeight);
                     if (_dstPixels565 == null || _dstPixels565.Length != dstSize)
                     {
                         _dstPixels565 = new byte[dstSize];
                     }
 
+                    byte* ptr = (byte*)data;
                     int m565 = 0;
-                    for (int y = 0; y < intHeight; y++)
+                    for (uint y = 0; y < height; y++)
                     {
-                        for (int x = y * intPitch; x < intWidth * 2 + y * intPitch; x++)
+                        for (uint x = y * pitch; x < width * 2 + y * pitch; x++)
                         {
-                            _dstPixels565[m565] = _srcPixels565[x];
+                            _dstPixels565[m565] = ptr[x];
                             m565++;
                         }
                     }
