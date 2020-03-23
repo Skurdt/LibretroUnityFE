@@ -87,16 +87,16 @@ namespace SK.Emulation.Libretro
                     button = Input.GetKey(KeyCode.Keypad3);
                     break;
                 case RetroPad.RETRO_DEVICE_ID_JOYPAD_L2:
-                    button = Input.GetKey(KeyCode.W);
-                    break;
-                case RetroPad.RETRO_DEVICE_ID_JOYPAD_R2:
                     button = Input.GetKey(KeyCode.X);
                     break;
-                case RetroPad.RETRO_DEVICE_ID_JOYPAD_L3:
+                case RetroPad.RETRO_DEVICE_ID_JOYPAD_R2:
                     button = Input.GetKey(KeyCode.C);
                     break;
-                case RetroPad.RETRO_DEVICE_ID_JOYPAD_R3:
+                case RetroPad.RETRO_DEVICE_ID_JOYPAD_L3:
                     button = Input.GetKey(KeyCode.V);
+                    break;
+                case RetroPad.RETRO_DEVICE_ID_JOYPAD_R3:
+                    button = Input.GetKey(KeyCode.B);
                     break;
                 default:
                     break;
@@ -148,7 +148,7 @@ namespace SK.Emulation.Libretro
 
         private short ProcessKeyboard(uint id)
         {
-            return BoolToShort(Input.GetKey((KeyCode)id));
+            return BoolToShort(id < (uint)RetroKey.RETROK_OEM_102 ? Input.GetKey((KeyCode)id) : false);
         }
 
         private static short BoolToShort(bool boolValue)

@@ -7,3 +7,4 @@ using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Style", "IDE0062:Make local function 'static'", Justification = "Unsupported by Unity", Scope = "module")]
 [assembly: SuppressMessage("Style", "IDE0063:Use simple 'using' statement", Justification = "Unsupported by Unity", Scope = "module")]
+[assembly: SuppressMessage("Style", "IDE0066:Convert switch statement to expression", Justification = "Unsupported by Unity", Scope = "module")]
