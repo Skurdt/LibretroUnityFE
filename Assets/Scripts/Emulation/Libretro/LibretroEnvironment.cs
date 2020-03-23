@@ -20,11 +20,11 @@ namespace SK.Emulation.Libretro
         {
             switch (cmd)
             {
-                // TODO: Rotate screen (counter-clockwise)
-                // Values: 0, 1,  2,   3
-                // Result: 0, 90, 180, 270 degrees
                 case RetroEnvironment.SET_ROTATION:
                 {
+                    //TODO: Rotate screen (counter-clockwise)
+                    //Values: 0, 1,  2,   3
+                    //Result: 0, 90, 180, 270 degrees
                     uint* inRotation = (uint*)data;
                     _core.rotation = *inRotation;
                     Log.Info($"in_Rotation: {_core.rotation}", "SET_ROTATION");
@@ -33,7 +33,7 @@ namespace SK.Emulation.Libretro
                 //break;
                 case RetroEnvironment.GET_OVERSCAN:
                 {
-                    // TODO: Retrieve value from core/rom
+                    //TODO: Retrieve value from core/rom
                     bool* outOverscan = (bool*)data;
                     *outOverscan = true;
                     Log.Info($"out_Overscan: {*outOverscan}", "GET_OVERSCAN");
@@ -41,7 +41,7 @@ namespace SK.Emulation.Libretro
                 break;
                 case RetroEnvironment.GET_CAN_DUPE:
                 {
-                    // NOTE: What is frame duping and do we support that? No clue :p
+                    //NOTE: What is frame duping and do we support that? No clue :p
                     bool* outCanDupe = (bool*)data;
                     *outCanDupe = true;
                 }
@@ -51,15 +51,17 @@ namespace SK.Emulation.Libretro
                     RetroMessage* inMessage = (RetroMessage*)data;
                     string msgString = Marshal.PtrToStringAnsi((IntPtr)inMessage->msg);
                     Log.Info($"in_Message: {msgString}", "SET_MESSAGE");
+                    return false; //TODO: Remove when implemented!
                 }
-                break;
+                //break;
                 //case RetroEnvironment.SHUTDOWN:
                 //    break;
-                //case RetroEnvironment.SET_PERFORMANCE_LEVEL:
-                //{
-                //    int* inPerformanceLevel = (int*)data;
-                //    Debug.Log($"<color=yellow>Core Performance level:</color> {*inPerformanceLevel}");
-                //}
+                case RetroEnvironment.SET_PERFORMANCE_LEVEL:
+                {
+                    int* inPerformanceLevel = (int*)data;
+                    Log.Info($"in_PerformanceLevel: {*inPerformanceLevel}", "SET_PERFORMANCE_LEVEL");
+                    return false; //TODO: Remove when implemented!
+                }
                 //break;
                 case RetroEnvironment.GET_SYSTEM_DIRECTORY:
                 {
@@ -96,13 +98,18 @@ namespace SK.Emulation.Libretro
                         uint index = inInputDescriptors->index;
                         uint id = inInputDescriptors->id;
                         string descText = Marshal.PtrToStringAnsi((IntPtr)inInputDescriptors->desc);
-                        //Debug.Log($"<color=yellow>###</color> Port: {port} Device: {device} Index: {index} Id: {id} Desc: {descText}");
+                        Log.Info($"### Port: {port} Device: {device} Index: {index} Id: {id} Desc: {descText}", "SET_INPUT_DESCRIPTORS");
                         inInputDescriptors++;
                     }
+                    return false; //TODO: Remove when implemented!
                 }
-                break;
-                //case RetroEnvironment.SET_KEYBOARD_CALLBACK:
-                //    break;
+                //break;
+                case RetroEnvironment.SET_KEYBOARD_CALLBACK:
+                {
+                    Log.Info("SET_KEYBOARD_CALLBACK");
+                    return false; //TODO: Remove when implemented!
+                }
+                //break;
                 //case RetroEnvironment.SET_DISK_CONTROL_INTERFACE:
                 //    return false;
                 //case RetroEnvironment.SET_HW_RENDER:
@@ -118,7 +125,7 @@ namespace SK.Emulation.Libretro
                     }
                     catch (KeyNotFoundException e)
                     {
-                        Debug.Log($"<color=red>{e.Message}</color>".Replace("given key", $"key '{k}'"));
+                        Log.Exception(e.Message.Replace("given key", $"key '{k}'"));
                         return false;
                     }
                 }
@@ -153,8 +160,12 @@ namespace SK.Emulation.Libretro
                 //    break;
                 //case RetroEnvironment.GET_RUMBLE_INTERFACE:
                 //    break;
-                //case RetroEnvironment.GET_INPUT_DEVICE_CAPABILITIES:
-                //    break;
+                case RetroEnvironment.GET_INPUT_DEVICE_CAPABILITIES:
+                {
+                    Log.Info("GET_INPUT_DEVICE_CAPABILITIES");
+                    return false; //TODO: Remove when implemented!
+                }
+                //break;
                 //case RetroEnvironment.GET_SENSOR_INTERFACE:
                 //    break;
                 //case RetroEnvironment.GET_CAMERA_INTERFACE:
@@ -214,7 +225,7 @@ namespace SK.Emulation.Libretro
                     subsystem_current_count = 0;
 
                     uint size = 0;
-                    Log.Info("SET_SUBSYSTEM_INFO.", "Environment");
+                    Log.Info("SET_SUBSYSTEM_INFO", "Environment");
                     {
                         uint i = 0;
                         while (inSubsytemInfo[i].ident != null)
@@ -280,8 +291,9 @@ namespace SK.Emulation.Libretro
 
                         subsystem_current_count = (size <= SUBSYSTEM_MAX_SUBSYSTEMS) ? size : SUBSYSTEM_MAX_SUBSYSTEMS;
                     }
+                    return false; //TODO: Remove when implemented!
                 }
-                break;
+                //break;
                 case RetroEnvironment.SET_CONTROLLER_INFO:
                 {
                     RetroControllerInfo* inControllerInfo = (RetroControllerInfo*)data;
@@ -290,11 +302,12 @@ namespace SK.Emulation.Libretro
                         RetroControllerDescription* description = inControllerInfo->types;
                         string descText = Marshal.PtrToStringAnsi((IntPtr)description->desc);
                         uint id = description->id;
-                        //Debug.Log($"<color=yellow>#### Controller {id} description:</color> {descText}");
+                        Log.Info($"#### Controller {id} description: {descText}");
                         inControllerInfo++;
                     }
+                    return false; //TODO: Remove when implemented!
                 }
-                break;
+                //break;
                 //case RetroEnvironment.SET_MEMORY_MAPS:
                 //    break;
                 case RetroEnvironment.SET_GEOMETRY:
@@ -310,8 +323,9 @@ namespace SK.Emulation.Libretro
 
                         // TODO: Set video aspect ratio
                     }
+                    return false; //TODO: Remove when implemented!
                 }
-                break;
+                //break;
                 //case RetroEnvironment.GET_USERNAME:
                 //    break;
                 //case RetroEnvironment.GET_LANGUAGE:
@@ -367,8 +381,9 @@ namespace SK.Emulation.Libretro
                 case RetroEnvironment.SET_CORE_OPTIONS_INTL:
                 {
                     // TODO: Something probably
+                    return false; //TODO: Remove when implemented!
                 }
-                break;
+                //break;
                 //case RetroEnvironment.SET_CORE_OPTIONS_DISPLAY:
                 //    break;
                 //case RetroEnvironment.GET_PREFERRED_HW_RENDER:

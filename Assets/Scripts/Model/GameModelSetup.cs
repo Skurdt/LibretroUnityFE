@@ -20,6 +20,8 @@ namespace SK.Model
 
         private Emulation.Libretro.Wrapper _wrapper;
 
+        private Material _originalMaterial;
+
         private void Awake()
         {
             _renderer = transform.GetChild(0).GetChild(1).GetComponent<Renderer>();
@@ -44,6 +46,22 @@ namespace SK.Model
             Emulation.Libretro.Wrapper.OnCoreStartedEvent -= CoreStartedCallback;
             Emulation.Libretro.Wrapper.OnGameStartedEvent -= GameStartedCallback;
             Emulation.Libretro.Wrapper.OnGameStoppedEvent -= GameStoppedCallback;
+        }
+
+        private void Update()
+        {
+            if (Input.GetMouseButtonDown(1))
+            {
+                if (Cursor.lockState == CursorLockMode.Locked)
+                {
+                    Cursor.lockState = CursorLockMode.None;
+                }
+                else if (Cursor.lockState == CursorLockMode.None)
+                {
+                    Cursor.lockState = CursorLockMode.Locked;
+                }
+                Cursor.visible = !Cursor.visible;
+            }
         }
 
         private void OnDestroy()
@@ -156,8 +174,6 @@ namespace SK.Model
             }
         }
 
-        private Material _originalMaterial;
-
         private void CoreStartedCallback(Emulation.Libretro.Wrapper.CoreStartedInfo info)
         {
             if (_infoText != null)
@@ -203,6 +219,9 @@ namespace SK.Model
             _renderer.material.EnableKeyword("_EMISSION");
             _renderer.material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
             _renderer.material.SetColor("_EmissionColor", Color.white);
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
 
         private void GameStoppedCallback()
@@ -212,6 +231,9 @@ namespace SK.Model
                 _infoText.SetText(string.Empty);
             }
             _renderer.material = _originalMaterial;
+
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
 
         //private static Color32 AverageColorFromTexture(Texture2D tex)

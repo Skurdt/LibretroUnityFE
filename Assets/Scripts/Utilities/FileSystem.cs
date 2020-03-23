@@ -74,11 +74,16 @@ namespace SK.Utilities
 
         public static string GetRelativePath(string path)
         {
-            string result = null;
+            string result = path;
 
             try
             {
-                result = Path.GetFullPath(path).Replace($"{UnityEngine.Application.streamingAssetsPath}{Path.DirectorySeparatorChar}", "@");
+                string fullPath = GetAlsolutePath(path);
+                string formattedStreamingAssetsPath = UnityEngine.Application.streamingAssetsPath.Replace('/', Path.DirectorySeparatorChar);
+                if (fullPath.Contains(formattedStreamingAssetsPath))
+                {
+                    result = $"@{fullPath.Replace($"{formattedStreamingAssetsPath}{Path.DirectorySeparatorChar}", string.Empty)}";
+                }
             }
             catch (Exception e)
             {
