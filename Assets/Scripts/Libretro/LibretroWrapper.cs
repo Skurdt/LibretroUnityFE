@@ -1,5 +1,4 @@
-﻿using NAudio.Wave;
-using SK.Utilities;
+﻿using SK.Utilities;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -12,13 +11,13 @@ namespace SK.Libretro
     {
         #region Events
         public delegate void OnCoreStartedDelegate(LibretroCore core);
-        public static event OnCoreStartedDelegate OnCoreStartedEvent;
+        public static OnCoreStartedDelegate OnCoreStartedEvent;
         public delegate void OnCoreStoppedDelegate(LibretroCore core);
-        public static event OnCoreStoppedDelegate OnCoreStoppedEvent;
+        public static OnCoreStoppedDelegate OnCoreStoppedEvent;
         public delegate void OnGameStartedDelegate(LibretroGame game);
-        public static event OnGameStartedDelegate OnGameStartedEvent;
+        public static OnGameStartedDelegate OnGameStartedEvent;
         public delegate void OnGameStoppedDelegate(LibretroGame game);
-        public static event OnGameStoppedDelegate OnGameStoppedEvent;
+        public static OnGameStoppedDelegate OnGameStoppedEvent;
         #endregion
 
         public LibretroCore Core { get; private set; }
@@ -43,10 +42,6 @@ namespace SK.Libretro
         private retro_system_av_info _systemAVInfo;
         private retro_game_info _gameInfo;
         private retro_pixel_format _pixelFormat;
-
-        private WaveOutEvent _audioDevice;
-        private WaveFormat _audioFormat;
-        private BufferedWaveProvider _bufferedWaveProvider;
 
         public unsafe void StartCore(string corePath)
         {
@@ -109,8 +104,6 @@ namespace SK.Libretro
                         Game.Fps = Convert.ToSingle(_systemAVInfo.timing.fps);
                         Game.SampleRate = Convert.ToInt32(_systemAVInfo.timing.sample_rate);
 
-                        InitAudioDevice(Game.SampleRate, 2);
-
                         Game.Running = true;
 
                         OnGameStartedEvent?.Invoke(Game);
@@ -148,9 +141,6 @@ namespace SK.Libretro
                     Marshal.FreeHGlobal(Game.internalData);
                 }
 
-                _audioDevice?.Stop();
-                _audioDevice?.Dispose();
-
                 OnCoreStoppedEvent?.Invoke(Core);
 
                 Core.DeInit();
@@ -162,8 +152,6 @@ namespace SK.Libretro
             }
         }
 
-        //int numFrames;
-
         public void Update()
         {
             if (Game == null || !Game.Running || Core == null || !Core.Initialized)
@@ -171,37 +159,7 @@ namespace SK.Libretro
                 return;
             }
 
-            //System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
             Core.retro_run();
-            //sw.Stop();
-            //if (numFrames++ >= 120)
-            //{
-            //    Log.Info($"{sw.Elapsed.TotalMilliseconds}ms");
-            //    numFrames = 0;
-            //}
-        }
-
-        private void InitAudioDevice(int rate, int channels)
-        {
-            try
-            {
-                _audioDevice = new WaveOutEvent
-                {
-                    DesiredLatency = 200
-                };
-                _audioFormat = WaveFormat.CreateIeeeFloatWaveFormat(rate, channels);
-                _bufferedWaveProvider = new BufferedWaveProvider(_audioFormat)
-                {
-                    DiscardOnBufferOverflow = true,
-                    BufferLength = 65536
-                };
-                _audioDevice.Init(_bufferedWaveProvider);
-                _audioDevice.Play();
-            }
-            catch (Exception e)
-            {
-                Log.Exception(e.Message, "Libretro.Wrapper.InitAudioDevice");
-            }
         }
 
         public string GetGamePath(string directory, string gameName)

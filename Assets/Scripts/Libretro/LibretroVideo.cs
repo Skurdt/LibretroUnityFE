@@ -126,7 +126,7 @@ namespace SK.Libretro
 
             public void Execute(int index)
             {
-                short packed = SourceData[index * 2];
+                short packed = SourceData[index * sizeof(short)];
                 TextureData[index] = ARGB1555toBGRA32(packed);
             }
         }

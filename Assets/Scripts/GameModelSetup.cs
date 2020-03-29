@@ -27,6 +27,9 @@ namespace SK
         private TextMeshProUGUI _infoText = null;
         private string _coreInfoText = string.Empty;
 
+        [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "Constructor subscribes to events, no methods are called directly on this...")]
+        private AudioDeviceExternal _externalAudio = null;
+
         private void Awake()
         {
             _renderer = transform.GetChild(0).GetChild(1).GetComponent<Renderer>();
@@ -39,6 +42,12 @@ namespace SK
             }
 
             Game = FileSystem.DeserializeFromJson<Game>($"{Application.streamingAssetsPath}/Game.json");
+
+            AudioSource foundUnityAudioSource = GetComponentInChildren<AudioSource>();
+            if (foundUnityAudioSource == null)
+            {
+                _externalAudio = new AudioDeviceExternal();
+            }
         }
 
         private void Start()

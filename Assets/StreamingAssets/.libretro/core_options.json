@@ -262,6 +262,339 @@
                         "disabled"
                     ],
                     "DefaultValue": "enabled"
+                },
+                {
+                    "Key": "mame2003-plus_neogeo_bios",
+                    "Value": "default",
+                    "Description": "Specify Neo Geo BIOS (Restart core)",
+                    "PossibleValues": [
+                        "default",
+                        "euro",
+                        "euro-s1",
+                        "us",
+                        "us-e",
+                        "asia",
+                        "japan",
+                        "japan-s2",
+                        "unibios33",
+                        "unibios20",
+                        "unibios13",
+                        "unibios11",
+                        "unibios10",
+                        "debug",
+                        "asia-aes"
+                    ],
+                    "DefaultValue": "default"
+                },
+                {
+                    "Key": "mame2003-plus_dialsharexy",
+                    "Value": "disabled",
+                    "Description": "Share 2 player dial controls across one X/Y device",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Key": "mame2003-plus_vector_resolution",
+                    "Value": "1024x768",
+                    "Description": "Vector resolution (Restart core)",
+                    "PossibleValues": [
+                        "1024x768",
+                        "640x480",
+                        "1280x960",
+                        "1440x1080",
+                        "1600x1200",
+                        "original"
+                    ],
+                    "DefaultValue": "1024x768"
+                },
+                {
+                    "Key": "mame2003-plus_vector_antialias",
+                    "Value": "enabled",
+                    "Description": "Vector antialiasing",
+                    "PossibleValues": [
+                        "enabled",
+                        "disabled"
+                    ],
+                    "DefaultValue": "enabled"
+                },
+                {
+                    "Key": "mame2003-plus_vector_beam_width",
+                    "Value": "2",
+                    "Description": "Vector beam width (only with antialiasing)",
+                    "PossibleValues": [
+                        "2",
+                        "1",
+                        "1.2",
+                        "1.4",
+                        "1.6",
+                        "1.8",
+                        "2.5",
+                        "3",
+                        "4",
+                        "5",
+                        "6",
+                        "7",
+                        "8",
+                        "9",
+                        "10",
+                        "11",
+                        "12"
+                    ],
+                    "DefaultValue": "2"
+                },
+                {
+                    "Key": "mame2003-plus_vector_translucency",
+                    "Value": "enabled",
+                    "Description": "Vector translucency",
+                    "PossibleValues": [
+                        "enabled",
+                        "disabled"
+                    ],
+                    "DefaultValue": "enabled"
+                },
+                {
+                    "Key": "mame2003-plus_vector_flicker",
+                    "Value": "20",
+                    "Description": "Vector flicker",
+                    "PossibleValues": [
+                        "20",
+                        "0",
+                        "10",
+                        "30",
+                        "40",
+                        "50",
+                        "60",
+                        "70",
+                        "80",
+                        "90",
+                        "100"
+                    ],
+                    "DefaultValue": "20"
+                },
+                {
+                    "Key": "mame2003-plus_vector_intensity",
+                    "Value": "1.5",
+                    "Description": "Vector intensity",
+                    "PossibleValues": [
+                        "1.5",
+                        "0.5",
+                        "1",
+                        "2",
+                        "2.5",
+                        "3"
+                    ],
+                    "DefaultValue": "1.5"
+                }
+            ]
+        },
+        {
+            "CoreName": "MAME",
+            "Options": [
+                {
+                    "Key": "mame_read_config",
+                    "Value": "disabled",
+                    "Description": "Read configuration",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Key": "mame_write_config",
+                    "Value": "disabled",
+                    "Description": "Write configuration",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Key": "mame_saves",
+                    "Value": "game",
+                    "Description": "Save state naming",
+                    "PossibleValues": [
+                        "game",
+                        "system"
+                    ],
+                    "DefaultValue": "game"
+                },
+                {
+                    "Key": "mame_auto_save",
+                    "Value": "disabled",
+                    "Description": "Auto save/load states",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Key": "mame_mouse_enable",
+                    "Value": "disabled",
+                    "Description": "Enable in-game mouse",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Key": "mame_lightgun_mode",
+                    "Value": "none",
+                    "Description": "Lightgun mode",
+                    "PossibleValues": [
+                        "none",
+                        "touchscreen",
+                        "lightgun"
+                    ],
+                    "DefaultValue": "none"
+                },
+                {
+                    "Key": "mame_buttons_profiles",
+                    "Value": "enabled",
+                    "Description": "Profile Buttons according to games (Restart)",
+                    "PossibleValues": [
+                        "enabled",
+                        "disabled"
+                    ],
+                    "DefaultValue": "enabled"
+                },
+                {
+                    "Key": "mame_throttle",
+                    "Value": "disabled",
+                    "Description": "Enable throttle",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Key": "mame_cheats_enable",
+                    "Value": "disabled",
+                    "Description": "Enable cheats",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Key": "mame_alternate_renderer",
+                    "Value": "disabled",
+                    "Description": "Alternate render method",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Key": "mame_softlists_enable",
+                    "Value": "enabled",
+                    "Description": "Enable softlists",
+                    "PossibleValues": [
+                        "enabled",
+                        "disabled"
+                    ],
+                    "DefaultValue": "enabled"
+                },
+                {
+                    "Key": "mame_softlists_auto_media",
+                    "Value": "enabled",
+                    "Description": "Softlist automatic media type",
+                    "PossibleValues": [
+                        "enabled",
+                        "disabled"
+                    ],
+                    "DefaultValue": "enabled"
+                },
+                {
+                    "Key": "mame_media_type",
+                    "Value": "rom",
+                    "Description": "Media type",
+                    "PossibleValues": [
+                        "rom",
+                        "cart",
+                        "flop",
+                        "cdrm",
+                        "cass",
+                        "hard",
+                        "serl",
+                        "prin"
+                    ],
+                    "DefaultValue": "rom"
+                },
+                {
+                    "Key": "mame_boot_to_bios",
+                    "Value": "disabled",
+                    "Description": "Boot to BIOS",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Key": "mame_boot_to_osd",
+                    "Value": "disabled",
+                    "Description": "Boot to OSD",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Key": "mame_boot_from_cli",
+                    "Value": "disabled",
+                    "Description": "Boot from CLI",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Key": "mame_altres",
+                    "Value": "640x480",
+                    "Description": "Resolution",
+                    "PossibleValues": [
+                        "640x480",
+                        "640x360",
+                        "800x600",
+                        "800x450",
+                        "960x720",
+                        "960x540",
+                        "1024x768",
+                        "1024x576",
+                        "1280x960",
+                        "1280x720",
+                        "1600x1200",
+                        "1600x900",
+                        "1440x1080",
+                        "1920x1080",
+                        "1920x1440",
+                        "2560x1440",
+                        "2880x2160",
+                        "3840x2160"
+                    ],
+                    "DefaultValue": "640x480"
+                },
+                {
+                    "Key": "mame_mame_paths_enable",
+                    "Value": "disabled",
+                    "Description": "MAME INI Paths",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
                 }
             ]
         }
