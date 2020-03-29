@@ -1,9 +1,0 @@
-{
-    "Games": [
-        {
-            "Core": "mame",
-            "Directory": "@Roms/mame",
-            "Name": "pacman"
-        }
-    ]
-}

@@ -58,6 +58,7 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
-# Libretro Cores and roms
-[Aa]ssets/StreamingAssets/Data~/Cores*
-[Aa]ssets/StreamingAssets/Data~/Roms*
+# Libretro
+[Aa]ssets/StreamingAssets/.libretro/cores/*
+[Aa]ssets/StreamingAssets/.libretro/system/*
+[Aa]ssets/StreamingAssets/.libretro/temp/*

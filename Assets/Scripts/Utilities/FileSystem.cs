@@ -16,7 +16,7 @@ namespace SK.Utilities
 
             try
             {
-                using (_ = File.Create(GetAlsolutePath(path)))
+                using (_ = File.Create(GetAbsolutePath(path)))
                 {
                     result = true;
                 }
@@ -35,9 +35,9 @@ namespace SK.Utilities
 
             try
             {
-                File.Delete(GetAlsolutePath(path));
+                File.Delete(GetAbsolutePath(path));
 #if UNITY_EDITOR
-                File.Delete(GetAlsolutePath($"{path}.meta"));
+                File.Delete(GetAbsolutePath($"{path}.meta"));
 #endif
                 result = true;
             }
@@ -49,7 +49,7 @@ namespace SK.Utilities
             return result;
         }
 
-        public static string GetAlsolutePath(string path)
+        public static string GetAbsolutePath(string path)
         {
             string result = null;
 
@@ -66,7 +66,7 @@ namespace SK.Utilities
             }
             catch (Exception e)
             {
-                Log.Exception(e.Message, "FileSystem.GetAlsolutePath");
+                Log.Exception(e.Message, "FileSystem.GetAbsolutePath");
             }
 
             return result;
@@ -78,7 +78,7 @@ namespace SK.Utilities
 
             try
             {
-                string fullPath = GetAlsolutePath(path);
+                string fullPath = GetAbsolutePath(path);
                 string formattedStreamingAssetsPath = UnityEngine.Application.streamingAssetsPath.Replace('/', Path.DirectorySeparatorChar);
                 if (fullPath.Contains(formattedStreamingAssetsPath))
                 {
@@ -99,7 +99,7 @@ namespace SK.Utilities
 
             try
             {
-                result = Directory.GetFiles(GetAlsolutePath(path), searchPattern, includeSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+                result = Directory.GetFiles(GetAbsolutePath(path), searchPattern, includeSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
             }
             catch (Exception e)
             {
@@ -116,7 +116,7 @@ namespace SK.Utilities
             try
             {
                 string jsonString = UnityEngine.JsonUtility.ToJson(sourceObject, true);
-                File.WriteAllText(GetAlsolutePath(targetPath), jsonString);
+                File.WriteAllText(GetAbsolutePath(targetPath), jsonString);
                 result = true;
             }
             catch (Exception e)
@@ -133,7 +133,7 @@ namespace SK.Utilities
 
             try
             {
-                string jsonString = File.ReadAllText(GetAlsolutePath(sourcePath));
+                string jsonString = File.ReadAllText(GetAbsolutePath(sourcePath));
                 result = UnityEngine.JsonUtility.FromJson<T>(jsonString);
             }
             catch (Exception e)
