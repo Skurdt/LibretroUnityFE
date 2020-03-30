@@ -25,9 +25,18 @@ namespace SK
 
         private void OnDisable()
         {
-            Libretro.Wrapper.OnAudioCallback -= UploadSamples;
-            Libretro.Wrapper.OnGameStartedEvent -= Init;
-            Libretro.Wrapper.OnGameStoppedEvent -= DeInit;
+            DeInitInternal();
+        }
+
+        void OnAudioFilterRead(float[] data, int channels)
+        {
+            if (_audioBuffer == null || _audioBuffer.Count < data.Length)
+            {
+                return;
+            }
+
+            _audioBuffer.CopyTo(0, data, 0, data.Length);
+            _audioBuffer.RemoveRange(0, data.Length);
         }
 
         private void Init(Libretro.Wrapper.LibretroGame game)
@@ -43,9 +52,7 @@ namespace SK
 
         private void DeInit(Libretro.Wrapper.LibretroGame game)
         {
-            _audioSource.Stop();
-            _audioBuffer.Clear();
-            _audioBuffer = null;
+            DeInitInternal();
         }
 
         private void UploadSamples(float[] samples)
@@ -56,15 +63,14 @@ namespace SK
             }
         }
 
-        void OnAudioFilterRead(float[] data, int channels)
+        private void DeInitInternal()
         {
-            if (_audioBuffer == null || _audioBuffer.Count < data.Length)
-            {
-                return;
-            }
-
-            _audioBuffer.CopyTo(0, data, 0, data.Length);
-            _audioBuffer.RemoveRange(0, data.Length);
+            Libretro.Wrapper.OnAudioCallback -= UploadSamples;
+            Libretro.Wrapper.OnGameStartedEvent -= Init;
+            Libretro.Wrapper.OnGameStoppedEvent -= DeInit;
+            _audioSource.Stop();
+            _audioBuffer.Clear();
+            _audioBuffer = null;
         }
     }
 }

@@ -7,7 +7,6 @@ using retro_usec_t = System.Int64;
 
 namespace SK.Libretro
 {
-
     public partial class Wrapper
     {
         #region Dynamically loaded function delegates

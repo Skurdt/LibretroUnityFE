@@ -387,6 +387,26 @@
                         "3"
                     ],
                     "DefaultValue": "1.5"
+                },
+                {
+                    "Key": "mame2003-plus_four_way_emulation",
+                    "Value": "disabled",
+                    "Description": "4-way joystick emulation on 8-way joysticks",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Key": "mame2003-plus_crosshair_enabled",
+                    "Value": "enabled",
+                    "Description": "Show Lightgun crosshair",
+                    "PossibleValues": [
+                        "enabled",
+                        "disabled"
+                    ],
+                    "DefaultValue": "enabled"
                 }
             ]
         },
@@ -595,6 +615,261 @@
                         "enabled"
                     ],
                     "DefaultValue": "disabled"
+                }
+            ]
+        },
+        {
+            "CoreName": "Stella",
+            "Options": [
+                {
+                    "Key": "stella_console",
+                    "Value": "auto",
+                    "Description": "Console display",
+                    "PossibleValues": [
+                        "auto",
+                        "ntsc",
+                        "pal",
+                        "secam",
+                        "ntsc50",
+                        "pal60",
+                        "secam60"
+                    ],
+                    "DefaultValue": "auto"
+                },
+                {
+                    "Key": "stella_palette",
+                    "Value": "standard",
+                    "Description": "Palette colors",
+                    "PossibleValues": [
+                        "standard",
+                        "z26",
+                        "user"
+                    ],
+                    "DefaultValue": "standard"
+                },
+                {
+                    "Key": "stella_filter",
+                    "Value": "disabled",
+                    "Description": "TV effects",
+                    "PossibleValues": [
+                        "disabled",
+                        "composite",
+                        "s-video",
+                        "rgb",
+                        "badly adjusted"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Key": "stella_ntsc_aspect",
+                    "Value": "par",
+                    "Description": "NTSC aspect %",
+                    "PossibleValues": [
+                        "par",
+                        "100",
+                        "101",
+                        "102",
+                        "103",
+                        "104",
+                        "105",
+                        "106",
+                        "107",
+                        "108",
+                        "109",
+                        "110",
+                        "111",
+                        "112",
+                        "113",
+                        "114",
+                        "115",
+                        "116",
+                        "117",
+                        "118",
+                        "119",
+                        "120",
+                        "121",
+                        "122",
+                        "123",
+                        "124",
+                        "125",
+                        "50",
+                        "75",
+                        "76",
+                        "77",
+                        "78",
+                        "79",
+                        "80",
+                        "81",
+                        "82",
+                        "83",
+                        "84",
+                        "85",
+                        "86",
+                        "87",
+                        "88",
+                        "89",
+                        "90",
+                        "91",
+                        "92",
+                        "93",
+                        "94",
+                        "95",
+                        "96",
+                        "97",
+                        "98",
+                        "99"
+                    ],
+                    "DefaultValue": "par"
+                },
+                {
+                    "Key": "stella_pal_aspect",
+                    "Value": "par",
+                    "Description": "PAL aspect %",
+                    "PossibleValues": [
+                        "par",
+                        "100",
+                        "101",
+                        "102",
+                        "103",
+                        "104",
+                        "105",
+                        "106",
+                        "107",
+                        "108",
+                        "109",
+                        "110",
+                        "111",
+                        "112",
+                        "113",
+                        "114",
+                        "115",
+                        "116",
+                        "117",
+                        "118",
+                        "119",
+                        "120",
+                        "121",
+                        "122",
+                        "123",
+                        "124",
+                        "125",
+                        "50",
+                        "75",
+                        "76",
+                        "77",
+                        "78",
+                        "79",
+                        "80",
+                        "81",
+                        "82",
+                        "83",
+                        "84",
+                        "85",
+                        "86",
+                        "87",
+                        "88",
+                        "89",
+                        "90",
+                        "91",
+                        "92",
+                        "93",
+                        "94",
+                        "95",
+                        "96",
+                        "97",
+                        "98",
+                        "99"
+                    ],
+                    "DefaultValue": "par"
+                },
+                {
+                    "Key": "stella_crop_hoverscan",
+                    "Value": "disabled",
+                    "Description": "Crop horizontal overscan",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Key": "stella_stereo",
+                    "Value": "auto",
+                    "Description": "Stereo sound",
+                    "PossibleValues": [
+                        "auto",
+                        "off",
+                        "on"
+                    ],
+                    "DefaultValue": "auto"
+                },
+                {
+                    "Key": "stella_phosphor",
+                    "Value": "auto",
+                    "Description": "Phosphor mode",
+                    "PossibleValues": [
+                        "auto",
+                        "off",
+                        "on"
+                    ],
+                    "DefaultValue": "auto"
+                },
+                {
+                    "Key": "stella_phosphor_blend",
+                    "Value": "60",
+                    "Description": "Phosphor blend %",
+                    "PossibleValues": [
+                        "60",
+                        "65",
+                        "70",
+                        "75",
+                        "80",
+                        "85",
+                        "90",
+                        "95",
+                        "100",
+                        "0",
+                        "5",
+                        "10",
+                        "15",
+                        "20",
+                        "25",
+                        "30",
+                        "35",
+                        "40",
+                        "45",
+                        "50",
+                        "55"
+                    ],
+                    "DefaultValue": "60"
+                },
+                {
+                    "Key": "stella_paddle_joypad_sensitivity",
+                    "Value": "3",
+                    "Description": "Paddle joypad sensitivity",
+                    "PossibleValues": [
+                        "3",
+                        "4",
+                        "5",
+                        "6",
+                        "7",
+                        "8",
+                        "9",
+                        "10",
+                        "11",
+                        "12",
+                        "13",
+                        "14",
+                        "15",
+                        "16",
+                        "17",
+                        "18",
+                        "19",
+                        "20",
+                        "1",
+                        "2"
+                    ],
+                    "DefaultValue": "3"
                 }
             ]
         }

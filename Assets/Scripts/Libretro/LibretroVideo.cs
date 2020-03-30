@@ -9,6 +9,8 @@ namespace SK.Libretro
 {
     public partial class Wrapper
     {
+        public static bool UseXRGB8888Job = true;
+
         public Texture2D Texture { get; private set; }
 
         private unsafe void RetroVideoRefreshCallback(void* data, uint width, uint height, uint pitch)
@@ -18,70 +20,76 @@ namespace SK.Libretro
                 return;
             }
 
-            int intWidth = Convert.ToInt32(width);
-            int intHeight = Convert.ToInt32(height);
-            int intPitch = Convert.ToInt32(pitch / sizeof(uint));
+            int intWidth  = (int)width;
+            int intHeight = (int)height;
 
             switch (_pixelFormat)
             {
                 case retro_pixel_format.RETRO_PIXEL_FORMAT_0RGB1555:
                 {
-                    try
+                    if (Texture == null || Texture.format != TextureFormat.BGRA32 || Texture.width != intWidth || Texture.height != intHeight)
                     {
-                        if (Texture == null || Texture.format != TextureFormat.BGRA32 || Texture.width != intPitch || Texture.height != intHeight)
+                        Texture = new Texture2D(intWidth, intHeight, TextureFormat.BGRA32, false)
                         {
-                            Texture = new Texture2D(intPitch, intHeight, TextureFormat.BGRA32, false)
-                            {
-                                filterMode = FilterMode.Trilinear
-                            };
+                            filterMode = FilterMode.Trilinear
+                        };
+                    }
+
+                    ushort* dataPtr = (ushort*)data;
+                    NativeArray<uint> textureData = Texture.GetRawTextureData<uint>();
+
+                    for (int y = 0; y < intHeight; y++)
+                    {
+                        ushort* rowStart = dataPtr;
+                        for (int x = 0; x < intWidth; x++)
+                        {
+                            ushort packed = dataPtr[x];
+                            textureData[y * intWidth + x] = ARGB1555toBGRA32(packed);
                         }
-
-                        short* dataPtr = (short*)data;
-                        NativeArray<int> textureData = Texture.GetRawTextureData<int>();
-                        int arrayLength = textureData.Length;
-
-                        new RGB1555Job
-                        {
-                            SourceData = dataPtr,
-                            TextureData = textureData
-                        }.Schedule(arrayLength, 1000).Complete();
-
-                        Texture.Apply();
+                        dataPtr = rowStart + pitch / sizeof(ushort);
                     }
-                    catch (Exception e)
-                    {
-                        Utilities.Log.Exception(e.Message);
-                    }
+
+                    Texture.Apply();
                 }
                 break;
                 case retro_pixel_format.RETRO_PIXEL_FORMAT_XRGB8888:
                 {
-                    try
+                    int targetWidth = UseXRGB8888Job ? (int)pitch / sizeof(uint) : intWidth;
+
+                    if (Texture == null || Texture.format != TextureFormat.BGRA32 || Texture.width != targetWidth || Texture.height != intHeight)
                     {
-                        if (Texture == null || Texture.format != TextureFormat.BGRA32 || Texture.width != intPitch || Texture.height != intHeight)
+                        Texture = new Texture2D(targetWidth, intHeight, TextureFormat.BGRA32, false)
                         {
-                            Texture = new Texture2D(intPitch, intHeight, TextureFormat.BGRA32, false)
-                            {
-                                filterMode = FilterMode.Trilinear
-                            };
-                        }
+                            filterMode = FilterMode.Trilinear
+                        };
+                    }
 
-                        int* dataPtr = (int*)data;
-                        NativeArray<int> textureData = Texture.GetRawTextureData<int>();
-                        int arrayLength = textureData.Length;
+                    uint* dataPtr = (uint*)data;
+                    NativeArray<uint> textureData = Texture.GetRawTextureData<uint>();
 
+                    if (UseXRGB8888Job)
+                    {
                         new RGB8888Job
                         {
                             SourceData = dataPtr,
                             TextureData = textureData
-                        }.Schedule(arrayLength, 1000).Complete();
-
-                        Texture.Apply();
+                        }.Schedule(textureData.Length, 1000).Complete();
                     }
-                    catch (Exception e)
+                    else
                     {
-                        Utilities.Log.Exception(e.Message);
+                        for (int y = 0; y < intHeight; y++)
+                        {
+                            uint* rowStart = dataPtr;
+                            for (int x = 0; x < intWidth; x++)
+                            {
+                                uint packed = dataPtr[x];
+                                textureData[y * intWidth + x] = ARGB8888toBGRA32(packed);
+                            }
+                            dataPtr = rowStart + pitch / sizeof(uint);
+                        }
                     }
+
+                    Texture.Apply();
                 }
                 break;
                 case retro_pixel_format.RETRO_PIXEL_FORMAT_RGB565:
@@ -94,17 +102,17 @@ namespace SK.Libretro
                         };
                     }
 
-                    byte* dataPtr = (byte*)data;
-                    NativeArray<byte> textureData = Texture.GetRawTextureData<byte>();
+                    ushort* dataPtr = (ushort*)data;
+                    NativeArray<ushort> textureData = Texture.GetRawTextureData<ushort>();
 
-                    int m565 = 0;
-                    for (uint y = 0; y < height; y++)
+                    for (int y = 0; y < intHeight; y++)
                     {
-                        for (uint x = y * pitch; x < width * 2 + y * pitch; x++)
+                        ushort* rowStart = dataPtr;
+                        for (int x = 0; x < intWidth; x++)
                         {
-                            textureData[m565] = dataPtr[x];
-                            m565++;
+                            textureData[y * intWidth + x] = dataPtr[x];
                         }
+                        dataPtr = rowStart + pitch / sizeof(ushort);
                     }
 
                     Texture.Apply();
@@ -119,48 +127,35 @@ namespace SK.Libretro
         }
 
         [BurstCompile]
-        private unsafe struct RGB1555Job : IJobParallelFor
-        {
-            [ReadOnly] [NativeDisableUnsafePtrRestriction] public short* SourceData;
-            [WriteOnly] public NativeArray<int> TextureData;
-
-            public void Execute(int index)
-            {
-                short packed = SourceData[index * sizeof(short)];
-                TextureData[index] = ARGB1555toBGRA32(packed);
-            }
-        }
-
-        [BurstCompile]
         private unsafe struct RGB8888Job : IJobParallelFor
         {
-            [ReadOnly] [NativeDisableUnsafePtrRestriction] public int* SourceData;
-            [WriteOnly] public NativeArray<int> TextureData;
+            [ReadOnly] [NativeDisableUnsafePtrRestriction] public uint* SourceData;
+            [WriteOnly] public NativeArray<uint> TextureData;
 
             public void Execute(int index)
             {
-                int packed = SourceData[index];
+                uint packed = SourceData[index];
                 TextureData[index] = ARGB8888toBGRA32(packed);
             }
         }
 
-        private static int ARGB1555toBGRA32(short packed)
+        private static uint ARGB1555toBGRA32(ushort packed)
         {
-            int a = packed & 0x8000;
-            int r = packed & 0x7C00;
-            int g = packed & 0x03E0;
-            int b = packed & 0x1F;
-            int rgb = (r << 9) | (g << 6) | (b << 3);
+            uint a = (uint)packed & 0x8000;
+            uint r = (uint)packed & 0x7C00;
+            uint g = (uint)packed & 0x03E0;
+            uint b = (uint)packed & 0x1F;
+            uint rgb = (r << 9) | (g << 6) | (b << 3);
             return (a * 0x1FE00) | rgb | ((rgb >> 5) & 0x070707);
         }
 
-        private static int ARGB8888toBGRA32(int packed)
+        private static uint ARGB8888toBGRA32(uint packed)
         {
             byte a = (byte)((packed & 0x00FF0000) >> 24);
             byte r = (byte)((packed & 0x00FF0000) >> 16);
             byte g = (byte)((packed & 0x0000FF00) >> 8);
             byte b = (byte)(packed & 0x00000FF0);
-            return (b) | (g << 8) | (r << 16) | (a << 24);
+            return (uint)((b) | (g << 8) | (r << 16) | (a << 24));
         }
     }
 }

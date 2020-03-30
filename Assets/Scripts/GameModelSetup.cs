@@ -25,6 +25,7 @@ namespace SK
 
         public Game Game;
         private TextMeshProUGUI _infoText = null;
+        private double _updateLoopTimeMs;
         private string _coreInfoText = string.Empty;
 
         [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "Constructor subscribes to events, no methods are called directly on this...")]
@@ -91,6 +92,11 @@ namespace SK
                 Cursor.visible = !Cursor.visible;
             }
 
+            if (Input.GetKeyDown(KeyCode.F1))
+            {
+                Libretro.Wrapper.UseXRGB8888Job = !Libretro.Wrapper.UseXRGB8888Job;
+            }
+
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 StopGame();
@@ -100,6 +106,11 @@ namespace SK
                 Application.Quit(0);
 #endif
             }
+        }
+
+        private void OnGUI()
+        {
+            GUI.Label(new Rect(4, 2, 200, 100), $"Update: {_updateLoopTimeMs}ms");
         }
 
         private void StartGame()
@@ -168,17 +179,28 @@ namespace SK
             }
         }
 
+        private int numFrames;
+
         [SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Called by InvokeRepeating")]
         private void LibretroRunLoop()
         {
             if (Wrapper != null)
             {
+                System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+
                 Wrapper.Update();
 
                 if (Wrapper.Texture != null)
                 {
                     _renderer.material.mainTexture = Wrapper.Texture;
                     _renderer.material.SetTexture("_EmissionMap", Wrapper.Texture);
+                }
+
+                sw.Stop();
+                if (numFrames++ >= 60)
+                {
+                    _updateLoopTimeMs = sw.Elapsed.TotalMilliseconds;
+                    numFrames = 0;
                 }
             }
         }
