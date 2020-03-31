@@ -92,11 +92,6 @@ namespace SK
                 Cursor.visible = !Cursor.visible;
             }
 
-            if (Input.GetKeyDown(KeyCode.F1))
-            {
-                Libretro.Wrapper.UseXRGB8888Job = !Libretro.Wrapper.UseXRGB8888Job;
-            }
-
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 StopGame();
@@ -190,17 +185,17 @@ namespace SK
 
                 Wrapper.Update();
 
+                sw.Stop();
+                if (numFrames++ >= 10)
+                {
+                    _updateLoopTimeMs = sw.Elapsed.TotalMilliseconds;
+                    numFrames = 0;
+                }
+
                 if (Wrapper.Texture != null)
                 {
                     _renderer.material.mainTexture = Wrapper.Texture;
                     _renderer.material.SetTexture("_EmissionMap", Wrapper.Texture);
-                }
-
-                sw.Stop();
-                if (numFrames++ >= 60)
-                {
-                    _updateLoopTimeMs = sw.Elapsed.TotalMilliseconds;
-                    numFrames = 0;
                 }
             }
         }

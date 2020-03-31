@@ -9,8 +9,6 @@ namespace SK.Libretro
 {
     public partial class Wrapper
     {
-        public static bool UseXRGB8888Job = true;
-
         public Texture2D Texture { get; private set; }
 
         private unsafe void RetroVideoRefreshCallback(void* data, uint width, uint height, uint pitch)
@@ -35,59 +33,36 @@ namespace SK.Libretro
                         };
                     }
 
-                    ushort* dataPtr = (ushort*)data;
-                    NativeArray<uint> textureData = Texture.GetRawTextureData<uint>();
-
-                    for (int y = 0; y < intHeight; y++)
+                    new ARGB1555Job
                     {
-                        ushort* rowStart = dataPtr;
-                        for (int x = 0; x < intWidth; x++)
-                        {
-                            ushort packed = dataPtr[x];
-                            textureData[y * intWidth + x] = ARGB1555toBGRA32(packed);
-                        }
-                        dataPtr = rowStart + pitch / sizeof(ushort);
-                    }
+                        SourceData = (ushort*)data,
+                        Width = intWidth,
+                        Height = intHeight,
+                        PitchPixels = (int)(pitch / sizeof(ushort)),
+                        TextureData = Texture.GetRawTextureData<uint>()
+                    }.Schedule().Complete();
 
                     Texture.Apply();
                 }
                 break;
                 case retro_pixel_format.RETRO_PIXEL_FORMAT_XRGB8888:
                 {
-                    int targetWidth = UseXRGB8888Job ? (int)pitch / sizeof(uint) : intWidth;
-
-                    if (Texture == null || Texture.format != TextureFormat.BGRA32 || Texture.width != targetWidth || Texture.height != intHeight)
+                    if (Texture == null || Texture.format != TextureFormat.BGRA32 || Texture.width != intWidth || Texture.height != intHeight)
                     {
-                        Texture = new Texture2D(targetWidth, intHeight, TextureFormat.BGRA32, false)
+                        Texture = new Texture2D(intWidth, intHeight, TextureFormat.BGRA32, false)
                         {
                             filterMode = FilterMode.Trilinear
                         };
                     }
 
-                    uint* dataPtr = (uint*)data;
-                    NativeArray<uint> textureData = Texture.GetRawTextureData<uint>();
-
-                    if (UseXRGB8888Job)
+                    new ARGB8888Job
                     {
-                        new RGB8888Job
-                        {
-                            SourceData = dataPtr,
-                            TextureData = textureData
-                        }.Schedule(textureData.Length, 1000).Complete();
-                    }
-                    else
-                    {
-                        for (int y = 0; y < intHeight; y++)
-                        {
-                            uint* rowStart = dataPtr;
-                            for (int x = 0; x < intWidth; x++)
-                            {
-                                uint packed = dataPtr[x];
-                                textureData[y * intWidth + x] = ARGB8888toBGRA32(packed);
-                            }
-                            dataPtr = rowStart + pitch / sizeof(uint);
-                        }
-                    }
+                        SourceData = (uint*)data,
+                        Width = intWidth,
+                        Height = intHeight,
+                        PitchPixels = (int)(pitch / sizeof(uint)),
+                        TextureData = Texture.GetRawTextureData<uint>()
+                    }.Schedule().Complete();
 
                     Texture.Apply();
                 }
@@ -102,18 +77,14 @@ namespace SK.Libretro
                         };
                     }
 
-                    ushort* dataPtr = (ushort*)data;
-                    NativeArray<ushort> textureData = Texture.GetRawTextureData<ushort>();
-
-                    for (int y = 0; y < intHeight; y++)
+                    new RGB565Job
                     {
-                        ushort* rowStart = dataPtr;
-                        for (int x = 0; x < intWidth; x++)
-                        {
-                            textureData[y * intWidth + x] = dataPtr[x];
-                        }
-                        dataPtr = rowStart + pitch / sizeof(ushort);
-                    }
+                        SourceData = (ushort*)data,
+                        Width = intWidth,
+                        Height = intHeight,
+                        PitchPixels = (int)(pitch / sizeof(ushort)),
+                        TextureData = Texture.GetRawTextureData<ushort>()
+                    }.Schedule().Complete();
 
                     Texture.Apply();
                 }
@@ -127,15 +98,71 @@ namespace SK.Libretro
         }
 
         [BurstCompile]
-        private unsafe struct RGB8888Job : IJobParallelFor
+        private unsafe struct ARGB1555Job : IJob
         {
-            [ReadOnly] [NativeDisableUnsafePtrRestriction] public uint* SourceData;
+            [ReadOnly] [NativeDisableUnsafePtrRestriction] public ushort* SourceData;
+            [ReadOnly] public int Width;
+            [ReadOnly] public int Height;
+            [ReadOnly] public int PitchPixels;
             [WriteOnly] public NativeArray<uint> TextureData;
 
-            public void Execute(int index)
+            public void Execute()
             {
-                uint packed = SourceData[index];
-                TextureData[index] = ARGB8888toBGRA32(packed);
+                ushort* line = SourceData;
+                for (int y = 0; y < Height; ++y)
+                {
+                    for (int x = 0; x < Width; ++x)
+                    {
+                        TextureData[y * Width + x] = ARGB1555toBGRA32(line[x]);
+                    }
+                    line += PitchPixels;
+                }
+            }
+        }
+
+        [BurstCompile]
+        private unsafe struct ARGB8888Job : IJob
+        {
+            [ReadOnly] [NativeDisableUnsafePtrRestriction] public uint* SourceData;
+            [ReadOnly] public int Width;
+            [ReadOnly] public int Height;
+            [ReadOnly] public int PitchPixels;
+            [WriteOnly] public NativeArray<uint> TextureData;
+
+            public void Execute()
+            {
+                uint* line = SourceData;
+                for (int y = 0; y < Height; ++y)
+                {
+                    for (int x = 0; x < Width; ++x)
+                    {
+                        TextureData[y * Width + x] = line[x];
+                    }
+                    line += PitchPixels;
+                }
+            }
+        }
+
+        [BurstCompile]
+        private unsafe struct RGB565Job : IJob
+        {
+            [ReadOnly] [NativeDisableUnsafePtrRestriction] public ushort* SourceData;
+            [ReadOnly] public int Width;
+            [ReadOnly] public int Height;
+            [ReadOnly] public int PitchPixels;
+            [WriteOnly] public NativeArray<ushort> TextureData;
+
+            public void Execute()
+            {
+                ushort* line = SourceData;
+                for (int y = 0; y < Height; ++y)
+                {
+                    for (int x = 0; x < Width; ++x)
+                    {
+                        TextureData[y * Width + x] = line[x];
+                    }
+                    line += PitchPixels;
+                }
             }
         }
 
@@ -147,15 +174,6 @@ namespace SK.Libretro
             uint b = (uint)packed & 0x1F;
             uint rgb = (r << 9) | (g << 6) | (b << 3);
             return (a * 0x1FE00) | rgb | ((rgb >> 5) & 0x070707);
-        }
-
-        private static uint ARGB8888toBGRA32(uint packed)
-        {
-            byte a = (byte)((packed & 0x00FF0000) >> 24);
-            byte r = (byte)((packed & 0x00FF0000) >> 16);
-            byte g = (byte)((packed & 0x0000FF00) >> 8);
-            byte b = (byte)(packed & 0x00000FF0);
-            return (uint)((b) | (g << 8) | (r << 16) | (a << 24));
         }
     }
 }

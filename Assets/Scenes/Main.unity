@@ -1057,7 +1057,7 @@ MonoBehaviour:
   Game:
     Core: mame2003_plus
     Directory: D:\mame2003-plus\roms
-    Name: mslug2
+    Name: mslug
 --- !u!4 &4570645587454080703
 Transform:
   m_ObjectHideFlags: 0
