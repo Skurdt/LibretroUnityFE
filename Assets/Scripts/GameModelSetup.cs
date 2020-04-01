@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace SK
 {
@@ -18,36 +19,48 @@ namespace SK
     [SelectionBase]
     public class GameModelSetup : MonoBehaviour
     {
-        private Renderer _renderer = null;
-        private Material _originalMaterial = null;
-
         public Libretro.Wrapper Wrapper { get; private set; }
 
         public Game Game;
-        private TextMeshProUGUI _infoText = null;
-        private double _updateLoopTimeMs;
+
+        private Renderer _rendererComponent = null;
+        private Material _originalMaterial = null;
+
+        private TextMeshProUGUI _infoTextComponent = null;
         private string _coreInfoText = string.Empty;
 
         [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "Constructor subscribes to events, no methods are called directly on this...")]
         private AudioDeviceExternal _externalAudio = null;
 
+        private double _updateLoopTimeMs;
+
         private void Awake()
         {
-            _renderer = transform.GetChild(0).GetChild(1).GetComponent<Renderer>();
-            _originalMaterial = _renderer.sharedMaterial;
+            if (transform.childCount > 0)
+            {
+                Transform modelTransform = transform.GetChild(0);
+                if (modelTransform != null && modelTransform.childCount > 1)
+                {
+                    Transform screenTransform = modelTransform.GetChild(1);
+                    if (screenTransform.TryGetComponent(out _rendererComponent))
+                    {
+                        _originalMaterial = _rendererComponent.sharedMaterial;
+
+                        Game = FileSystem.DeserializeFromJson<Game>($"{Application.streamingAssetsPath}/Game.json");
+
+                        AudioSource foundUnityAudioSource = GetComponentInChildren<AudioSource>();
+                        if (foundUnityAudioSource == null)
+                        {
+                            _externalAudio = new AudioDeviceExternal();
+                        }
+                    }
+                }
+            }
 
             GameObject uiNode = GameObject.Find("UI");
             if (uiNode != null)
             {
-                _infoText = uiNode.GetComponentInChildren<TextMeshProUGUI>();
-            }
-
-            Game = FileSystem.DeserializeFromJson<Game>($"{Application.streamingAssetsPath}/Game.json");
-
-            AudioSource foundUnityAudioSource = GetComponentInChildren<AudioSource>();
-            if (foundUnityAudioSource == null)
-            {
-                _externalAudio = new AudioDeviceExternal();
+                _infoTextComponent = uiNode.GetComponentInChildren<TextMeshProUGUI>();
             }
         }
 
@@ -79,7 +92,7 @@ namespace SK
 
         private void Update()
         {
-            if (Input.GetMouseButtonDown(1))
+            if (Mouse.current.middleButton.wasPressedThisFrame)
             {
                 if (Cursor.lockState == CursorLockMode.Locked)
                 {
@@ -194,8 +207,8 @@ namespace SK
 
                 if (Wrapper.Texture != null)
                 {
-                    _renderer.material.mainTexture = Wrapper.Texture;
-                    _renderer.material.SetTexture("_EmissionMap", Wrapper.Texture);
+                    _rendererComponent.material.mainTexture = Wrapper.Texture;
+                    _rendererComponent.material.SetTexture("_EmissionMap", Wrapper.Texture);
                 }
             }
         }
@@ -204,7 +217,7 @@ namespace SK
         {
             if (core != null)
             {
-                if (_infoText != null)
+                if (_infoTextComponent != null)
                 {
                     StringBuilder sb = new StringBuilder()
                         .AppendLine("<color=yellow>Core Info:</color>")
@@ -217,16 +230,16 @@ namespace SK
                         .AppendLine($"<color=lightblue>BlockExtraction:</color> {core.BlockExtraction}")
                         .Append("</size>");
                     _coreInfoText = sb.ToString();
-                    _infoText.SetText(_coreInfoText);
+                    _infoTextComponent.SetText(_coreInfoText);
                 }
             }
         }
 
         private void CoreStoppedCallback(Libretro.Wrapper.LibretroCore core)
         {
-            if (_infoText != null)
+            if (_infoTextComponent != null)
             {
-                _infoText.SetText(string.Empty);
+                _infoTextComponent.SetText(string.Empty);
             }
         }
 
@@ -234,9 +247,9 @@ namespace SK
         {
             if (game != null)
             {
-                if (_infoText != null)
+                if (_infoTextComponent != null)
                 {
-                    StringBuilder sb = new StringBuilder(_infoText.text)
+                    StringBuilder sb = new StringBuilder(_infoTextComponent.text)
                         .AppendLine()
                         .AppendLine("<color=yellow>Game Info:</color>")
                         .Append("<size=12>")
@@ -249,24 +262,24 @@ namespace SK
                         .AppendLine($"<color=lightblue>SampleRate:</color> {game.SampleRate}")
                         .Append("</size>");
 
-                    _infoText.SetText(sb.ToString());
+                    _infoTextComponent.SetText(sb.ToString());
                 }
             }
 
-            _renderer.material.mainTextureScale = new Vector2(1f, -1f);
-            _renderer.material.EnableKeyword("_EMISSION");
-            _renderer.material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
-            _renderer.material.SetColor("_EmissionColor", Color.white);
+            _rendererComponent.material.mainTextureScale = new Vector2(1f, -1f);
+            _rendererComponent.material.EnableKeyword("_EMISSION");
+            _rendererComponent.material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+            _rendererComponent.material.SetColor("_EmissionColor", Color.white);
         }
 
         private void GameStoppedCallback(Libretro.Wrapper.LibretroGame game)
         {
-            if (_infoText != null)
-            {
-                _infoText.SetText(string.Empty);
-            }
+            _rendererComponent.material = _originalMaterial;
 
-            _renderer.material = _originalMaterial;
+            if (_infoTextComponent != null)
+            {
+                _infoTextComponent.SetText(string.Empty);
+            }
 
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;

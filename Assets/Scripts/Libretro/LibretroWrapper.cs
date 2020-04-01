@@ -11,13 +11,13 @@ namespace SK.Libretro
     {
         #region Events
         public delegate void OnCoreStartedDelegate(LibretroCore core);
-        public static OnCoreStartedDelegate OnCoreStartedEvent;
+        public static event OnCoreStartedDelegate OnCoreStartedEvent;
         public delegate void OnCoreStoppedDelegate(LibretroCore core);
-        public static OnCoreStoppedDelegate OnCoreStoppedEvent;
+        public static event OnCoreStoppedDelegate OnCoreStoppedEvent;
         public delegate void OnGameStartedDelegate(LibretroGame game);
-        public static OnGameStartedDelegate OnGameStartedEvent;
+        public static event OnGameStartedDelegate OnGameStartedEvent;
         public delegate void OnGameStoppedDelegate(LibretroGame game);
-        public static OnGameStoppedDelegate OnGameStoppedEvent;
+        public static event OnGameStoppedDelegate OnGameStoppedEvent;
         #endregion
 
         public LibretroCore Core { get; private set; }
@@ -58,11 +58,11 @@ namespace SK.Libretro
 
                 _systemInfo = new retro_system_info();
                 Core.retro_get_system_info(ref _systemInfo);
-                Core.CoreName = Marshal.PtrToStringAnsi((IntPtr)_systemInfo.library_name);
-                Core.CoreVersion = Marshal.PtrToStringAnsi((IntPtr)_systemInfo.library_version);
-                Core.ValidExtensions = Marshal.PtrToStringAnsi((IntPtr)_systemInfo.valid_extensions).Split('|');
+                Core.CoreName         = CharsToString(_systemInfo.library_name);
+                Core.CoreVersion      = CharsToString(_systemInfo.library_version);
+                Core.ValidExtensions  = CharsToString(_systemInfo.valid_extensions).Split('|');
                 Core.RequiresFullPath = _systemInfo.need_fullpath;
-                Core.BlockExtraction = _systemInfo.block_extract;
+                Core.BlockExtraction  = _systemInfo.block_extract;
 
                 Core.retro_set_environment(_environmentCallback);
                 Core.retro_init();
@@ -96,13 +96,13 @@ namespace SK.Libretro
                         _systemAVInfo = new retro_system_av_info();
                         Core.retro_get_system_av_info(ref _systemAVInfo);
 
-                        Game.BaseWidth = Convert.ToInt32(_systemAVInfo.geometry.base_width);
-                        Game.BaseHeight = Convert.ToInt32(_systemAVInfo.geometry.base_height);
-                        Game.MaxWidth = Convert.ToInt32(_systemAVInfo.geometry.max_width);
-                        Game.MaxHeight = Convert.ToInt32(_systemAVInfo.geometry.max_height);
+                        Game.BaseWidth   = (int)(_systemAVInfo.geometry.base_width);
+                        Game.BaseHeight  = (int)(_systemAVInfo.geometry.base_height);
+                        Game.MaxWidth    = (int)(_systemAVInfo.geometry.max_width);
+                        Game.MaxHeight   = (int)(_systemAVInfo.geometry.max_height);
                         Game.AspectRatio = _systemAVInfo.geometry.aspect_ratio;
-                        Game.Fps = Convert.ToSingle(_systemAVInfo.timing.fps);
-                        Game.SampleRate = Convert.ToInt32(_systemAVInfo.timing.sample_rate);
+                        Game.Fps         = (float)(_systemAVInfo.timing.fps);
+                        Game.SampleRate  = (int)(_systemAVInfo.timing.sample_rate);
 
                         Game.Running = true;
 

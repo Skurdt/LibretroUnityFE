@@ -1035,6 +1035,7 @@ GameObject:
   - component: {fileID: 4570645587454080703}
   - component: {fileID: 1582831234327946844}
   - component: {fileID: 4570645587454080702}
+  - component: {fileID: 4570645587454080704}
   m_Layer: 0
   m_Name: default80hor
   m_TagString: Untagged
@@ -1057,7 +1058,7 @@ MonoBehaviour:
   Game:
     Core: mame2003_plus
     Directory: D:\mame2003-plus\roms
-    Name: mslug
+    Name: mslugx
 --- !u!4 &4570645587454080703
 Transform:
   m_ObjectHideFlags: 0
@@ -1073,6 +1074,50 @@ Transform:
   m_Father: {fileID: 817238060}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &4570645587454080704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4570645587454080701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 621567455fd1c4ceb811cc8a00b6a1a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_NotificationBehavior: 0
+  m_MaxPlayerCount: 2
+  m_AllowJoining: 1
+  m_JoinBehavior: 0
+  m_PlayerJoinedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_PlayerLeftEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_JoinAction:
+    m_UseReference: 0
+    m_Action:
+      m_Name: Join
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: cbf768b2-75c6-4483-a352-757bea7504a1
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+    m_Reference: {fileID: 0}
+  m_PlayerPrefab: {fileID: 3509142860079312475, guid: 8b1b18d3b20af884b9dc00b05fcf10e4,
+    type: 3}
+  m_SplitScreen: 0
+  m_MaintainAspectRatioInSplitScreen: 0
+  m_FixedNumberOfSplitScreens: -1
+  m_SplitScreenRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
 --- !u!33 &5330669195896609875
 MeshFilter:
   m_ObjectHideFlags: 0

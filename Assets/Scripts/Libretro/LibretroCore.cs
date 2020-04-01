@@ -9,9 +9,9 @@ namespace SK.Libretro
         [Serializable]
         public class CoreOption
         {
-            public string Key;
-            public string Value;
             public string Description;
+            public string Value;
+            public string Key;
             public string[] PossibleValues;
             public string DefaultValue;
         }
@@ -66,7 +66,12 @@ namespace SK.Libretro
             public bool RequiresFullPath;
             public bool BlockExtraction;
 
+            public int Rotation;
+            public int PerformanceLevel;
+
             public CoreOptions CoreOptions;
+
+            public retro_controller_info[] ControllerPorts;
 
             public bool Initialized;
 

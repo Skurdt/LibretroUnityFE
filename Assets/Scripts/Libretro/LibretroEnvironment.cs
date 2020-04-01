@@ -21,36 +21,36 @@ namespace SK.Libretro
             {
                 case retro_environment.RETRO_ENVIRONMENT_SET_ROTATION:
                 {
-                    //TODO: Rotate screen (counter-clockwise)
-                    //Values: 0, 1,  2,   3
-                    //Result: 0, 90, 180, 270 degrees
                     uint* inRotation = (uint*)data;
-                    Game.Rotation = Convert.ToInt32(*inRotation);
-                    Log.Info($"in_Rotation: {Game.Rotation}", "SET_ROTATION");
-                    return false;
+                    Log.Warning($"in_Rotation: {*inRotation}", "RETRO_ENVIRONMENT_SET_ROTATION");
+                    if (Core != null)
+                    {
+                        Core.Rotation = (int)*inRotation;
+                    }
+                    return false; // TODO: Rotate screen (counter-clockwise) Values: 0, 1, 2, 3 Result: 0, 90, 180, 270 degrees
                 }
                 //break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_OVERSCAN:
                 {
-                    //TODO: Retrieve value from core/rom
+                    // TODO: Figure out the value...
                     bool* outOverscan = (bool*)data;
-                    *outOverscan = true;
-                    Log.Info($"out_Overscan: {*outOverscan}", "GET_OVERSCAN");
+                    *outOverscan      = true;
+                    Log.Warning($"out_Overscan: {*outOverscan}", "RETRO_ENVIRONMENT_GET_OVERSCAN");
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_CAN_DUPE:
                 {
                     //NOTE: What is frame duping and do we support that? No clue :p
                     bool* outCanDupe = (bool*)data;
-                    *outCanDupe = true;
-                    Log.Info($"out_CanDupe: {*outCanDupe}", "GET_CAN_DUPE");
+                    *outCanDupe      = true;
+                    Log.Warning($"out_CanDupe: {*outCanDupe}", "RETRO_ENVIRONMENT_GET_CAN_DUPE");
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_MESSAGE:
                 {
                     retro_message* inMessage = (retro_message*)data;
-                    string msgString = Marshal.PtrToStringAnsi((IntPtr)inMessage->msg);
-                    Log.Info($"in_Message: {msgString}", "SET_MESSAGE");
+                    string msgString         = CharsToString(inMessage->msg);
+                    Log.Warning($"in_Message: {msgString}", "RETRO_ENVIRONMENT_SET_MESSAGE");
                 }
                 break;
                 //case RETRO_ENVIRONMENT.RETRO_ENVIRONMENT_SHUTDOWN:
@@ -58,15 +58,16 @@ namespace SK.Libretro
                 case retro_environment.RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL:
                 {
                     int* inPerformanceLevel = (int*)data;
-                    Log.Info($"in_PerformanceLevel: {*inPerformanceLevel}", "SET_PERFORMANCE_LEVEL");
+                    Core.PerformanceLevel   = *inPerformanceLevel;
+                    Log.Info($"in_PerformanceLevel: {*inPerformanceLevel}", "RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL");
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY:
                 {
                     char** outSystemDirectory = (char**)data;
-                    string systemDirectory = FileSystem.GetAbsolutePath($"{SystemDirectory}/{Core.CoreName}");
-                    *outSystemDirectory = StringToChars(systemDirectory);
-                    Log.Info($"out_SystemDirectory: {systemDirectory}", "GET_SYSTEM_DIRECTORY");
+                    string systemDirectory    = FileSystem.GetAbsolutePath($"{SystemDirectory}/{Core.CoreName}");
+                    *outSystemDirectory       = StringToChars(systemDirectory);
+                    Log.Info($"out_SystemDirectory: {systemDirectory}", "RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY");
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
@@ -79,7 +80,7 @@ namespace SK.Libretro
                         case retro_pixel_format.RETRO_PIXEL_FORMAT_RGB565:
                         {
                             _pixelFormat = *inPixelFormat;
-                            Log.Info($"in_PixelFormat: {_pixelFormat}", "SET_PIXEL_FORMAT");
+                            Log.Info($"in_PixelFormat: {_pixelFormat}", "RETRO_ENVIRONMENT_SET_PIXEL_FORMAT");
                         }
                         break;
                         default:
@@ -92,19 +93,19 @@ namespace SK.Libretro
                     retro_input_descriptor* inInputDescriptors = (retro_input_descriptor*)data;
                     while (inInputDescriptors->desc != null)
                     {
-                        uint port = inInputDescriptors->port;
-                        uint device = inInputDescriptors->device;
-                        uint index = inInputDescriptors->index;
-                        uint id = inInputDescriptors->id;
-                        string descText = Marshal.PtrToStringAnsi((IntPtr)inInputDescriptors->desc);
-                        Log.Info($"### Port: {port} Device: {device} Index: {index} Id: {id} Desc: {descText}", "SET_INPUT_DESCRIPTORS");
+                        uint port       = inInputDescriptors->port;
+                        uint device     = inInputDescriptors->device;
+                        uint index      = inInputDescriptors->index;
+                        uint id         = inInputDescriptors->id;
+                        string descText = CharsToString(inInputDescriptors->desc);
+                        Log.Warning($"### Port: {port} Device: {(retro_device)device} Index: {index} Id: {id} Desc: {descText}", "RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS");
                         inInputDescriptors++;
                     }
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK:
                 {
-                    Log.Info("SET_KEYBOARD_CALLBACK");
+                    Log.Warning("RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK");
                 }
                 break;
                 //case RETRO_ENVIRONMENT.RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:
@@ -114,7 +115,8 @@ namespace SK.Libretro
                 case retro_environment.RETRO_ENVIRONMENT_GET_VARIABLE:
                 {
                     retro_variable* outVariable = (retro_variable*)data;
-                    string key = Marshal.PtrToStringAnsi((IntPtr)outVariable->key);
+
+                    string key = CharsToString(outVariable->key);
                     if (Core.CoreOptions != null)
                     {
                         CoreOption coreOption = Core.CoreOptions.Options.Find(x => x.Key.Equals(key, StringComparison.OrdinalIgnoreCase));
@@ -130,7 +132,7 @@ namespace SK.Libretro
                     }
                     else
                     {
-                        Log.Warning($"Core didn't set its options.");
+                        Log.Warning($"Core didn't set its options for key '{key}'.");
                         return false;
                     }
                 }
@@ -148,24 +150,24 @@ namespace SK.Libretro
 
                     while (inVariable->key != null)
                     {
-                        string key = Marshal.PtrToStringAnsi((IntPtr)inVariable->key);
+                        string key = CharsToString(inVariable->key);
 
                         CoreOption coreOption = Core.CoreOptions.Options.Find(x => x.Key.Equals(key, StringComparison.OrdinalIgnoreCase));
                         if (coreOption == null)
                         {
-                            string[] descriptionAndValues = Marshal.PtrToStringAnsi((IntPtr)inVariable->value).Split(';');
-                            string description = descriptionAndValues[0].Trim();
-                            string[] possibleValues = descriptionAndValues[1].Trim().Split('|');
-                            string defaultValue = possibleValues[0];
-                            string value = defaultValue;
+                            string[] descriptionAndValues = CharsToString(inVariable->value).Split(';');
+                            string description            = descriptionAndValues[0].Trim();
+                            string[] possibleValues       = descriptionAndValues[1].Trim().Split('|');
+                            string defaultValue           = possibleValues[0];
+                            string value                  = defaultValue;
 
                             coreOption = new CoreOption
                             {
-                                Description = description,
-                                Key = key,
-                                Value = value,
+                                Description    = description,
+                                Value          = value,
+                                Key            = key,
                                 PossibleValues = possibleValues,
-                                DefaultValue = defaultValue
+                                DefaultValue   = defaultValue
                             };
 
                             Core.CoreOptions.Options.Add(coreOption);
@@ -180,7 +182,7 @@ namespace SK.Libretro
                 case retro_environment.RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE:
                 {
                     bool* outVariableUpdate = (bool*)data;
-                    *outVariableUpdate = false;
+                    *outVariableUpdate      = false;
                 }
                 break;
                 //case RETRO_ENVIRONMENT.RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:
@@ -195,9 +197,9 @@ namespace SK.Libretro
                 //    break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES:
                 {
-                    Log.Info("GET_INPUT_DEVICE_CAPABILITIES");
-                    //ulong* bitmask = (ulong*)data;
-                    //*bitmask = (1 << (int)RetroDevice.RETRO_DEVICE_JOYPAD) | (1 << (int)RetroDevice.RETRO_DEVICE_ANALOG) | (1 << (int)RetroDevice.RETRO_DEVICE_KEYBOARD);
+                    Log.Warning("RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES");
+                    //ulong* outBitmask = (ulong*)data;
+                    //*outBitmask       = (1 << (int)RetroDevice.RETRO_DEVICE_JOYPAD) | (1 << (int)RetroDevice.RETRO_DEVICE_ANALOG) | (1 << (int)RetroDevice.RETRO_DEVICE_KEYBOARD);
                     return false; //TODO: Remove when implemented!
                 }
                 //break;
@@ -208,7 +210,7 @@ namespace SK.Libretro
                 case retro_environment.RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
                 {
                     retro_log_callback* outLogInterface = (retro_log_callback*)data;
-                    outLogInterface->log = Marshal.GetFunctionPointerForDelegate(_logPrintfCallback);
+                    outLogInterface->log                = Marshal.GetFunctionPointerForDelegate(_logPrintfCallback);
                 }
                 break;
                 //case RETRO_ENVIRONMENT.RETRO_ENVIRONMENT_GET_PERF_INTERFACE:
@@ -218,17 +220,17 @@ namespace SK.Libretro
                 case retro_environment.RETRO_ENVIRONMENT_GET_CORE_ASSETS_DIRECTORY:
                 {
                     char** outCoreAssetsDirectory = (char**)data;
-                    string coreAssetsDirectory = FileSystem.GetAbsolutePath($"{SystemDirectory}/{Core.CoreName}");
-                    *outCoreAssetsDirectory = StringToChars(coreAssetsDirectory);
-                    Log.Info($"out_CoreAssetsDirectory: {coreAssetsDirectory}", "GET_CORE_ASSETS_DIRECTORY");
+                    string coreAssetsDirectory    = FileSystem.GetAbsolutePath($"{SystemDirectory}/{Core.CoreName}");
+                    *outCoreAssetsDirectory       = StringToChars(coreAssetsDirectory);
+                    Log.Info($"out_CoreAssetsDirectory: {coreAssetsDirectory}", "RETRO_ENVIRONMENT_GET_CORE_ASSETS_DIRECTORY");
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY:
                 {
                     char** outSaveDirectory = (char**)data;
-                    string saveDirectory = FileSystem.GetAbsolutePath($"{SystemDirectory}/{Core.CoreName}");
-                    *outSaveDirectory = StringToChars(saveDirectory);
-                    Log.Info($"out_SaveDirectory: {saveDirectory}", "GET_SAVE_DIRECTORY");
+                    string saveDirectory    = FileSystem.GetAbsolutePath($"{SystemDirectory}/{Core.CoreName}");
+                    *outSaveDirectory       = StringToChars(saveDirectory);
+                    Log.Info($"out_SaveDirectory: {saveDirectory}", "RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY");
                 }
                 break;
                 //case RETRO_ENVIRONMENT.RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO:
@@ -334,18 +336,34 @@ namespace SK.Libretro
                 //break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_CONTROLLER_INFO:
                 {
+                    int i;
                     retro_controller_info* inControllerInfo = (retro_controller_info*)data;
-                    while (inControllerInfo->types != null)
+                    for (i = 0; inControllerInfo[i].types != null; ++i)
                     {
-                        retro_controller_description* description = inControllerInfo->types;
-                        string descText = Marshal.PtrToStringAnsi((IntPtr)description->desc);
-                        uint id = description->id;
-                        Log.Info($"#### Controller {id} description: {descText}");
-                        inControllerInfo++;
+                        Log.Info($"# Controller port: {i + 1}", "RETRO_ENVIRONMENT_SET_CONTROLLER_INFO");
+                        for (int j = 0; j < inControllerInfo[i].num_types; ++j)
+                        {
+                            string desc = CharsToString(inControllerInfo[i].types[j].desc);
+                            uint id     = inControllerInfo[i].types[j].id;
+                            Log.Info($"    {desc} (ID: {id})", "RETRO_ENVIRONMENT_SET_CONTROLLER_INFO");
+                        }
                     }
-                    return false; //TODO: Remove when implemented!
+
+                    if (Core != null)
+                    {
+                        int numPorts = i;
+                        Core.ControllerPorts = new retro_controller_info[numPorts];
+                        for (int j = 0; j < numPorts; ++j)
+                        {
+                            Core.ControllerPorts[j] = inControllerInfo[j];
+                        }
+                    }
+                    else
+                    {
+                        Log.Error($"Core is null.", "RETRO_ENVIRONMENT_SET_CONTROLLER_INFO");
+                    }
                 }
-                //break;
+                break;
                 //case RETRO_ENVIRONMENT.RETRO_ENVIRONMENT_SET_MEMORY_MAPS:
                 //    break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_GEOMETRY:
@@ -355,8 +373,8 @@ namespace SK.Libretro
                         || (_systemAVInfo.geometry.base_height != inGeometry->base_height)
                         || (_systemAVInfo.geometry.aspect_ratio != inGeometry->aspect_ratio))
                     {
-                        _systemAVInfo.geometry.base_width = inGeometry->base_width;
-                        _systemAVInfo.geometry.base_height = inGeometry->base_height;
+                        _systemAVInfo.geometry.base_width   = inGeometry->base_width;
+                        _systemAVInfo.geometry.base_height  = inGeometry->base_height;
                         _systemAVInfo.geometry.aspect_ratio = inGeometry->aspect_ratio;
 
                         // TODO: Set video aspect ratio
@@ -426,7 +444,7 @@ namespace SK.Libretro
                 //    break;
                 default:
                 {
-                    Log.Error($"Not implemented: {Enum.GetName(typeof(retro_environment), cmd)}");
+                    Log.Error($"Not implemented: {Enum.GetName(typeof(retro_environment), cmd)}", "RetroEnvironmentCallback");
                     return false;
                 }
             }

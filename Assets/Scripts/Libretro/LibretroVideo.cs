@@ -20,6 +20,7 @@ namespace SK.Libretro
 
             int intWidth  = (int)width;
             int intHeight = (int)height;
+            int intPitch  = (int)pitch;
 
             switch (_pixelFormat)
             {
@@ -35,10 +36,10 @@ namespace SK.Libretro
 
                     new ARGB1555Job
                     {
-                        SourceData = (ushort*)data,
-                        Width = intWidth,
-                        Height = intHeight,
-                        PitchPixels = (int)(pitch / sizeof(ushort)),
+                        SourceData  = (ushort*)data,
+                        Width       = intWidth,
+                        Height      = intHeight,
+                        PitchPixels = intPitch / sizeof(ushort),
                         TextureData = Texture.GetRawTextureData<uint>()
                     }.Schedule().Complete();
 
@@ -57,10 +58,10 @@ namespace SK.Libretro
 
                     new ARGB8888Job
                     {
-                        SourceData = (uint*)data,
-                        Width = intWidth,
-                        Height = intHeight,
-                        PitchPixels = (int)(pitch / sizeof(uint)),
+                        SourceData  = (uint*)data,
+                        Width       = intWidth,
+                        Height      = intHeight,
+                        PitchPixels = intPitch / sizeof(uint),
                         TextureData = Texture.GetRawTextureData<uint>()
                     }.Schedule().Complete();
 
@@ -79,10 +80,10 @@ namespace SK.Libretro
 
                     new RGB565Job
                     {
-                        SourceData = (ushort*)data,
-                        Width = intWidth,
-                        Height = intHeight,
-                        PitchPixels = (int)(pitch / sizeof(ushort)),
+                        SourceData  = (ushort*)data,
+                        Width       = intWidth,
+                        Height      = intHeight,
+                        PitchPixels = intPitch / sizeof(ushort),
                         TextureData = Texture.GetRawTextureData<ushort>()
                     }.Schedule().Complete();
 
@@ -91,7 +92,6 @@ namespace SK.Libretro
                 break;
                 default:
                 {
-                    Texture = null;
                     throw new ArgumentOutOfRangeException();
                 }
             }
@@ -168,10 +168,10 @@ namespace SK.Libretro
 
         private static uint ARGB1555toBGRA32(ushort packed)
         {
-            uint a = (uint)packed & 0x8000;
-            uint r = (uint)packed & 0x7C00;
-            uint g = (uint)packed & 0x03E0;
-            uint b = (uint)packed & 0x1F;
+            uint a = (uint)(packed & 0x8000);
+            uint r = (uint)(packed & 0x7C00);
+            uint g = (uint)(packed & 0x03E0);
+            uint b = (uint)(packed & 0x1F);
             uint rgb = (r << 9) | (g << 6) | (b << 3);
             return (a * 0x1FE00) | rgb | ((rgb >> 5) & 0x070707);
         }

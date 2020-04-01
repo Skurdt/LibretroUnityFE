@@ -17,8 +17,6 @@ namespace SK.Libretro
             public float Fps;
             public int SampleRate;
 
-            public int Rotation;
-
             public bool Running;
 
             public IntPtr internalData;

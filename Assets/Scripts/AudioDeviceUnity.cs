@@ -18,9 +18,9 @@ namespace SK
 
         private void OnEnable()
         {
-            Libretro.Wrapper.OnAudioCallback += UploadSamples;
             Libretro.Wrapper.OnGameStartedEvent += Init;
             Libretro.Wrapper.OnGameStoppedEvent += DeInit;
+            Libretro.Wrapper.OnAudioProcessSamples += ProcessSamples;
         }
 
         private void OnDisable()
@@ -55,7 +55,7 @@ namespace SK
             DeInitInternal();
         }
 
-        private void UploadSamples(float[] samples)
+        private void ProcessSamples(float[] samples)
         {
             if (_audioBuffer != null)
             {
@@ -65,10 +65,11 @@ namespace SK
 
         private void DeInitInternal()
         {
-            Libretro.Wrapper.OnAudioCallback -= UploadSamples;
             Libretro.Wrapper.OnGameStartedEvent -= Init;
             Libretro.Wrapper.OnGameStoppedEvent -= DeInit;
+            Libretro.Wrapper.OnAudioProcessSamples -= ProcessSamples;
             _audioSource.Stop();
+            _audioSource = null;
             _audioBuffer.Clear();
             _audioBuffer = null;
         }

@@ -92,14 +92,14 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private unsafe struct retro_controller_description
+        public unsafe struct retro_controller_description
         {
             public char* desc;
             public uint id;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private unsafe struct retro_controller_info
+        public unsafe struct retro_controller_info
         {
             public retro_controller_description* types;
             public uint num_types;

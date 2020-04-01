@@ -11,7 +11,7 @@ namespace SK
 
         public AudioDeviceExternal()
         {
-            Libretro.Wrapper.OnAudioCallback += UploadSamples;
+            Libretro.Wrapper.OnAudioProcessSamples += UploadSamples;
             Libretro.Wrapper.OnGameStartedEvent += Init;
             Libretro.Wrapper.OnGameStoppedEvent += DeInit;
         }
@@ -37,7 +37,7 @@ namespace SK
 
         private void DeInit(Libretro.Wrapper.LibretroGame game)
         {
-            Libretro.Wrapper.OnAudioCallback -= UploadSamples;
+            Libretro.Wrapper.OnAudioProcessSamples -= UploadSamples;
             Libretro.Wrapper.OnGameStartedEvent -= Init;
             Libretro.Wrapper.OnGameStoppedEvent -= DeInit;
 

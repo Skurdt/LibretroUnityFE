@@ -4,8 +4,8 @@ namespace SK.Libretro
 {
     public partial class Wrapper
     {
-        public delegate void OnAudioCallbackDelegate(float[] samples);
-        public static OnAudioCallbackDelegate OnAudioCallback;
+        public delegate void ProcessAudioSamplesDelegate(float[] samples);
+        public static event ProcessAudioSamplesDelegate OnAudioProcessSamples;
 
         private void RetroAudioSampleCallback(short left, short right)
         {
@@ -15,7 +15,7 @@ namespace SK.Libretro
                 Mathf.Clamp(right * -0.000030517578125f, -1.0f, 1.0f)
             };
 
-            OnAudioCallback(floatBuffer);
+            OnAudioProcessSamples?.Invoke(floatBuffer);
         }
 
         private unsafe uint RetroAudioSampleBatchCallback(short* data, uint frames)
@@ -28,7 +28,7 @@ namespace SK.Libretro
                 floatBuffer[i] = value;
             }
 
-            OnAudioCallback(floatBuffer);
+            OnAudioProcessSamples?.Invoke(floatBuffer);
 
             return frames;
         }

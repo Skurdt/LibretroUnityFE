@@ -4,9 +4,9 @@
             "CoreName": "MAME 2003-Plus",
             "Options": [
                 {
-                    "Key": "mame2003-plus_mouse_device",
-                    "Value": "mouse",
                     "Description": "Mouse Device",
+                    "Value": "mouse",
+                    "Key": "mame2003-plus_mouse_device",
                     "PossibleValues": [
                         "mouse",
                         "pointer",
@@ -15,29 +15,9 @@
                     "DefaultValue": "mouse"
                 },
                 {
-                    "Key": "mame2003-plus_skip_disclaimer",
-                    "Value": "enabled",
                     "Description": "Skip Disclaimer",
-                    "PossibleValues": [
-                        "disabled",
-                        "enabled"
-                    ],
-                    "DefaultValue": "disabled"
-                },
-                {
-                    "Key": "mame2003-plus_skip_warnings",
-                    "Value": "enabled",
-                    "Description": "Skip Warnings",
-                    "PossibleValues": [
-                        "disabled",
-                        "enabled"
-                    ],
-                    "DefaultValue": "disabled"
-                },
-                {
-                    "Key": "mame2003-plus_display_setup",
                     "Value": "disabled",
-                    "Description": "Display MAME menu",
+                    "Key": "mame2003-plus_skip_disclaimer",
                     "PossibleValues": [
                         "disabled",
                         "enabled"
@@ -45,9 +25,29 @@
                     "DefaultValue": "disabled"
                 },
                 {
-                    "Key": "mame2003-plus_analog",
-                    "Value": "analog",
+                    "Description": "Skip Warnings",
+                    "Value": "disabled",
+                    "Key": "mame2003-plus_skip_warnings",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Description": "Display MAME menu",
+                    "Value": "disabled",
+                    "Key": "mame2003-plus_display_setup",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
                     "Description": "Control mapping",
+                    "Value": "digital",
+                    "Key": "mame2003-plus_analog",
                     "PossibleValues": [
                         "analog",
                         "digital"
@@ -55,9 +55,9 @@
                     "DefaultValue": "analog"
                 },
                 {
-                    "Key": "mame2003-plus_deadzone",
-                    "Value": "20",
                     "Description": "Analog deadzone",
+                    "Value": "20",
+                    "Key": "mame2003-plus_deadzone",
                     "PossibleValues": [
                         "20",
                         "0",
@@ -83,9 +83,9 @@
                     "DefaultValue": "20"
                 },
                 {
-                    "Key": "mame2003-plus_dcs_speedhack",
-                    "Value": "enabled",
                     "Description": "DCS Speedhack",
+                    "Value": "enabled",
+                    "Key": "mame2003-plus_dcs_speedhack",
                     "PossibleValues": [
                         "enabled",
                         "disabled"
@@ -93,19 +93,9 @@
                     "DefaultValue": "enabled"
                 },
                 {
-                    "Key": "mame2003-plus_core_sys_subfolder",
-                    "Value": "enabled",
                     "Description": "Locate system files within a subfolder",
-                    "PossibleValues": [
-                        "enabled",
-                        "disabled"
-                    ],
-                    "DefaultValue": "enabled"
-                },
-                {
-                    "Key": "mame2003-plus_core_save_subfolder",
                     "Value": "enabled",
-                    "Description": "Locate save files within a subfolder",
+                    "Key": "mame2003-plus_core_sys_subfolder",
                     "PossibleValues": [
                         "enabled",
                         "disabled"
@@ -113,9 +103,19 @@
                     "DefaultValue": "enabled"
                 },
                 {
-                    "Key": "mame2003-plus_tate_mode",
-                    "Value": "disabled",
+                    "Description": "Locate save files within a subfolder",
+                    "Value": "enabled",
+                    "Key": "mame2003-plus_core_save_subfolder",
+                    "PossibleValues": [
+                        "enabled",
+                        "disabled"
+                    ],
+                    "DefaultValue": "enabled"
+                },
+                {
                     "Description": "TATE Mode - Rotating display (Restart core)",
+                    "Value": "disabled",
+                    "Key": "mame2003-plus_tate_mode",
                     "PossibleValues": [
                         "disabled",
                         "enabled"
@@ -123,9 +123,9 @@
                     "DefaultValue": "disabled"
                 },
                 {
-                    "Key": "mame2003-plus_brightness",
-                    "Value": "1.0",
                     "Description": "Brightness",
+                    "Value": "1.0",
+                    "Key": "mame2003-plus_brightness",
                     "PossibleValues": [
                         "1.0",
                         "0.2",
@@ -150,9 +150,9 @@
                     "DefaultValue": "1.0"
                 },
                 {
-                    "Key": "mame2003-plus_gamma",
-                    "Value": "1.0",
                     "Description": "Gamma correction",
+                    "Value": "1.0",
+                    "Key": "mame2003-plus_gamma",
                     "PossibleValues": [
                         "1.0",
                         "0.5",
@@ -174,9 +174,9 @@
                     "DefaultValue": "1.0"
                 },
                 {
-                    "Key": "mame2003-plus_frameskip",
-                    "Value": "0",
                     "Description": "Frameskip",
+                    "Value": "0",
+                    "Key": "mame2003-plus_frameskip",
                     "PossibleValues": [
                         "0",
                         "1",
@@ -188,9 +188,9 @@
                     "DefaultValue": "0"
                 },
                 {
-                    "Key": "mame2003-plus_sample_rate",
-                    "Value": "48000",
                     "Description": "Sample Rate (KHz)",
+                    "Value": "48000",
+                    "Key": "mame2003-plus_sample_rate",
                     "PossibleValues": [
                         "48000",
                         "8000",
@@ -203,9 +203,9 @@
                     "DefaultValue": "48000"
                 },
                 {
-                    "Key": "mame2003-plus_input_interface",
-                    "Value": "keyboard",
                     "Description": "Input interface",
+                    "Value": "retropad",
+                    "Key": "mame2003-plus_input_interface",
                     "PossibleValues": [
                         "retropad",
                         "keyboard",
@@ -214,19 +214,9 @@
                     "DefaultValue": "retropad"
                 },
                 {
-                    "Key": "mame2003-plus_mame_remapping",
-                    "Value": "enabled",
                     "Description": "Legacy Remapping (restart)",
-                    "PossibleValues": [
-                        "enabled",
-                        "disabled"
-                    ],
-                    "DefaultValue": "enabled"
-                },
-                {
-                    "Key": "mame2003-plus_display_artwork",
                     "Value": "enabled",
-                    "Description": "Display artwork (Restart core)",
+                    "Key": "mame2003-plus_mame_remapping",
                     "PossibleValues": [
                         "enabled",
                         "disabled"
@@ -234,9 +224,19 @@
                     "DefaultValue": "enabled"
                 },
                 {
-                    "Key": "mame2003-plus_art_resolution",
-                    "Value": "1",
+                    "Description": "Display artwork (Restart core)",
+                    "Value": "enabled",
+                    "Key": "mame2003-plus_display_artwork",
+                    "PossibleValues": [
+                        "enabled",
+                        "disabled"
+                    ],
+                    "DefaultValue": "enabled"
+                },
+                {
                     "Description": "Artwork resolution multiplier (Restart core)",
+                    "Value": "1",
+                    "Key": "mame2003-plus_art_resolution",
                     "PossibleValues": [
                         "1",
                         "2"
@@ -244,9 +244,9 @@
                     "DefaultValue": "1"
                 },
                 {
-                    "Key": "mame2003-plus_cheat_input_ports",
-                    "Value": "disabled",
                     "Description": "Dip switch/Cheat input ports",
+                    "Value": "disabled",
+                    "Key": "mame2003-plus_cheat_input_ports",
                     "PossibleValues": [
                         "disabled",
                         "enabled"
@@ -254,9 +254,9 @@
                     "DefaultValue": "disabled"
                 },
                 {
-                    "Key": "mame2003-plus_machine_timing",
-                    "Value": "enabled",
                     "Description": "Bypass audio skew (Restart core)",
+                    "Value": "enabled",
+                    "Key": "mame2003-plus_machine_timing",
                     "PossibleValues": [
                         "enabled",
                         "disabled"
@@ -264,9 +264,19 @@
                     "DefaultValue": "enabled"
                 },
                 {
-                    "Key": "mame2003-plus_neogeo_bios",
-                    "Value": "default",
+                    "Description": "4-way joystick emulation on 8-way joysticks",
+                    "Value": "disabled",
+                    "Key": "mame2003-plus_four_way_emulation",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
                     "Description": "Specify Neo Geo BIOS (Restart core)",
+                    "Value": "default",
+                    "Key": "mame2003-plus_neogeo_bios",
                     "PossibleValues": [
                         "default",
                         "euro",
@@ -287,9 +297,9 @@
                     "DefaultValue": "default"
                 },
                 {
-                    "Key": "mame2003-plus_dialsharexy",
-                    "Value": "disabled",
                     "Description": "Share 2 player dial controls across one X/Y device",
+                    "Value": "disabled",
+                    "Key": "mame2003-plus_dialsharexy",
                     "PossibleValues": [
                         "disabled",
                         "enabled"
@@ -297,9 +307,9 @@
                     "DefaultValue": "disabled"
                 },
                 {
-                    "Key": "mame2003-plus_vector_resolution",
-                    "Value": "1024x768",
                     "Description": "Vector resolution (Restart core)",
+                    "Value": "1024x768",
+                    "Key": "mame2003-plus_vector_resolution",
                     "PossibleValues": [
                         "1024x768",
                         "640x480",
@@ -311,9 +321,9 @@
                     "DefaultValue": "1024x768"
                 },
                 {
-                    "Key": "mame2003-plus_vector_antialias",
-                    "Value": "enabled",
                     "Description": "Vector antialiasing",
+                    "Value": "enabled",
+                    "Key": "mame2003-plus_vector_antialias",
                     "PossibleValues": [
                         "enabled",
                         "disabled"
@@ -321,9 +331,9 @@
                     "DefaultValue": "enabled"
                 },
                 {
-                    "Key": "mame2003-plus_vector_beam_width",
-                    "Value": "2",
                     "Description": "Vector beam width (only with antialiasing)",
+                    "Value": "2",
+                    "Key": "mame2003-plus_vector_beam_width",
                     "PossibleValues": [
                         "2",
                         "1",
@@ -346,9 +356,9 @@
                     "DefaultValue": "2"
                 },
                 {
-                    "Key": "mame2003-plus_vector_translucency",
-                    "Value": "enabled",
                     "Description": "Vector translucency",
+                    "Value": "enabled",
+                    "Key": "mame2003-plus_vector_translucency",
                     "PossibleValues": [
                         "enabled",
                         "disabled"
@@ -356,9 +366,9 @@
                     "DefaultValue": "enabled"
                 },
                 {
-                    "Key": "mame2003-plus_vector_flicker",
-                    "Value": "20",
                     "Description": "Vector flicker",
+                    "Value": "20",
+                    "Key": "mame2003-plus_vector_flicker",
                     "PossibleValues": [
                         "20",
                         "0",
@@ -375,9 +385,9 @@
                     "DefaultValue": "20"
                 },
                 {
-                    "Key": "mame2003-plus_vector_intensity",
-                    "Value": "1.5",
                     "Description": "Vector intensity",
+                    "Value": "1.5",
+                    "Key": "mame2003-plus_vector_intensity",
                     "PossibleValues": [
                         "1.5",
                         "0.5",
@@ -387,489 +397,6 @@
                         "3"
                     ],
                     "DefaultValue": "1.5"
-                },
-                {
-                    "Key": "mame2003-plus_four_way_emulation",
-                    "Value": "disabled",
-                    "Description": "4-way joystick emulation on 8-way joysticks",
-                    "PossibleValues": [
-                        "disabled",
-                        "enabled"
-                    ],
-                    "DefaultValue": "disabled"
-                },
-                {
-                    "Key": "mame2003-plus_crosshair_enabled",
-                    "Value": "enabled",
-                    "Description": "Show Lightgun crosshair",
-                    "PossibleValues": [
-                        "enabled",
-                        "disabled"
-                    ],
-                    "DefaultValue": "enabled"
-                }
-            ]
-        },
-        {
-            "CoreName": "MAME",
-            "Options": [
-                {
-                    "Key": "mame_read_config",
-                    "Value": "disabled",
-                    "Description": "Read configuration",
-                    "PossibleValues": [
-                        "disabled",
-                        "enabled"
-                    ],
-                    "DefaultValue": "disabled"
-                },
-                {
-                    "Key": "mame_write_config",
-                    "Value": "disabled",
-                    "Description": "Write configuration",
-                    "PossibleValues": [
-                        "disabled",
-                        "enabled"
-                    ],
-                    "DefaultValue": "disabled"
-                },
-                {
-                    "Key": "mame_saves",
-                    "Value": "game",
-                    "Description": "Save state naming",
-                    "PossibleValues": [
-                        "game",
-                        "system"
-                    ],
-                    "DefaultValue": "game"
-                },
-                {
-                    "Key": "mame_auto_save",
-                    "Value": "disabled",
-                    "Description": "Auto save/load states",
-                    "PossibleValues": [
-                        "disabled",
-                        "enabled"
-                    ],
-                    "DefaultValue": "disabled"
-                },
-                {
-                    "Key": "mame_mouse_enable",
-                    "Value": "disabled",
-                    "Description": "Enable in-game mouse",
-                    "PossibleValues": [
-                        "disabled",
-                        "enabled"
-                    ],
-                    "DefaultValue": "disabled"
-                },
-                {
-                    "Key": "mame_lightgun_mode",
-                    "Value": "none",
-                    "Description": "Lightgun mode",
-                    "PossibleValues": [
-                        "none",
-                        "touchscreen",
-                        "lightgun"
-                    ],
-                    "DefaultValue": "none"
-                },
-                {
-                    "Key": "mame_buttons_profiles",
-                    "Value": "enabled",
-                    "Description": "Profile Buttons according to games (Restart)",
-                    "PossibleValues": [
-                        "enabled",
-                        "disabled"
-                    ],
-                    "DefaultValue": "enabled"
-                },
-                {
-                    "Key": "mame_throttle",
-                    "Value": "disabled",
-                    "Description": "Enable throttle",
-                    "PossibleValues": [
-                        "disabled",
-                        "enabled"
-                    ],
-                    "DefaultValue": "disabled"
-                },
-                {
-                    "Key": "mame_cheats_enable",
-                    "Value": "disabled",
-                    "Description": "Enable cheats",
-                    "PossibleValues": [
-                        "disabled",
-                        "enabled"
-                    ],
-                    "DefaultValue": "disabled"
-                },
-                {
-                    "Key": "mame_alternate_renderer",
-                    "Value": "disabled",
-                    "Description": "Alternate render method",
-                    "PossibleValues": [
-                        "disabled",
-                        "enabled"
-                    ],
-                    "DefaultValue": "disabled"
-                },
-                {
-                    "Key": "mame_softlists_enable",
-                    "Value": "enabled",
-                    "Description": "Enable softlists",
-                    "PossibleValues": [
-                        "enabled",
-                        "disabled"
-                    ],
-                    "DefaultValue": "enabled"
-                },
-                {
-                    "Key": "mame_softlists_auto_media",
-                    "Value": "enabled",
-                    "Description": "Softlist automatic media type",
-                    "PossibleValues": [
-                        "enabled",
-                        "disabled"
-                    ],
-                    "DefaultValue": "enabled"
-                },
-                {
-                    "Key": "mame_media_type",
-                    "Value": "rom",
-                    "Description": "Media type",
-                    "PossibleValues": [
-                        "rom",
-                        "cart",
-                        "flop",
-                        "cdrm",
-                        "cass",
-                        "hard",
-                        "serl",
-                        "prin"
-                    ],
-                    "DefaultValue": "rom"
-                },
-                {
-                    "Key": "mame_boot_to_bios",
-                    "Value": "disabled",
-                    "Description": "Boot to BIOS",
-                    "PossibleValues": [
-                        "disabled",
-                        "enabled"
-                    ],
-                    "DefaultValue": "disabled"
-                },
-                {
-                    "Key": "mame_boot_to_osd",
-                    "Value": "disabled",
-                    "Description": "Boot to OSD",
-                    "PossibleValues": [
-                        "disabled",
-                        "enabled"
-                    ],
-                    "DefaultValue": "disabled"
-                },
-                {
-                    "Key": "mame_boot_from_cli",
-                    "Value": "disabled",
-                    "Description": "Boot from CLI",
-                    "PossibleValues": [
-                        "disabled",
-                        "enabled"
-                    ],
-                    "DefaultValue": "disabled"
-                },
-                {
-                    "Key": "mame_altres",
-                    "Value": "640x480",
-                    "Description": "Resolution",
-                    "PossibleValues": [
-                        "640x480",
-                        "640x360",
-                        "800x600",
-                        "800x450",
-                        "960x720",
-                        "960x540",
-                        "1024x768",
-                        "1024x576",
-                        "1280x960",
-                        "1280x720",
-                        "1600x1200",
-                        "1600x900",
-                        "1440x1080",
-                        "1920x1080",
-                        "1920x1440",
-                        "2560x1440",
-                        "2880x2160",
-                        "3840x2160"
-                    ],
-                    "DefaultValue": "640x480"
-                },
-                {
-                    "Key": "mame_mame_paths_enable",
-                    "Value": "disabled",
-                    "Description": "MAME INI Paths",
-                    "PossibleValues": [
-                        "disabled",
-                        "enabled"
-                    ],
-                    "DefaultValue": "disabled"
-                }
-            ]
-        },
-        {
-            "CoreName": "Stella",
-            "Options": [
-                {
-                    "Key": "stella_console",
-                    "Value": "auto",
-                    "Description": "Console display",
-                    "PossibleValues": [
-                        "auto",
-                        "ntsc",
-                        "pal",
-                        "secam",
-                        "ntsc50",
-                        "pal60",
-                        "secam60"
-                    ],
-                    "DefaultValue": "auto"
-                },
-                {
-                    "Key": "stella_palette",
-                    "Value": "standard",
-                    "Description": "Palette colors",
-                    "PossibleValues": [
-                        "standard",
-                        "z26",
-                        "user"
-                    ],
-                    "DefaultValue": "standard"
-                },
-                {
-                    "Key": "stella_filter",
-                    "Value": "disabled",
-                    "Description": "TV effects",
-                    "PossibleValues": [
-                        "disabled",
-                        "composite",
-                        "s-video",
-                        "rgb",
-                        "badly adjusted"
-                    ],
-                    "DefaultValue": "disabled"
-                },
-                {
-                    "Key": "stella_ntsc_aspect",
-                    "Value": "par",
-                    "Description": "NTSC aspect %",
-                    "PossibleValues": [
-                        "par",
-                        "100",
-                        "101",
-                        "102",
-                        "103",
-                        "104",
-                        "105",
-                        "106",
-                        "107",
-                        "108",
-                        "109",
-                        "110",
-                        "111",
-                        "112",
-                        "113",
-                        "114",
-                        "115",
-                        "116",
-                        "117",
-                        "118",
-                        "119",
-                        "120",
-                        "121",
-                        "122",
-                        "123",
-                        "124",
-                        "125",
-                        "50",
-                        "75",
-                        "76",
-                        "77",
-                        "78",
-                        "79",
-                        "80",
-                        "81",
-                        "82",
-                        "83",
-                        "84",
-                        "85",
-                        "86",
-                        "87",
-                        "88",
-                        "89",
-                        "90",
-                        "91",
-                        "92",
-                        "93",
-                        "94",
-                        "95",
-                        "96",
-                        "97",
-                        "98",
-                        "99"
-                    ],
-                    "DefaultValue": "par"
-                },
-                {
-                    "Key": "stella_pal_aspect",
-                    "Value": "par",
-                    "Description": "PAL aspect %",
-                    "PossibleValues": [
-                        "par",
-                        "100",
-                        "101",
-                        "102",
-                        "103",
-                        "104",
-                        "105",
-                        "106",
-                        "107",
-                        "108",
-                        "109",
-                        "110",
-                        "111",
-                        "112",
-                        "113",
-                        "114",
-                        "115",
-                        "116",
-                        "117",
-                        "118",
-                        "119",
-                        "120",
-                        "121",
-                        "122",
-                        "123",
-                        "124",
-                        "125",
-                        "50",
-                        "75",
-                        "76",
-                        "77",
-                        "78",
-                        "79",
-                        "80",
-                        "81",
-                        "82",
-                        "83",
-                        "84",
-                        "85",
-                        "86",
-                        "87",
-                        "88",
-                        "89",
-                        "90",
-                        "91",
-                        "92",
-                        "93",
-                        "94",
-                        "95",
-                        "96",
-                        "97",
-                        "98",
-                        "99"
-                    ],
-                    "DefaultValue": "par"
-                },
-                {
-                    "Key": "stella_crop_hoverscan",
-                    "Value": "disabled",
-                    "Description": "Crop horizontal overscan",
-                    "PossibleValues": [
-                        "disabled",
-                        "enabled"
-                    ],
-                    "DefaultValue": "disabled"
-                },
-                {
-                    "Key": "stella_stereo",
-                    "Value": "auto",
-                    "Description": "Stereo sound",
-                    "PossibleValues": [
-                        "auto",
-                        "off",
-                        "on"
-                    ],
-                    "DefaultValue": "auto"
-                },
-                {
-                    "Key": "stella_phosphor",
-                    "Value": "auto",
-                    "Description": "Phosphor mode",
-                    "PossibleValues": [
-                        "auto",
-                        "off",
-                        "on"
-                    ],
-                    "DefaultValue": "auto"
-                },
-                {
-                    "Key": "stella_phosphor_blend",
-                    "Value": "60",
-                    "Description": "Phosphor blend %",
-                    "PossibleValues": [
-                        "60",
-                        "65",
-                        "70",
-                        "75",
-                        "80",
-                        "85",
-                        "90",
-                        "95",
-                        "100",
-                        "0",
-                        "5",
-                        "10",
-                        "15",
-                        "20",
-                        "25",
-                        "30",
-                        "35",
-                        "40",
-                        "45",
-                        "50",
-                        "55"
-                    ],
-                    "DefaultValue": "60"
-                },
-                {
-                    "Key": "stella_paddle_joypad_sensitivity",
-                    "Value": "3",
-                    "Description": "Paddle joypad sensitivity",
-                    "PossibleValues": [
-                        "3",
-                        "4",
-                        "5",
-                        "6",
-                        "7",
-                        "8",
-                        "9",
-                        "10",
-                        "11",
-                        "12",
-                        "13",
-                        "14",
-                        "15",
-                        "16",
-                        "17",
-                        "18",
-                        "19",
-                        "20",
-                        "1",
-                        "2"
-                    ],
-                    "DefaultValue": "3"
                 }
             ]
         }
