@@ -210,7 +210,7 @@ namespace SK.Libretro
                 case retro_environment.RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
                 {
                     retro_log_callback* outLogInterface = (retro_log_callback*)data;
-                    outLogInterface->log                = Marshal.GetFunctionPointerForDelegate(_logPrintfCallback);
+                    outLogInterface->log                = Core.SetLogCallback();
                 }
                 break;
                 //case RETRO_ENVIRONMENT.RETRO_ENVIRONMENT_GET_PERF_INTERFACE:
@@ -368,16 +368,19 @@ namespace SK.Libretro
                 //    break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_GEOMETRY:
                 {
-                    retro_game_geometry* inGeometry = (retro_game_geometry*)data;
-                    if ((_systemAVInfo.geometry.base_width != inGeometry->base_width)
-                        || (_systemAVInfo.geometry.base_height != inGeometry->base_height)
-                        || (_systemAVInfo.geometry.aspect_ratio != inGeometry->aspect_ratio))
+                    if (Game.Running)
                     {
-                        _systemAVInfo.geometry.base_width   = inGeometry->base_width;
-                        _systemAVInfo.geometry.base_height  = inGeometry->base_height;
-                        _systemAVInfo.geometry.aspect_ratio = inGeometry->aspect_ratio;
+                        retro_game_geometry* inGeometry = (retro_game_geometry*)data;
+                        if ((Game.BaseWidth != inGeometry->base_width)
+                            || (Game.BaseHeight != inGeometry->base_height)
+                            || (Game.AspectRatio != inGeometry->aspect_ratio))
+                        {
+                            Game.BaseWidth   = (int)inGeometry->base_width;
+                            Game.BaseHeight  = (int)inGeometry->base_height;
+                            Game.AspectRatio = inGeometry->aspect_ratio;
 
-                        // TODO: Set video aspect ratio
+                            // TODO: Set video aspect ratio
+                        }
                     }
                 }
                 break;

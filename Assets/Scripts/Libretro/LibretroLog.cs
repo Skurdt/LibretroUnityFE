@@ -1,15 +1,15 @@
-﻿using System;
-using UnityEngine;
+﻿using SK.Utilities;
+using System;
 
 namespace SK.Libretro
 {
     public partial class Wrapper
     {
-        private void RetroLogPrintf(retro_log_level log_level, string format, IntPtr args)
+        private void RetroLogPrintf(retro_log_level log_level, string format, IntPtr _/*args*/)
         {
             if (log_level > retro_log_level.RETRO_LOG_INFO)
             {
-                Debug.Log($"{log_level}: {format}");
+                Log.Info($"{log_level}: {format}", "Libretro.Wrapper.RetroLogPrintf");
             }
         }
     }

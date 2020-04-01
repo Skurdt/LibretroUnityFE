@@ -130,40 +130,51 @@ namespace SK
                 string corePath = FileSystem.GetAbsolutePath($"{Libretro.Wrapper.WrapperDirectory}/cores/{Game.Core}_libretro.dll");
                 if (FileSystem.FileExists(corePath))
                 {
-                    Wrapper.StartCore(corePath);
-
-                    if (!string.IsNullOrEmpty(Game.Name))
+                    if (Wrapper.StartCore(corePath))
                     {
-                        string gamePath = Wrapper.GetGamePath(Game.Directory, Game.Name);
-                        if (gamePath == null)
+                        if (!string.IsNullOrEmpty(Game.Name))
                         {
-                            // Try Zip archive
-                            string archivePath = FileSystem.GetAbsolutePath($"{Game.Directory}/{Game.Name}.zip");
-                            if (File.Exists(archivePath))
+                            string gamePath = Wrapper.GetGamePath(Game.Directory, Game.Name);
+                            if (gamePath == null)
                             {
-                                string extractPath = FileSystem.GetAbsolutePath($"{Libretro.Wrapper.WrapperDirectory}/temp");
-                                if (Directory.Exists(extractPath))
+                                // Try Zip archive
+                                string archivePath = FileSystem.GetAbsolutePath($"{Game.Directory}/{Game.Name}.zip");
+                                if (File.Exists(archivePath))
                                 {
-                                    Directory.Delete(extractPath, true);
+                                    string extractPath = FileSystem.GetAbsolutePath($"{Libretro.Wrapper.WrapperDirectory}/temp");
+                                    if (Directory.Exists(extractPath))
+                                    {
+                                        Directory.Delete(extractPath, true);
+                                    }
+                                    System.IO.Compression.ZipFile.ExtractToDirectory(archivePath, extractPath);
+                                    gamePath = Wrapper.GetGamePath(extractPath, Game.Name);
                                 }
-                                System.IO.Compression.ZipFile.ExtractToDirectory(archivePath, extractPath);
-                                gamePath = Wrapper.GetGamePath(extractPath, Game.Name);
                             }
-                        }
 
-                        if (gamePath != null)
-                        {
-                            Wrapper.StartGame(gamePath);
-                            InvokeRepeating("LibretroRunLoop", 0f, 1f / Wrapper.Game.Fps);
+                            if (gamePath != null)
+                            {
+                                if (Wrapper.StartGame(gamePath))
+                                {
+                                    InvokeRepeating("LibretroRunLoop", 0f, 1f / Wrapper.Game.Fps);
+                                }
+                                else
+                                {
+                                    Log.Error($"Game '{Game.Name}' failed to start on core '{Game.Core}'.", "GameModelSetup.StartGame");
+                                }
+                            }
+                            else
+                            {
+                                Log.Error($"Game '{Game.Name}' at path '{Game.Directory}' not found.", "GameModelSetup.StartGame");
+                            }
                         }
                         else
                         {
-                            Log.Error($"Game '{Game.Name}' at path '{Game.Directory}' not found.", "GameModelSetup.StartGame");
+                            Log.Warning($"Game not set, running '{Game.Core}' core only.", "GameModelSetup.StartGame");
                         }
                     }
                     else
                     {
-                        Log.Warning($"Game not set, running core only.", "GameModelSetup.StartGame");
+                        Log.Warning($"Failed to start core '{Game.Core}'.", "GameModelSetup.StartGame");
                     }
                 }
                 else
@@ -179,12 +190,9 @@ namespace SK
 
         public void StopGame()
         {
-            if (Wrapper != null)
-            {
-                CancelInvoke();
-                Wrapper.StopGame();
-                Wrapper = null;
-            }
+            CancelInvoke();
+            Wrapper?.StopGame();
+            Wrapper = null;
         }
 
         private int numFrames;
@@ -199,7 +207,7 @@ namespace SK
                 Wrapper.Update();
 
                 sw.Stop();
-                if (numFrames++ >= 10)
+                if (numFrames++ >= 30)
                 {
                     _updateLoopTimeMs = sw.Elapsed.TotalMilliseconds;
                     numFrames = 0;

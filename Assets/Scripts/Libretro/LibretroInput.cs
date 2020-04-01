@@ -19,7 +19,7 @@ namespace SK.Libretro
         {
         }
 
-        private short RetroInputStateCallback(uint port, retro_device device, uint index, uint id)
+        private short RetroInputStateCallback(uint port, retro_device device, uint _/*index*/, uint id)
         {
             short result = 0;
 

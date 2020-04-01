@@ -1,6 +1,8 @@
 ﻿using SK.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using static SK.Utilities.StringUtils;
 
 namespace SK.Libretro
 {
@@ -59,12 +61,15 @@ namespace SK.Libretro
             public retro_get_memory_size_t retro_get_memory_size;
             #endregion
 
-            public int ApiVersion;
-            public string CoreName;
-            public string CoreVersion;
-            public string[] ValidExtensions;
-            public bool RequiresFullPath;
-            public bool BlockExtraction;
+            public bool Initialized { get; private set; }
+
+            public int ApiVersion { get; private set; }
+
+            public string CoreName { get; private set; }
+            public string CoreVersion { get; private set; }
+            public string[] ValidExtensions { get; private set; }
+            public bool RequiresFullPath { get; private set; }
+            public bool BlockExtraction { get; private set; }
 
             public int Rotation;
             public int PerformanceLevel;
@@ -73,36 +78,69 @@ namespace SK.Libretro
 
             public retro_controller_info[] ControllerPorts;
 
-            public bool Initialized;
-
             private DllModule _dll;
 
-            public LibretroCore(string corePath)
+            private retro_environment_t _environmentCallback;
+            private retro_video_refresh_t _videoRefreshCallback;
+            private retro_audio_sample_t _audioSampleCallback;
+            private retro_audio_sample_batch_t _audioSampleBatchCallback;
+            private retro_input_poll_t _inputPollCallback;
+            private retro_input_state_t _inputStateCallback;
+            private retro_log_printf_t _logPrintfCallback;
+
+            public unsafe bool Start(Wrapper wrapper, string corePath)
             {
                 try
                 {
                     _dll = new DllModuleWindows(corePath);
                     GetCoreFunctions();
                     ApiVersion = retro_api_version();
+
+                    SetCallbacks(wrapper);
+
+                    retro_system_info systemInfo = new retro_system_info();
+                    retro_get_system_info(ref systemInfo);
+
+                    CoreName         = CharsToString(systemInfo.library_name);
+                    CoreVersion      = CharsToString(systemInfo.library_version);
+                    ValidExtensions  = CharsToString(systemInfo.valid_extensions).Split('|');
+                    RequiresFullPath = systemInfo.need_fullpath;
+                    BlockExtraction  = systemInfo.block_extract;
+
+                    retro_set_environment(_environmentCallback);
+                    retro_init();
+                    retro_set_video_refresh(_videoRefreshCallback);
+                    retro_set_audio_sample(_audioSampleCallback);
+                    retro_set_audio_sample_batch(_audioSampleBatchCallback);
+                    retro_set_input_poll(_inputPollCallback);
+                    retro_set_input_state(_inputStateCallback);
+
+                    Initialized = true;
+                    return true;
                 }
                 catch (Exception e)
                 {
-                    Log.Exception(e.Message, "Libretro.Wrapper.LibretroCore.new");
-                    throw;
+                    Log.Exception(e.Message, "Libretro.Wrapper.LibretroCore.Start");
+                    return false;
                 }
             }
 
-            public void DeInit()
+            public void Stop()
             {
                 try
                 {
-                    retro_deinit();
+                    if (Initialized)
+                    {
+                        retro_deinit();
+                        Initialized = false;
+                    }
+
                     _dll.Free();
                     _dll = null;
                 }
                 catch (Exception e)
                 {
-                    Log.Exception(e.Message);
+                    Log.Exception(e.Message, "Libretro.Wrapper.LibretroCore.Stop");
                 }
             }
 
@@ -133,6 +171,22 @@ namespace SK.Libretro
                 retro_get_region                 = _dll.GetFunction<retro_get_region_t>("retro_get_region");
                 retro_get_memory_data            = _dll.GetFunction<retro_get_memory_data_t>("retro_get_memory_data");
                 retro_get_memory_size            = _dll.GetFunction<retro_get_memory_size_t>("retro_get_memory_size");
+            }
+
+            private unsafe void SetCallbacks(Wrapper wrapper)
+            {
+                _environmentCallback      = wrapper.RetroEnvironmentCallback;
+                _videoRefreshCallback     = wrapper.RetroVideoRefreshCallback;
+                _audioSampleCallback      = wrapper.RetroAudioSampleCallback;
+                _audioSampleBatchCallback = wrapper.RetroAudioSampleBatchCallback;
+                _inputPollCallback        = wrapper.RetroInputPollCallback;
+                _inputStateCallback       = wrapper.RetroInputStateCallback;
+                _logPrintfCallback        = wrapper.RetroLogPrintf;
+            }
+
+            public IntPtr SetLogCallback()
+            {
+                return Marshal.GetFunctionPointerForDelegate(_logPrintfCallback);
             }
         }
     }

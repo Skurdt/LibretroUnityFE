@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 585465343913405650}
   - component: {fileID: 8899563417348289051}
   - component: {fileID: 9172923986759652616}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: RetroPad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -60,7 +60,7 @@ MonoBehaviour:
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: 
+  m_DefaultActionMap: RetroPad
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!114 &9172923986759652616

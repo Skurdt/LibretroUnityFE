@@ -11,6 +11,8 @@ namespace SK.Libretro
     {
         public Texture2D Texture { get; private set; }
 
+        private retro_pixel_format _pixelFormat;
+
         private unsafe void RetroVideoRefreshCallback(void* data, uint width, uint height, uint pitch)
         {
             if (data == null || width == 0 || height == 0 || pitch == 0)
@@ -26,68 +28,18 @@ namespace SK.Libretro
             {
                 case retro_pixel_format.RETRO_PIXEL_FORMAT_0RGB1555:
                 {
-                    if (Texture == null || Texture.format != TextureFormat.BGRA32 || Texture.width != intWidth || Texture.height != intHeight)
-                    {
-                        Texture = new Texture2D(intWidth, intHeight, TextureFormat.BGRA32, false)
-                        {
-                            filterMode = FilterMode.Trilinear
-                        };
-                    }
-
-                    new ARGB1555Job
-                    {
-                        SourceData  = (ushort*)data,
-                        Width       = intWidth,
-                        Height      = intHeight,
-                        PitchPixels = intPitch / sizeof(ushort),
-                        TextureData = Texture.GetRawTextureData<uint>()
-                    }.Schedule().Complete();
-
-                    Texture.Apply();
+                    ProcessFrame0RGB1555((ushort*)data, intWidth, intHeight, intPitch / sizeof(ushort));
                 }
                 break;
                 case retro_pixel_format.RETRO_PIXEL_FORMAT_XRGB8888:
                 {
-                    if (Texture == null || Texture.format != TextureFormat.BGRA32 || Texture.width != intWidth || Texture.height != intHeight)
-                    {
-                        Texture = new Texture2D(intWidth, intHeight, TextureFormat.BGRA32, false)
-                        {
-                            filterMode = FilterMode.Trilinear
-                        };
-                    }
 
-                    new ARGB8888Job
-                    {
-                        SourceData  = (uint*)data,
-                        Width       = intWidth,
-                        Height      = intHeight,
-                        PitchPixels = intPitch / sizeof(uint),
-                        TextureData = Texture.GetRawTextureData<uint>()
-                    }.Schedule().Complete();
-
-                    Texture.Apply();
+                    ProcessFrameARGB8888((uint*)data, intWidth, intHeight, intPitch / sizeof(uint));
                 }
                 break;
                 case retro_pixel_format.RETRO_PIXEL_FORMAT_RGB565:
                 {
-                    if (Texture == null || Texture.format != TextureFormat.RGB565 || Texture.width != intWidth || Texture.height != intHeight)
-                    {
-                        Texture = new Texture2D(intWidth, intHeight, TextureFormat.RGB565, false)
-                        {
-                            filterMode = FilterMode.Trilinear
-                        };
-                    }
-
-                    new RGB565Job
-                    {
-                        SourceData  = (ushort*)data,
-                        Width       = intWidth,
-                        Height      = intHeight,
-                        PitchPixels = intPitch / sizeof(ushort),
-                        TextureData = Texture.GetRawTextureData<ushort>()
-                    }.Schedule().Complete();
-
-                    Texture.Apply();
+                    ProcessFrameRGB565((ushort*)data, intWidth, intHeight, intPitch / sizeof(ushort));
                 }
                 break;
                 default:
@@ -95,6 +47,72 @@ namespace SK.Libretro
                     throw new ArgumentOutOfRangeException();
                 }
             }
+        }
+
+        private unsafe void ProcessFrame0RGB1555(ushort* data, int width, int height, int pitchInPixels)
+        {
+            if (Texture == null || Texture.format != TextureFormat.BGRA32 || Texture.width != width || Texture.height != height)
+            {
+                Texture = new Texture2D(width, height, TextureFormat.BGRA32, false)
+                {
+                    filterMode = FilterMode.Trilinear
+                };
+            }
+
+            new ARGB1555Job
+            {
+                SourceData  = data,
+                Width       = width,
+                Height      = height,
+                PitchPixels = pitchInPixels,
+                TextureData = Texture.GetRawTextureData<uint>()
+            }.Schedule().Complete();
+
+            Texture.Apply();
+        }
+
+        private unsafe void ProcessFrameARGB8888(uint* data, int width, int height, int pitchInPixels)
+        {
+            if (Texture == null || Texture.format != TextureFormat.BGRA32 || Texture.width != width || Texture.height != height)
+            {
+                Texture = new Texture2D(width, height, TextureFormat.BGRA32, false)
+                {
+                    filterMode = FilterMode.Trilinear
+                };
+            }
+
+            new ARGB8888Job
+            {
+                SourceData  = data,
+                Width       = width,
+                Height      = height,
+                PitchPixels = pitchInPixels,
+                TextureData = Texture.GetRawTextureData<uint>()
+            }.Schedule().Complete();
+
+            Texture.Apply();
+        }
+
+        private unsafe void ProcessFrameRGB565(ushort* data, int width, int height, int pitchInPixels)
+        {
+            if (Texture == null || Texture.format != TextureFormat.RGB565 || Texture.width != width || Texture.height != height)
+            {
+                Texture = new Texture2D(width, height, TextureFormat.RGB565, false)
+                {
+                    filterMode = FilterMode.Trilinear
+                };
+            }
+
+            new RGB565Job
+            {
+                SourceData  = data,
+                Width       = width,
+                Height      = height,
+                PitchPixels = pitchInPixels,
+                TextureData = Texture.GetRawTextureData<ushort>()
+            }.Schedule().Complete();
+
+            Texture.Apply();
         }
 
         [BurstCompile]
