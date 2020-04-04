@@ -1,14 +1,13 @@
 ﻿using SK.Utilities;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Text;
-using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace SK
 {
-    [System.Serializable]
+    [Serializable]
     public class Game
     {
         public string Core;
@@ -19,20 +18,12 @@ namespace SK
     [SelectionBase]
     public class GameModelSetup : MonoBehaviour
     {
-        public Libretro.Wrapper Wrapper { get; private set; }
+        [SerializeField] private Game _game;
 
-        public Game Game;
+        public Libretro.Wrapper Wrapper { get; private set; } = new Libretro.Wrapper();
 
         private Renderer _rendererComponent = null;
         private Material _originalMaterial = null;
-
-        private TextMeshProUGUI _infoTextComponent = null;
-        private string _coreInfoText = string.Empty;
-
-        [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "Constructor subscribes to events, no methods are called directly on this...")]
-        private AudioDeviceExternal _externalAudio = null;
-
-        private double _updateLoopTimeMs;
 
         private void Awake()
         {
@@ -45,44 +36,36 @@ namespace SK
                     if (screenTransform.TryGetComponent(out _rendererComponent))
                     {
                         _originalMaterial = _rendererComponent.sharedMaterial;
-
-                        Game = FileSystem.DeserializeFromJson<Game>($"{Application.streamingAssetsPath}/Game.json");
-
-                        AudioSource foundUnityAudioSource = GetComponentInChildren<AudioSource>();
-                        if (foundUnityAudioSource == null)
-                        {
-                            _externalAudio = new AudioDeviceExternal();
-                        }
                     }
                 }
-            }
-
-            GameObject uiNode = GameObject.Find("UI");
-            if (uiNode != null)
-            {
-                _infoTextComponent = uiNode.GetComponentInChildren<TextMeshProUGUI>();
             }
         }
 
         private void Start()
         {
-            StartGame();
+            if (!string.IsNullOrEmpty(_game.Name))
+            {
+                StartGame();
+            }
         }
 
         private void OnEnable()
         {
-            Libretro.Wrapper.OnCoreStartedEvent += CoreStartedCallback;
-            Libretro.Wrapper.OnCoreStoppedEvent += CoreStoppedCallback;
-            Libretro.Wrapper.OnGameStartedEvent += GameStartedCallback;
-            Libretro.Wrapper.OnGameStoppedEvent += GameStoppedCallback;
+            Wrapper.OnCoreStartedEvent += CoreStartedCallback;
+            Wrapper.OnCoreStoppedEvent += CoreStoppedCallback;
+            Wrapper.OnGameStartedEvent += GameStartedCallback;
+            Wrapper.OnGameStoppedEvent += GameStoppedCallback;
         }
 
         private void OnDisable()
         {
-            Libretro.Wrapper.OnCoreStartedEvent -= CoreStartedCallback;
-            Libretro.Wrapper.OnCoreStoppedEvent -= CoreStoppedCallback;
-            Libretro.Wrapper.OnGameStartedEvent -= GameStartedCallback;
-            Libretro.Wrapper.OnGameStoppedEvent -= GameStoppedCallback;
+            if (Wrapper != null)
+            {
+                Wrapper.OnCoreStartedEvent -= CoreStartedCallback;
+                Wrapper.OnCoreStoppedEvent -= CoreStoppedCallback;
+                Wrapper.OnGameStartedEvent -= GameStartedCallback;
+                Wrapper.OnGameStoppedEvent -= GameStoppedCallback;
+            }
         }
 
         private void OnDestroy()
@@ -90,64 +73,46 @@ namespace SK
             StopGame();
         }
 
-        private void Update()
+        public void ActivateInput()
         {
-            if (Mouse.current.middleButton.wasPressedThisFrame)
-            {
-                if (Cursor.lockState == CursorLockMode.Locked)
-                {
-                    Cursor.lockState = CursorLockMode.None;
-                }
-                else if (Cursor.lockState == CursorLockMode.None)
-                {
-                    Cursor.lockState = CursorLockMode.Locked;
-                }
-                Cursor.visible = !Cursor.visible;
-            }
-
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                StopGame();
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-#else
-                Application.Quit(0);
-#endif
-            }
+            Wrapper.InputProcessor = FindObjectOfType<PlayerInputManager>().GetComponent<Libretro.IInputProcessor>();
         }
 
-        private void OnGUI()
+        public void DeactivateInput()
         {
-            GUI.Label(new Rect(4, 2, 200, 100), $"Update: {_updateLoopTimeMs}ms");
+            Wrapper.InputProcessor = null;
         }
 
-        private void StartGame()
+        public void StartGame()
         {
-            if (Game != null)
+            if (!Wrapper.Game.Running)
             {
-                Wrapper = new Libretro.Wrapper();
+                Wrapper.AudioProcessor = GetComponentInChildren<Libretro.IAudioProcessor>() ?? new AudioProcessorExternal();
 
-                string corePath = FileSystem.GetAbsolutePath($"{Libretro.Wrapper.WrapperDirectory}/cores/{Game.Core}_libretro.dll");
+                string corePath = FileSystem.GetAbsolutePath($"{Libretro.Wrapper.WrapperDirectory}/cores/{_game.Core}_libretro.dll");
                 if (FileSystem.FileExists(corePath))
                 {
-                    if (Wrapper.StartCore(corePath))
+                    string instancePath = FileSystem.GetAbsolutePath($"{Libretro.Wrapper.TempDirectory}/{Path.GetFileName(corePath).Replace("_libretro", $"{Guid.NewGuid()}")}");
+                    File.Copy(corePath, instancePath);
+
+                    if (Wrapper.StartCore(instancePath))
                     {
-                        if (!string.IsNullOrEmpty(Game.Name))
+                        if (!string.IsNullOrEmpty(_game.Name))
                         {
-                            string gamePath = Wrapper.GetGamePath(Game.Directory, Game.Name);
+                            string gamePath = Wrapper.GetGamePath(_game.Directory, _game.Name);
                             if (gamePath == null)
                             {
                                 // Try Zip archive
-                                string archivePath = FileSystem.GetAbsolutePath($"{Game.Directory}/{Game.Name}.zip");
+                                string archivePath = FileSystem.GetAbsolutePath($"{_game.Directory}/{_game.Name}.zip");
                                 if (File.Exists(archivePath))
                                 {
-                                    string extractPath = FileSystem.GetAbsolutePath($"{Libretro.Wrapper.WrapperDirectory}/temp");
+                                    string extractPath = FileSystem.GetAbsolutePath(Libretro.Wrapper.TempDirectory);
                                     if (Directory.Exists(extractPath))
                                     {
                                         Directory.Delete(extractPath, true);
                                     }
                                     System.IO.Compression.ZipFile.ExtractToDirectory(archivePath, extractPath);
-                                    gamePath = Wrapper.GetGamePath(extractPath, Game.Name);
+                                    gamePath = Wrapper.GetGamePath(extractPath, _game.Name);
                                 }
                             }
 
@@ -159,32 +124,28 @@ namespace SK
                                 }
                                 else
                                 {
-                                    Log.Error($"Game '{Game.Name}' failed to start on core '{Game.Core}'.", "GameModelSetup.StartGame");
+                                    Log.Error($"Game '{_game.Name}' failed to start on core '{_game.Core}'.", "GameModelSetup.StartGame");
                                 }
                             }
                             else
                             {
-                                Log.Error($"Game '{Game.Name}' at path '{Game.Directory}' not found.", "GameModelSetup.StartGame");
+                                Log.Error($"Game '{_game.Name}' at path '{_game.Directory}' not found.", "GameModelSetup.StartGame");
                             }
                         }
                         else
                         {
-                            Log.Warning($"Game not set, running '{Game.Core}' core only.", "GameModelSetup.StartGame");
+                            Log.Warning($"Game not set, running '{_game.Core}' core only.", "GameModelSetup.StartGame");
                         }
                     }
                     else
                     {
-                        Log.Warning($"Failed to start core '{Game.Core}'.", "GameModelSetup.StartGame");
+                        Log.Warning($"Failed to start core '{_game.Core}'.", "GameModelSetup.StartGame");
                     }
                 }
                 else
                 {
-                    Log.Error($"Core '{Game.Core}' at path '{corePath}' not found.", "GameModelSetup.StartGame");
+                    Log.Error($"Core '{_game.Core}' at path '{corePath}' not found.", "GameModelSetup.StartGame");
                 }
-            }
-            else
-            {
-                Log.Error($"Game instance is null.", "GameModelSetup.StartGame");
             }
         }
 
@@ -195,102 +156,36 @@ namespace SK
             Wrapper = null;
         }
 
-        private int numFrames;
-
         [SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Called by InvokeRepeating")]
         private void LibretroRunLoop()
         {
-            if (Wrapper != null)
+            Wrapper.Update();
+            if (Wrapper.Texture != null)
             {
-                System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
-
-                Wrapper.Update();
-
-                sw.Stop();
-                if (numFrames++ >= 30)
-                {
-                    _updateLoopTimeMs = sw.Elapsed.TotalMilliseconds;
-                    numFrames = 0;
-                }
-
-                if (Wrapper.Texture != null)
-                {
-                    _rendererComponent.material.mainTexture = Wrapper.Texture;
-                    _rendererComponent.material.SetTexture("_EmissionMap", Wrapper.Texture);
-                }
+                _rendererComponent.material.mainTexture = Wrapper.Texture;
+                _rendererComponent.material.SetTexture("_EmissionMap", Wrapper.Texture);
             }
         }
 
-        private void CoreStartedCallback(Libretro.Wrapper.LibretroCore core)
+        private void CoreStartedCallback(Libretro.LibretroCore core)
         {
-            if (core != null)
-            {
-                if (_infoTextComponent != null)
-                {
-                    StringBuilder sb = new StringBuilder()
-                        .AppendLine("<color=yellow>Core Info:</color>")
-                        .Append("<size=12>")
-                        .AppendLine($"<color=lightblue>Api Version:</color> {core.ApiVersion}")
-                        .AppendLine($"<color=lightblue>Name:</color> {core.CoreName}")
-                        .AppendLine($"<color=lightblue>Version:</color> {core.CoreVersion}")
-                        .AppendLine($"<color=lightblue>ValidExtensions:</color> {string.Join("|", core.ValidExtensions)}")
-                        .AppendLine($"<color=lightblue>RequiresFullPath:</color> {core.RequiresFullPath}")
-                        .AppendLine($"<color=lightblue>BlockExtraction:</color> {core.BlockExtraction}")
-                        .Append("</size>");
-                    _coreInfoText = sb.ToString();
-                    _infoTextComponent.SetText(_coreInfoText);
-                }
-            }
         }
 
-        private void CoreStoppedCallback(Libretro.Wrapper.LibretroCore core)
+        private void CoreStoppedCallback(Libretro.LibretroCore core)
         {
-            if (_infoTextComponent != null)
-            {
-                _infoTextComponent.SetText(string.Empty);
-            }
         }
 
-        private void GameStartedCallback(Libretro.Wrapper.LibretroGame game)
+        private void GameStartedCallback(Libretro.LibretroGame game)
         {
-            if (game != null)
-            {
-                if (_infoTextComponent != null)
-                {
-                    StringBuilder sb = new StringBuilder(_infoTextComponent.text)
-                        .AppendLine()
-                        .AppendLine("<color=yellow>Game Info:</color>")
-                        .Append("<size=12>")
-                        .AppendLine($"<color=lightblue>BaseWidth:</color> {game.BaseWidth}")
-                        .AppendLine($"<color=lightblue>BaseHeight:</color> {game.BaseHeight}")
-                        .AppendLine($"<color=lightblue>MaxWidth:</color> {game.MaxWidth}")
-                        .AppendLine($"<color=lightblue>MaxHeight:</color> {game.MaxHeight}")
-                        .AppendLine($"<color=lightblue>AspectRatio:</color> {game.AspectRatio}")
-                        .AppendLine($"<color=lightblue>TargetFps:</color> {game.Fps}")
-                        .AppendLine($"<color=lightblue>SampleRate:</color> {game.SampleRate}")
-                        .Append("</size>");
-
-                    _infoTextComponent.SetText(sb.ToString());
-                }
-            }
-
             _rendererComponent.material.mainTextureScale = new Vector2(1f, -1f);
             _rendererComponent.material.EnableKeyword("_EMISSION");
             _rendererComponent.material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
             _rendererComponent.material.SetColor("_EmissionColor", Color.white);
         }
 
-        private void GameStoppedCallback(Libretro.Wrapper.LibretroGame game)
+        private void GameStoppedCallback(Libretro.LibretroGame game)
         {
             _rendererComponent.material = _originalMaterial;
-
-            if (_infoTextComponent != null)
-            {
-                _infoTextComponent.SetText(string.Empty);
-            }
-
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
         }
     }
 }

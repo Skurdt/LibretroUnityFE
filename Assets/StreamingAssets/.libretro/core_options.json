@@ -397,6 +397,224 @@
                         "3"
                     ],
                     "DefaultValue": "1.5"
+                },
+                {
+                    "Description": "Show Lightgun crosshair",
+                    "Value": "enabled",
+                    "Key": "mame2003-plus_crosshair_enabled",
+                    "PossibleValues": [
+                        "enabled",
+                        "disabled"
+                    ],
+                    "DefaultValue": "enabled"
+                }
+            ]
+        },
+        {
+            "CoreName": "MAME",
+            "Options": [
+                {
+                    "Description": "Read configuration",
+                    "Value": "disabled",
+                    "Key": "mame_read_config",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Description": "Write configuration",
+                    "Value": "disabled",
+                    "Key": "mame_write_config",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Description": "Save state naming",
+                    "Value": "game",
+                    "Key": "mame_saves",
+                    "PossibleValues": [
+                        "game",
+                        "system"
+                    ],
+                    "DefaultValue": "game"
+                },
+                {
+                    "Description": "Auto save/load states",
+                    "Value": "disabled",
+                    "Key": "mame_auto_save",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Description": "Enable in-game mouse",
+                    "Value": "enabled",
+                    "Key": "mame_mouse_enable",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Description": "Lightgun mode",
+                    "Value": "none",
+                    "Key": "mame_lightgun_mode",
+                    "PossibleValues": [
+                        "none",
+                        "touchscreen",
+                        "lightgun"
+                    ],
+                    "DefaultValue": "none"
+                },
+                {
+                    "Description": "Profile Buttons according to games (Restart)",
+                    "Value": "enabled",
+                    "Key": "mame_buttons_profiles",
+                    "PossibleValues": [
+                        "enabled",
+                        "disabled"
+                    ],
+                    "DefaultValue": "enabled"
+                },
+                {
+                    "Description": "Enable throttle",
+                    "Value": "disabled",
+                    "Key": "mame_throttle",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Description": "Enable cheats",
+                    "Value": "disabled",
+                    "Key": "mame_cheats_enable",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Description": "Alternate render method",
+                    "Value": "disabled",
+                    "Key": "mame_alternate_renderer",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Description": "Enable softlists",
+                    "Value": "enabled",
+                    "Key": "mame_softlists_enable",
+                    "PossibleValues": [
+                        "enabled",
+                        "disabled"
+                    ],
+                    "DefaultValue": "enabled"
+                },
+                {
+                    "Description": "Softlist automatic media type",
+                    "Value": "enabled",
+                    "Key": "mame_softlists_auto_media",
+                    "PossibleValues": [
+                        "enabled",
+                        "disabled"
+                    ],
+                    "DefaultValue": "enabled"
+                },
+                {
+                    "Description": "Media type",
+                    "Value": "rom",
+                    "Key": "mame_media_type",
+                    "PossibleValues": [
+                        "rom",
+                        "cart",
+                        "flop",
+                        "cdrm",
+                        "cass",
+                        "hard",
+                        "serl",
+                        "prin"
+                    ],
+                    "DefaultValue": "rom"
+                },
+                {
+                    "Description": "Boot to BIOS",
+                    "Value": "disabled",
+                    "Key": "mame_boot_to_bios",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Description": "Boot to OSD",
+                    "Value": "disabled",
+                    "Key": "mame_boot_to_osd",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Description": "Boot from CLI",
+                    "Value": "disabled",
+                    "Key": "mame_boot_from_cli",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
+                },
+                {
+                    "Description": "Resolution",
+                    "Value": "640x480",
+                    "Key": "mame_altres",
+                    "PossibleValues": [
+                        "640x480",
+                        "640x360",
+                        "800x600",
+                        "800x450",
+                        "960x720",
+                        "960x540",
+                        "1024x768",
+                        "1024x576",
+                        "1280x960",
+                        "1280x720",
+                        "1600x1200",
+                        "1600x900",
+                        "1440x1080",
+                        "1920x1080",
+                        "1920x1440",
+                        "2560x1440",
+                        "2880x2160",
+                        "3840x2160"
+                    ],
+                    "DefaultValue": "640x480"
+                },
+                {
+                    "Description": "MAME INI Paths",
+                    "Value": "disabled",
+                    "Key": "mame_mame_paths_enable",
+                    "PossibleValues": [
+                        "disabled",
+                        "enabled"
+                    ],
+                    "DefaultValue": "disabled"
                 }
             ]
         }
