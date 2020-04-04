@@ -25,36 +25,29 @@ namespace SK
         private Renderer _rendererComponent = null;
         private Material _originalMaterial = null;
 
-        private void Awake()
-        {
-            if (transform.childCount > 0)
-            {
-                Transform modelTransform = transform.GetChild(0);
-                if (modelTransform != null && modelTransform.childCount > 1)
-                {
-                    Transform screenTransform = modelTransform.GetChild(1);
-                    if (screenTransform.TryGetComponent(out _rendererComponent))
-                    {
-                        _originalMaterial = _rendererComponent.sharedMaterial;
-                    }
-                }
-            }
-        }
-
-        private void Start()
+        private void OnEnable()
         {
             if (!string.IsNullOrEmpty(_game.Name))
             {
-                StartGame();
-            }
-        }
+                if (transform.childCount > 0)
+                {
+                    Transform modelTransform = transform.GetChild(0);
+                    if (modelTransform != null && modelTransform.childCount > 1)
+                    {
+                        Transform screenTransform = modelTransform.GetChild(1);
+                        if (screenTransform.TryGetComponent(out _rendererComponent))
+                        {
+                            _originalMaterial = _rendererComponent.sharedMaterial;
 
-        private void OnEnable()
-        {
-            Wrapper.OnCoreStartedEvent += CoreStartedCallback;
-            Wrapper.OnCoreStoppedEvent += CoreStoppedCallback;
-            Wrapper.OnGameStartedEvent += GameStartedCallback;
-            Wrapper.OnGameStoppedEvent += GameStoppedCallback;
+                            Wrapper.OnCoreStartedEvent += CoreStartedCallback;
+                            Wrapper.OnCoreStoppedEvent += CoreStoppedCallback;
+                            Wrapper.OnGameStartedEvent += GameStartedCallback;
+                            Wrapper.OnGameStoppedEvent += GameStoppedCallback;
+                            StartGame();
+                        }
+                    }
+                }
+            }
         }
 
         private void OnDisable()
@@ -65,12 +58,8 @@ namespace SK
                 Wrapper.OnCoreStoppedEvent -= CoreStoppedCallback;
                 Wrapper.OnGameStartedEvent -= GameStartedCallback;
                 Wrapper.OnGameStoppedEvent -= GameStoppedCallback;
+                StopGame();
             }
-        }
-
-        private void OnDestroy()
-        {
-            StopGame();
         }
 
         public void ActivateInput()
@@ -153,7 +142,6 @@ namespace SK
         {
             CancelInvoke();
             Wrapper?.StopGame();
-            Wrapper = null;
         }
 
         [SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Called by InvokeRepeating")]

@@ -81,7 +81,6 @@ namespace SK.Libretro
 
             OnCoreStoppedEvent?.Invoke(Core);
             Core.Stop();
-            Core = null;
         }
 
         public void Update()

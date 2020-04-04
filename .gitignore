@@ -61,4 +61,5 @@ crashlytics-build.properties
 # Libretro
 [Aa]ssets/StreamingAssets/.libretro/cores/*
 [Aa]ssets/StreamingAssets/.libretro/system/*
+[Aa]ssets/StreamingAssets/.libretro/saves/*
 [Aa]ssets/StreamingAssets/.libretro/temp/*

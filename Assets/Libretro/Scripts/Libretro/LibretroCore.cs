@@ -81,7 +81,7 @@ namespace SK.Libretro
 
         public retro_controller_info[] ControllerPorts;
 
-        private DllModule _dll = new DllModuleWindows();
+        private readonly DllModule _dll = new DllModuleWindows();
 
         private retro_environment_t _environmentCallback;
         private retro_video_refresh_t _videoRefreshCallback;
@@ -156,7 +156,6 @@ namespace SK.Libretro
                 {
                     File.Delete(dllPath);
                 }
-                _dll = null;
             }
             catch (Exception e)
             {

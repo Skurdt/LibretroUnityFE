@@ -407,6 +407,16 @@
                         "disabled"
                     ],
                     "DefaultValue": "enabled"
+                },
+                {
+                    "Description": "NVRAM Bootstraps",
+                    "Value": "enabled",
+                    "Key": "mame2003-plus_nvram_bootstraps",
+                    "PossibleValues": [
+                        "enabled",
+                        "disabled"
+                    ],
+                    "DefaultValue": "enabled"
                 }
             ]
         },
