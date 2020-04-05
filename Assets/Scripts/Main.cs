@@ -76,22 +76,22 @@ namespace SK
         {
             Vector3 velocity = Vector3.zero;
 
-            if (Keyboard.current.upArrowKey.isPressed)
+            if (Keyboard.current.iKey.isPressed)
             {
                 velocity += new Vector3(0f, 0f, 1f);
             }
 
-            if (Keyboard.current.downArrowKey.isPressed)
+            if (Keyboard.current.kKey.isPressed)
             {
                 velocity -= new Vector3(0f, 0f, 1f);
             }
 
-            if (Keyboard.current.leftArrowKey.isPressed)
+            if (Keyboard.current.jKey.isPressed)
             {
                 velocity -= new Vector3(1.0f, 0f, 0f);
             }
 
-            if (Keyboard.current.rightArrowKey.isPressed)
+            if (Keyboard.current.lKey.isPressed)
             {
                 velocity += new Vector3(1.0f, 0f, 0f);
             }

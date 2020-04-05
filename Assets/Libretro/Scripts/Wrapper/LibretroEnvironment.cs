@@ -8,97 +8,6 @@ namespace SK.Libretro
 {
     public partial class Wrapper
     {
-        public const int MAX_USERS = 16;
-
-        private const int FIRST_CUSTOM_BIND = 16;
-        private const int FIRST_LIGHTGUN_BIND = (int)CustomBinds.ANALOG_BIND_LIST_END;
-        private const int FIRST_MISC_CUSTOM_BIND = (int)CustomBinds.LIGHTGUN_BIND_LIST_END;
-        public const int FIRST_META_KEY = (int)CustomBinds.CUSTOM_BIND_LIST_END;
-
-        /* RetroArch specific bind IDs. */
-        private enum CustomBinds
-        {
-            // Custom binds that extend the scope of RETRO_DEVICE_JOYPAD for RetroArch specifically.
-            // Analogs (RETRO_DEVICE_ANALOG)
-            ANALOG_LEFT_X_PLUS = FIRST_CUSTOM_BIND,
-            ANALOG_LEFT_X_MINUS,
-            ANALOG_LEFT_Y_PLUS,
-            ANALOG_LEFT_Y_MINUS,
-            ANALOG_RIGHT_X_PLUS,
-            ANALOG_RIGHT_X_MINUS,
-            ANALOG_RIGHT_Y_PLUS,
-            ANALOG_RIGHT_Y_MINUS,
-            ANALOG_BIND_LIST_END,
-
-            // Lightgun
-            LIGHTGUN_TRIGGER = FIRST_LIGHTGUN_BIND,
-            LIGHTGUN_RELOAD,
-            LIGHTGUN_AUX_A,
-            LIGHTGUN_AUX_B,
-            LIGHTGUN_AUX_C,
-            LIGHTGUN_START,
-            LIGHTGUN_SELECT,
-            LIGHTGUN_DPAD_UP,
-            LIGHTGUN_DPAD_DOWN,
-            LIGHTGUN_DPAD_LEFT,
-            LIGHTGUN_DPAD_RIGHT,
-            LIGHTGUN_BIND_LIST_END,
-
-            // Turbo
-            TURBO_ENABLE = FIRST_MISC_CUSTOM_BIND,
-
-            CUSTOM_BIND_LIST_END,
-
-            // Command binds. Not related to game input, only usable for port 0.
-            FAST_FORWARD_KEY = FIRST_META_KEY,
-            FAST_FORWARD_HOLD_KEY,
-            SLOWMOTION_KEY,
-            SLOWMOTION_HOLD_KEY,
-            LOAD_STATE_KEY,
-            SAVE_STATE_KEY,
-            FULLSCREEN_TOGGLE_KEY,
-            QUIT_KEY,
-            STATE_SLOT_PLUS,
-            STATE_SLOT_MINUS,
-            REWIND,
-            BSV_RECORD_TOGGLE,
-            PAUSE_TOGGLE,
-            FRAMEADVANCE,
-            RESET,
-            SHADER_NEXT,
-            SHADER_PREV,
-            CHEAT_INDEX_PLUS,
-            CHEAT_INDEX_MINUS,
-            CHEAT_TOGGLE,
-            SCREENSHOT,
-            MUTE,
-            OSK,
-            FPS_TOGGLE,
-            SEND_DEBUG_INFO,
-            NETPLAY_HOST_TOGGLE,
-            NETPLAY_GAME_WATCH,
-            ENABLE_HOTKEY,
-            VOLUME_UP,
-            VOLUME_DOWN,
-            OVERLAY_NEXT,
-            DISK_EJECT_TOGGLE,
-            DISK_NEXT,
-            DISK_PREV,
-            GRAB_MOUSE_TOGGLE,
-            GAME_FOCUS_TOGGLE,
-            UI_COMPANION_TOGGLE,
-
-            MENU_TOGGLE,
-
-            RECORDING_TOGGLE,
-            STREAMING_TOGGLE,
-
-            AI_SERVICE,
-
-            BIND_LIST_END,
-            BIND_LIST_END_NULL
-        };
-
         //private const uint SUBSYSTEM_MAX_SUBSYSTEMS = 20;
         //private const uint SUBSYSTEM_MAX_SUBSYSTEM_ROMS = 10;
 
@@ -111,6 +20,155 @@ namespace SK.Libretro
         {
             switch (cmd)
             {
+                /************************************************************************************************
+                / Data passed from the frontend to the core
+                /***********************************************************************************************/
+                case retro_environment.RETRO_ENVIRONMENT_GET_OVERSCAN:
+                {
+                    // TODO: Figure out the value
+                    bool* outOverscan = (bool*)data;
+                    *outOverscan = true;
+                    Log.Warning($"[OUT] Overscan: {*outOverscan}", "RETRO_ENVIRONMENT_GET_OVERSCAN");
+                }
+                break;
+                case retro_environment.RETRO_ENVIRONMENT_GET_CAN_DUPE:
+                {
+                    // TODO: Figure out what that is...
+                    bool* outCanDupe = (bool*)data;
+                    *outCanDupe = true;
+                    Log.Warning($"[OUT] CanDupe: {*outCanDupe}", "RETRO_ENVIRONMENT_GET_CAN_DUPE");
+                }
+                break;
+                case retro_environment.RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY:
+                {
+                    char** outSystemDirectory = (char**)data;
+                    *outSystemDirectory = StringToChars(FileSystem.GetAbsolutePath(SystemDirectory));
+                }
+                break;
+                case retro_environment.RETRO_ENVIRONMENT_GET_VARIABLE:
+                {
+                    retro_variable* outVariable = (retro_variable*)data;
+
+                    string key = CharsToString(outVariable->key);
+                    if (Core.CoreOptions != null)
+                    {
+                        string coreOption = Core.CoreOptions.Options.Find(x => x.StartsWith(key, StringComparison.OrdinalIgnoreCase));
+                        if (coreOption != null)
+                        {
+                            outVariable->value = StringToChars(coreOption.Split(';')[1]);
+                        }
+                        else
+                        {
+                            Log.Warning($"Core option {key} not found!");
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        Log.Warning($"Core didn't set its options for key '{key}'.");
+                        return false;
+                    }
+                }
+                break;
+                case retro_environment.RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE:
+                {
+                    bool* outVariableUpdate = (bool*)data;
+                    *outVariableUpdate = false;
+                }
+                break;
+                //case retro_environment.RETRO_ENVIRONMENT_GET_LIBRETRO_PATH:
+                //    break;
+                //case retro_environment.RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE:
+                //    break;
+                case retro_environment.RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES:
+                {
+                    Log.Warning("RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES");
+                    //ulong* outBitmask = (ulong*)data;
+                    //*outBitmask       = (1 << (int)RetroDevice.RETRO_DEVICE_JOYPAD) | (1 << (int)RetroDevice.RETRO_DEVICE_ANALOG) | (1 << (int)RetroDevice.RETRO_DEVICE_KEYBOARD);
+                    return false; //TODO: Remove when implemented!
+                }
+                //break;
+                case retro_environment.RETRO_ENVIRONMENT_GET_SENSOR_INTERFACE:
+                {
+                    data = null;
+                }
+                break;
+                case retro_environment.RETRO_ENVIRONMENT_GET_CAMERA_INTERFACE:
+                {
+                    data = null;
+                }
+                break;
+                case retro_environment.RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
+                {
+                    retro_log_callback* outLogInterface = (retro_log_callback*)data;
+                    outLogInterface->log = Core.SetLogCallback();
+                }
+                break;
+                case retro_environment.RETRO_ENVIRONMENT_GET_PERF_INTERFACE:
+                    return false;
+                case retro_environment.RETRO_ENVIRONMENT_GET_LOCATION_INTERFACE:
+                {
+                    data = null;
+                }
+                break;
+                case retro_environment.RETRO_ENVIRONMENT_GET_CORE_ASSETS_DIRECTORY:
+                {
+                    char** outCoreAssetsDirectory = (char**)data;
+                    *outCoreAssetsDirectory = StringToChars(FileSystem.GetAbsolutePath(SystemDirectory));
+                }
+                break;
+                case retro_environment.RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY:
+                {
+                    char** outSaveDirectory = (char**)data;
+                    *outSaveDirectory = StringToChars(FileSystem.GetAbsolutePath(SavesDirectory));
+                }
+                break;
+                //case retro_environment.RETRO_ENVIRONMENT_GET_USERNAME:
+                //    break;
+                case retro_environment.RETRO_ENVIRONMENT_GET_LANGUAGE:
+                    return false;
+                //case retro_environment.RETRO_ENVIRONMENT_GET_CURRENT_SOFTWARE_FRAMEBUFFER:
+                //    break;
+                //case retro_environment.RETRO_ENVIRONMENT_GET_HW_RENDER_INTERFACE:
+                //    break;
+                case retro_environment.RETRO_ENVIRONMENT_GET_VFS_INTERFACE:
+                    return false;
+                case retro_environment.RETRO_ENVIRONMENT_GET_LED_INTERFACE:
+                    return false;
+                case retro_environment.RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE:
+                {
+                    int result = 0;
+                    result |= 1; // if video enabled
+                    result |= 2; // if audio enabled
+
+                    int* outAudioVideoEnabled = (int*)data;
+                    *outAudioVideoEnabled = result;
+                }
+                break;
+                //case retro_environment.RETRO_ENVIRONMENT_GET_MIDI_INTERFACE:
+                //    break;
+                //case retro_environment.RETRO_ENVIRONMENT_GET_FASTFORWARDING:
+                //    break;
+                //case retro_environment.RETRO_ENVIRONMENT_GET_TARGET_REFRESH_RATE:
+                //    break;
+                case retro_environment.RETRO_ENVIRONMENT_GET_INPUT_BITMASKS:
+                {
+                }
+                break;
+                case retro_environment.RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
+                {
+                    uint* outVersion = (uint*)data;
+                    *outVersion = RETRO_API_VERSION;
+                }
+                break;
+                //case retro_environment.RETRO_ENVIRONMENT_GET_PREFERRED_HW_RENDER:
+                //    break;
+                //case retro_environment.RETRO_ENVIRONMENT_GET_DISK_CONTROL_INTERFACE_VERSION:
+                //    break;
+
+                /************************************************************************************************
+                / Data passed from the core to the frontend
+                /***********************************************************************************************/
                 case retro_environment.RETRO_ENVIRONMENT_SET_ROTATION:
                 {
                     // TODO: Rotate screen (counter-clockwise)
@@ -118,47 +176,21 @@ namespace SK.Libretro
                     // Result: 0, 90, 180, 270 degrees
                     uint* inRotation = (uint*)data;
                     Core.Rotation = (int)*inRotation;
-                    Log.Warning($"in_Rotation: {*inRotation}", "RETRO_ENVIRONMENT_SET_ROTATION");
+                    Log.Warning($"[IN] Rotation: {*inRotation}", "RETRO_ENVIRONMENT_SET_ROTATION");
                     return false;
                 }
                 //break;
-                case retro_environment.RETRO_ENVIRONMENT_GET_OVERSCAN:
-                {
-                    // TODO: Figure out the value...
-                    bool* outOverscan = (bool*)data;
-                    *outOverscan = true;
-                    Log.Warning($"out_Overscan: {*outOverscan}", "RETRO_ENVIRONMENT_GET_OVERSCAN");
-                }
-                break;
-                case retro_environment.RETRO_ENVIRONMENT_GET_CAN_DUPE:
-                {
-                    bool* outCanDupe = (bool*)data;
-                    *outCanDupe = true;
-                    Log.Info($"out_CanDupe: {*outCanDupe}", "RETRO_ENVIRONMENT_GET_CAN_DUPE");
-                }
-                break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_MESSAGE:
                 {
+                    // TODO: Do I need something from this?
                     retro_message* inMessage = (retro_message*)data;
-                    string msgString = CharsToString(inMessage->msg);
-                    Log.Warning($"in_Message: {msgString}", "RETRO_ENVIRONMENT_SET_MESSAGE");
+                    Log.Warning($"[IN] Message: {CharsToString(inMessage->msg)}", "RETRO_ENVIRONMENT_SET_MESSAGE");
                 }
                 break;
-                //case retro_environment.RETRO_ENVIRONMENT_SHUTDOWN:
-                //    break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL:
                 {
                     int* inPerformanceLevel = (int*)data;
                     Core.PerformanceLevel = *inPerformanceLevel;
-                    Log.Info($"in_PerformanceLevel: {*inPerformanceLevel}", "RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL");
-                }
-                break;
-                case retro_environment.RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY:
-                {
-                    char** outSystemDirectory = (char**)data;
-                    string systemDirectory = FileSystem.GetAbsolutePath(SystemDirectory);
-                    *outSystemDirectory = StringToChars(systemDirectory);
-                    Log.Info($"out_SystemDirectory: {systemDirectory}", "RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY");
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
@@ -171,7 +203,7 @@ namespace SK.Libretro
                         case retro_pixel_format.RETRO_PIXEL_FORMAT_RGB565:
                         {
                             Game.PixelFormat = *inPixelFormat;
-                            Log.Info($"in_PixelFormat: {*inPixelFormat}", "RETRO_ENVIRONMENT_SET_PIXEL_FORMAT");
+                            Log.Info($"[IN] PixelFormat: {*inPixelFormat}", "RETRO_ENVIRONMENT_SET_PIXEL_FORMAT");
                         }
                         break;
                         default:
@@ -259,143 +291,64 @@ namespace SK.Libretro
                     Core.HasInputDescriptors = true;
                 }
                 break;
-                case retro_environment.RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK:
-                {
-                    Log.Warning("RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK");
-                }
-                break;
+                //case retro_environment.RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK:
+                //    break;
                 //case retro_environment.RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:
                 //    return false;
-                case retro_environment.RETRO_ENVIRONMENT_SET_HW_RENDER:
-                    return false;
-                case retro_environment.RETRO_ENVIRONMENT_GET_VARIABLE:
-                {
-                    retro_variable* outVariable = (retro_variable*)data;
-
-                    string key = CharsToString(outVariable->key);
-                    if (Core.CoreOptions != null)
-                    {
-                        CoreOption coreOption = Core.CoreOptions.Options.Find(x => x.Key.Equals(key, StringComparison.OrdinalIgnoreCase));
-                        if (coreOption != null && coreOption.Value != null)
-                        {
-                            outVariable->value = StringToChars(coreOption.Value);
-                        }
-                        else
-                        {
-                            Log.Warning($"Core option {key} not found!");
-                            // return false;
-                        }
-                    }
-                    else
-                    {
-                        Log.Warning($"Core didn't set its options for key '{key}'.");
-                        return false;
-                    }
-                }
-                break;
+                //case retro_environment.RETRO_ENVIRONMENT_SET_HW_RENDER:
+                //    return false;
                 case retro_environment.RETRO_ENVIRONMENT_SET_VARIABLES:
                 {
-                    retro_variable* inVariable = (retro_variable*)data;
-
-                    Core.CoreOptions = _coreOptionsList.Cores.Find(x => x.CoreName.Equals(Core.CoreName, StringComparison.OrdinalIgnoreCase));
-                    if (Core.CoreOptions == null)
+                    try
                     {
-                        Core.CoreOptions = new CoreOptions { CoreName = Core.CoreName };
-                        _coreOptionsList.Cores.Add(Core.CoreOptions);
-                    }
+                        retro_variable* inVariable = (retro_variable*)data;
 
-                    while (inVariable->key != null)
-                    {
-                        string key = CharsToString(inVariable->key);
-
-                        CoreOption coreOption = Core.CoreOptions.Options.Find(x => x.Key.Equals(key, StringComparison.OrdinalIgnoreCase));
-                        if (coreOption == null)
+                        Core.CoreOptions = _coreOptionsList.Cores.Find(x => x.CoreName.Equals(Core.CoreName, StringComparison.OrdinalIgnoreCase));
+                        if (Core.CoreOptions == null)
                         {
-                            string[] descriptionAndValues = CharsToString(inVariable->value).Split(';');
-                            string description = descriptionAndValues[0].Trim();
-                            string[] possibleValues = descriptionAndValues[1].Trim().Split('|');
-                            string defaultValue = possibleValues[0];
-                            string value = defaultValue;
-
-                            coreOption = new CoreOption
-                            {
-                                Description = description,
-                                Value = value,
-                                Key = key,
-                                PossibleValues = possibleValues,
-                                DefaultValue = defaultValue
-                            };
-
-                            Core.CoreOptions.Options.Add(coreOption);
+                            Core.CoreOptions = new CoreOptions { CoreName = Core.CoreName };
+                            _coreOptionsList.Cores.Add(Core.CoreOptions);
                         }
 
-                        inVariable++;
+                        while (inVariable->key != null)
+                        {
+                            string key = CharsToString(inVariable->key);
+                            string coreOption = Core.CoreOptions.Options.Find(x => x.StartsWith(key, StringComparison.OrdinalIgnoreCase));
+                            if (coreOption == null)
+                            {
+                                string inValue = CharsToString(inVariable->value);
+                                string[] descriptionAndValues = inValue.Split(';');
+                                string[] possibleValues = descriptionAndValues[1].Trim().Split('|');
+                                string defaultValue = possibleValues[0];
+                                string value = defaultValue;
+                                coreOption = $"{key};{value};{string.Join("|", possibleValues)};";
+                                Core.CoreOptions.Options.Add(coreOption);
+                            }
+                            ++inVariable;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Exception(e);
                     }
 
-                    _ = FileSystem.SerializeToJson(_coreOptionsList, CoreOptionsFile);
-                }
-                break;
-                case retro_environment.RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE:
-                {
-                    bool* outVariableUpdate = (bool*)data;
-                    *outVariableUpdate = false;
+                    SaveCoreOptionsFile();
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:
                 {
                     bool* inSupportNoGame = (bool*)data;
+                    Core.SupportNoGame = *inSupportNoGame;
                 }
                 break;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_LIBRETRO_PATH:
-                //    break;
                 //case retro_environment.RETRO_ENVIRONMENT_SET_FRAME_TIME_CALLBACK:
                 //    break;
                 //case retro_environment.RETRO_ENVIRONMENT_SET_AUDIO_CALLBACK:
                 //    break;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE:
-                //    break;
-                case retro_environment.RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES:
-                {
-                    Log.Warning("RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES");
-                    //ulong* outBitmask = (ulong*)data;
-                    //*outBitmask       = (1 << (int)RetroDevice.RETRO_DEVICE_JOYPAD) | (1 << (int)RetroDevice.RETRO_DEVICE_ANALOG) | (1 << (int)RetroDevice.RETRO_DEVICE_KEYBOARD);
-                    return false; //TODO: Remove when implemented!
-                }
-                //break;
-                case retro_environment.RETRO_ENVIRONMENT_GET_SENSOR_INTERFACE:
-                    return false;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_CAMERA_INTERFACE:
-                //    break;
-                case retro_environment.RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
-                {
-                    retro_log_callback* outLogInterface = (retro_log_callback*)data;
-                    outLogInterface->log = Core.SetLogCallback();
-                }
-                break;
-                case retro_environment.RETRO_ENVIRONMENT_GET_PERF_INTERFACE:
-                    return false;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_LOCATION_INTERFACE:
-                //    break;
-                case retro_environment.RETRO_ENVIRONMENT_GET_CORE_ASSETS_DIRECTORY:
-                {
-                    char** outCoreAssetsDirectory = (char**)data;
-                    string coreAssetsDirectory = FileSystem.GetAbsolutePath($"{SystemDirectory}/{Core.CoreName}");
-                    *outCoreAssetsDirectory = StringToChars(coreAssetsDirectory);
-                    Log.Info($"out_CoreAssetsDirectory: {coreAssetsDirectory}", "RETRO_ENVIRONMENT_GET_CORE_ASSETS_DIRECTORY");
-                }
-                break;
-                case retro_environment.RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY:
-                {
-                    char** outSaveDirectory = (char**)data;
-                    string saveDirectory = FileSystem.GetAbsolutePath($"{SavesDirectory}");
-                    *outSaveDirectory = StringToChars(saveDirectory);
-                    Log.Info($"out_SaveDirectory: {saveDirectory}", "RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY");
-                }
-                break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO:
                 {
                     retro_system_av_info* inSystemAVnfo = (retro_system_av_info*)data;
-                    Game.SetSystemAVInfo(*inSystemAVnfo);
+                    Game.SystemAVInfo = *inSystemAVnfo;
                 }
                 break;
                 //case retro_environment.RETRO_ENVIRONMENT_SET_PROC_ADDRESS_CALLBACK:
@@ -523,22 +476,16 @@ namespace SK.Libretro
                     if (Game.Running)
                     {
                         retro_game_geometry* inGeometry = (retro_game_geometry*)data;
-                        if (Game.BaseWidth != inGeometry->base_width || Game.BaseHeight != inGeometry->base_height || Game.AspectRatio != inGeometry->aspect_ratio)
+                        if (Game.SystemAVInfo.geometry.base_width != inGeometry->base_width
+                            || Game.SystemAVInfo.geometry.base_height != inGeometry->base_height
+                            || Game.SystemAVInfo.geometry.aspect_ratio != inGeometry->aspect_ratio)
                         {
-                            Game.SetGeometry(*inGeometry);
+                            Game.SystemAVInfo.geometry = *inGeometry;
                             // TODO: Set video aspect ratio
                         }
                     }
                 }
                 break;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_USERNAME:
-                //    break;
-                case retro_environment.RETRO_ENVIRONMENT_GET_LANGUAGE:
-                    return false;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_CURRENT_SOFTWARE_FRAMEBUFFER:
-                //    break;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_HW_RENDER_INTERFACE:
-                //    break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_SUPPORT_ACHIEVEMENTS:
                     return false;
                 //case retro_environment.RETRO_ENVIRONMENT_SET_HW_RENDER_CONTEXT_NEGOTIATION_INTERFACE:
@@ -550,117 +497,69 @@ namespace SK.Libretro
                 break;
                 //case retro_environment.RETRO_ENVIRONMENT_SET_HW_SHARED_CONTEXT:
                 //    break;
-                case retro_environment.RETRO_ENVIRONMENT_GET_VFS_INTERFACE:
-                    return false;
-                case retro_environment.RETRO_ENVIRONMENT_GET_LED_INTERFACE:
-                    return false;
-                case retro_environment.RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE:
-                {
-                    int result = 0;
-                    result |= 1; // if video enabled
-                    result |= 2; // if audio enabled
-
-                    int* outAudioVideoEnabled = (int*)data;
-                    *outAudioVideoEnabled = result;
-                }
-                break;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_MIDI_INTERFACE:
-                //    break;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_FASTFORWARDING:
-                //    break;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_TARGET_REFRESH_RATE:
-                //    break;
-                case retro_environment.RETRO_ENVIRONMENT_GET_INPUT_BITMASKS:
-                {
-                }
-                break;
-                case retro_environment.RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
-                {
-                    uint* outVersion = (uint*)data;
-                    *outVersion = RETRO_API_VERSION;
-                }
-                break;
                 //case retro_environment.RETRO_ENVIRONMENT_SET_CORE_OPTIONS:
                 //    break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_CORE_OPTIONS_INTL:
                 {
-                    try
-                    {
-                        retro_core_options_intl inOptionsIntl = Marshal.PtrToStructure<retro_core_options_intl>((IntPtr)data);
+                    retro_core_options_intl inOptionsIntl = Marshal.PtrToStructure<retro_core_options_intl>((IntPtr)data);
 
-                        Core.CoreOptions = _coreOptionsList.Cores.Find(x => x.CoreName.Equals(Core.CoreName, StringComparison.OrdinalIgnoreCase));
-                        if (Core.CoreOptions == null)
+                    Core.CoreOptions = _coreOptionsList.Cores.Find(x => x.CoreName.Equals(Core.CoreName, StringComparison.OrdinalIgnoreCase));
+                    if (Core.CoreOptions == null)
+                    {
+                        Core.CoreOptions = new CoreOptions { CoreName = Core.CoreName };
+                        _coreOptionsList.Cores.Add(Core.CoreOptions);
+                    }
+
+                    for (int i = 0; i < RETRO_NUM_CORE_OPTION_VALUES_MAX; i++)
+                    {
+                        IntPtr ins = new IntPtr(inOptionsIntl.us.ToInt64() + i * Marshal.SizeOf<retro_core_option_definition>());
+                        retro_core_option_definition defs = Marshal.PtrToStructure<retro_core_option_definition>(ins);
+                        if (defs.key == null)
                         {
-                            Core.CoreOptions = new CoreOptions { CoreName = Core.CoreName };
-                            _coreOptionsList.Cores.Add(Core.CoreOptions);
+                            break;
                         }
 
-                        for (int i = 0; i < RETRO_NUM_CORE_OPTION_VALUES_MAX; i++)
+                        string key = CharsToString(defs.key);
+
+                        string coreOption = Core.CoreOptions.Options.Find(x => x.StartsWith(key, StringComparison.OrdinalIgnoreCase));
+                        if (coreOption == null)
                         {
-                            IntPtr ins = new IntPtr(inOptionsIntl.us.ToInt64() + i * Marshal.SizeOf<retro_core_option_definition>());
-                            retro_core_option_definition defs = Marshal.PtrToStructure<retro_core_option_definition>(ins);
-                            if (defs.key == null)
+                            string defaultValue = CharsToString(defs.default_value);
+
+                            List<string> possibleValues = new List<string>();
+                            for (int j = 0; j < defs.values.Length; j++)
                             {
-                                break;
+                                retro_core_option_value val = defs.values[j];
+                                if (val.value != null)
+                                {
+                                    possibleValues.Add(CharsToString(val.value));
+                                }
                             }
 
-                            string key = CharsToString(defs.key);
-
-                            CoreOption coreOption = Core.CoreOptions.Options.Find(x => x.Key.Equals(key, StringComparison.OrdinalIgnoreCase));
-                            if (coreOption == null)
+                            string value = string.Empty;
+                            if (!string.IsNullOrEmpty(defaultValue))
                             {
-                                string description  = CharsToString(defs.desc);
-                                string info         = CharsToString(defs.info);
-                                string defaultValue = CharsToString(defs.default_value);
-
-                                List<string> possibleValues = new List<string>();
-                                for (int j = 0; j < defs.values.Length; j++)
-                                {
-                                    retro_core_option_value val = defs.values[j];
-                                    if (val.value != null)
-                                    {
-                                        possibleValues.Add(CharsToString(val.value));
-                                    }
-                                }
-
-                                string value = string.Empty;
-                                if (!string.IsNullOrEmpty(defaultValue))
-                                {
-                                    value = defaultValue;
-                                }
-                                else if (possibleValues.Count > 0)
-                                {
-                                    value = possibleValues[0];
-                                }
-
-                                coreOption = new CoreOption
-                                {
-                                    Description    = description,
-                                    Value          = value,
-                                    Key            = key,
-                                    PossibleValues = possibleValues.ToArray(),
-                                    DefaultValue   = defaultValue
-                                };
-
-                                Core.CoreOptions.Options.Add(coreOption);
+                                value = defaultValue;
                             }
+                            else if (possibleValues.Count > 0)
+                            {
+                                value = possibleValues[0];
+                            }
+
+                            coreOption = $"{key};{value};{string.Join("|", possibleValues)}";
+
+                            Core.CoreOptions.Options.Add(coreOption);
                         }
+                    }
 
-                        _ = FileSystem.SerializeToJson(_coreOptionsList, CoreOptionsFile);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Exception(e);
-                    }
+                    SaveCoreOptionsFile();
                 }
                 break;
                 //case retro_environment.RETRO_ENVIRONMENT_SET_CORE_OPTIONS_DISPLAY:
                 //    break;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_PREFERRED_HW_RENDER:
-                //    break;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_DISK_CONTROL_INTERFACE_VERSION:
-                //    break;
                 //case retro_environment.RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT_INTERFACE:
+                //    break;
+                //case retro_environment.RETRO_ENVIRONMENT_SHUTDOWN:
                 //    break;
                 default:
                 {

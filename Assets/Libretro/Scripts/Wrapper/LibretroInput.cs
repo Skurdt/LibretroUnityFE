@@ -4,6 +4,97 @@ namespace SK.Libretro
 {
     public partial class Wrapper
     {
+        public const int MAX_USERS = 16;
+
+        private const int FIRST_CUSTOM_BIND = 16;
+        private const int FIRST_LIGHTGUN_BIND = (int)CustomBinds.ANALOG_BIND_LIST_END;
+        private const int FIRST_MISC_CUSTOM_BIND = (int)CustomBinds.LIGHTGUN_BIND_LIST_END;
+        public const int FIRST_META_KEY = (int)CustomBinds.CUSTOM_BIND_LIST_END;
+
+        /* Specific bind IDs. */
+        private enum CustomBinds
+        {
+            // Custom binds that extend the scope of RETRO_DEVICE_JOYPAD
+            // Analogs (RETRO_DEVICE_ANALOG)
+            ANALOG_LEFT_X_PLUS = FIRST_CUSTOM_BIND,
+            ANALOG_LEFT_X_MINUS,
+            ANALOG_LEFT_Y_PLUS,
+            ANALOG_LEFT_Y_MINUS,
+            ANALOG_RIGHT_X_PLUS,
+            ANALOG_RIGHT_X_MINUS,
+            ANALOG_RIGHT_Y_PLUS,
+            ANALOG_RIGHT_Y_MINUS,
+            ANALOG_BIND_LIST_END,
+
+            // Lightgun
+            LIGHTGUN_TRIGGER = FIRST_LIGHTGUN_BIND,
+            LIGHTGUN_RELOAD,
+            LIGHTGUN_AUX_A,
+            LIGHTGUN_AUX_B,
+            LIGHTGUN_AUX_C,
+            LIGHTGUN_START,
+            LIGHTGUN_SELECT,
+            LIGHTGUN_DPAD_UP,
+            LIGHTGUN_DPAD_DOWN,
+            LIGHTGUN_DPAD_LEFT,
+            LIGHTGUN_DPAD_RIGHT,
+            LIGHTGUN_BIND_LIST_END,
+
+            // Turbo
+            TURBO_ENABLE = FIRST_MISC_CUSTOM_BIND,
+
+            CUSTOM_BIND_LIST_END,
+
+            // Command binds. Not related to game input, only usable for port 0.
+            FAST_FORWARD_KEY = FIRST_META_KEY,
+            FAST_FORWARD_HOLD_KEY,
+            SLOWMOTION_KEY,
+            SLOWMOTION_HOLD_KEY,
+            LOAD_STATE_KEY,
+            SAVE_STATE_KEY,
+            FULLSCREEN_TOGGLE_KEY,
+            QUIT_KEY,
+            STATE_SLOT_PLUS,
+            STATE_SLOT_MINUS,
+            REWIND,
+            BSV_RECORD_TOGGLE,
+            PAUSE_TOGGLE,
+            FRAMEADVANCE,
+            RESET,
+            SHADER_NEXT,
+            SHADER_PREV,
+            CHEAT_INDEX_PLUS,
+            CHEAT_INDEX_MINUS,
+            CHEAT_TOGGLE,
+            SCREENSHOT,
+            MUTE,
+            OSK,
+            FPS_TOGGLE,
+            SEND_DEBUG_INFO,
+            NETPLAY_HOST_TOGGLE,
+            NETPLAY_GAME_WATCH,
+            ENABLE_HOTKEY,
+            VOLUME_UP,
+            VOLUME_DOWN,
+            OVERLAY_NEXT,
+            DISK_EJECT_TOGGLE,
+            DISK_NEXT,
+            DISK_PREV,
+            GRAB_MOUSE_TOGGLE,
+            GAME_FOCUS_TOGGLE,
+            UI_COMPANION_TOGGLE,
+
+            MENU_TOGGLE,
+
+            RECORDING_TOGGLE,
+            STREAMING_TOGGLE,
+
+            AI_SERVICE,
+
+            BIND_LIST_END,
+            BIND_LIST_END_NULL
+        };
+
         public void RetroInputPollCallback()
         {
         }

@@ -11,14 +11,7 @@ namespace SK.Libretro
     {
         public string Name { get; private set; }
 
-        public int BaseWidth { get; private set; }
-        public int BaseHeight { get; private set; }
-        public int MaxWidth { get; private set; }
-        public int MaxHeight { get; private set; }
-        public float AspectRatio { get; private set; }
-        public float Fps { get; private set; }
-        public int SampleRate { get; private set; }
-
+        public retro_system_av_info SystemAVInfo;
         public retro_pixel_format PixelFormat;
 
         public bool Running { get; private set; }
@@ -34,13 +27,12 @@ namespace SK.Libretro
             Name = Path.GetFileNameWithoutExtension(gamePath);
 
             retro_game_info gameInfo = GetGameInfo(gamePath);
-            if (core.retro_load_game(ref gameInfo))
+            if (_core.retro_load_game(ref gameInfo))
             {
                 try
                 {
-                    retro_system_av_info avInfo = new retro_system_av_info();
-                    core.retro_get_system_av_info(ref avInfo);
-                    SetSystemAVInfo(avInfo);
+                    SystemAVInfo = new retro_system_av_info();
+                    _core.retro_get_system_av_info(ref SystemAVInfo);
 
                     Running = true;
                     result = true;
@@ -66,27 +58,6 @@ namespace SK.Libretro
             {
                 Marshal.FreeHGlobal(_internalData);
             }
-        }
-
-        public void SetSystemAVInfo(retro_system_av_info systemAVInfo)
-        {
-            SetGeometry(systemAVInfo.geometry);
-            SetTiming(systemAVInfo.timing);
-        }
-
-        public void SetGeometry(retro_game_geometry gameGeometry)
-        {
-            BaseWidth   = Convert.ToInt32(gameGeometry.base_width);
-            BaseHeight  = Convert.ToInt32(gameGeometry.base_height);
-            MaxWidth    = Convert.ToInt32(gameGeometry.max_width);
-            MaxHeight   = Convert.ToInt32(gameGeometry.max_height);
-            AspectRatio = gameGeometry.aspect_ratio;
-        }
-
-        private void SetTiming(retro_system_timing systemTiming)
-        {
-            Fps        = Convert.ToSingle(systemTiming.fps);
-            SampleRate = Convert.ToInt32(systemTiming.sample_rate);
         }
 
         private unsafe retro_game_info GetGameInfo(string gamePath)

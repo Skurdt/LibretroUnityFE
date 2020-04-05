@@ -9,20 +9,10 @@ using static SK.Libretro.Utilities.StringUtils;
 namespace SK.Libretro
 {
     [Serializable]
-    public class CoreOption
-    {
-        public string Description;
-        public string Value;
-        public string Key;
-        public string[] PossibleValues;
-        public string DefaultValue;
-    }
-
-    [Serializable]
     public class CoreOptions
     {
         public string CoreName = string.Empty;
-        public List<CoreOption> Options = new List<CoreOption>();
+        public List<string> Options = new List<string>();
     }
 
     [Serializable]
@@ -68,11 +58,12 @@ namespace SK.Libretro
         public string CoreName { get; private set; }
         public string CoreVersion { get; private set; }
         public string[] ValidExtensions { get; private set; }
-        public bool RequiresFullPath { get; private set; }
-        public bool BlockExtraction { get; private set; }
+        public bool NeedFullPath { get; private set; }
+        public bool BlockExtract { get; private set; }
 
         public int Rotation;
         public int PerformanceLevel;
+        public bool SupportNoGame;
 
         public string[,] ButtonDescriptions = new string[MAX_USERS, FIRST_META_KEY];
         public bool HasInputDescriptors;
@@ -111,8 +102,8 @@ namespace SK.Libretro
                         CoreName         = CharsToString(systemInfo.library_name);
                         CoreVersion      = CharsToString(systemInfo.library_version);
                         ValidExtensions  = CharsToString(systemInfo.valid_extensions).Split('|');
-                        RequiresFullPath = systemInfo.need_fullpath;
-                        BlockExtraction  = systemInfo.block_extract;
+                        NeedFullPath = systemInfo.need_fullpath;
+                        BlockExtract  = systemInfo.block_extract;
 
                         retro_set_environment(_environmentCallback);
                         retro_set_video_refresh(_videoRefreshCallback);

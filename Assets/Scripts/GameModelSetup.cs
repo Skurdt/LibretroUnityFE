@@ -95,7 +95,7 @@ namespace SK
                     Wrapper.AudioProcessor = new Libretro.NAudioAudioProcessor();
                 }
 
-                Wrapper.AudioProcessor.Init(Wrapper.Game.SampleRate);
+                Wrapper.AudioProcessor.Init((int)Wrapper.Game.SystemAVInfo.timing.sample_rate);
             }
         }
 
@@ -163,7 +163,7 @@ namespace SK
                                     _rendererComponent.material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
                                     _rendererComponent.material.SetColor("_EmissionColor", Color.white);
 
-                                    InvokeRepeating("LibretroRunLoop", 0f, 1f / Wrapper.Game.Fps);
+                                    InvokeRepeating("LibretroRunLoop", 0f, 1f / (float)Wrapper.Game.SystemAVInfo.timing.fps);
                                 }
                                 else
                                 {

@@ -1,5 +1,6 @@
 ﻿using SK.Libretro.Utilities;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace SK.Libretro
@@ -24,12 +25,7 @@ namespace SK.Libretro
 
         public unsafe bool StartCore(string corePath)
         {
-            _coreOptionsList = FileSystem.DeserializeFromJson<CoreOptionsList>(CoreOptionsFile);
-            if (_coreOptionsList == null)
-            {
-                _coreOptionsList = new CoreOptionsList();
-            }
-
+            LoadCoreOptionsFile();
             return Core.Start(this, corePath);
         }
 
@@ -82,6 +78,25 @@ namespace SK.Libretro
             }
 
             return null;
+        }
+
+        private void LoadCoreOptionsFile()
+        {
+            _coreOptionsList = FileSystem.DeserializeFromJson<CoreOptionsList>(CoreOptionsFile);
+            if (_coreOptionsList == null)
+            {
+                _coreOptionsList = new CoreOptionsList();
+            }
+        }
+
+        private void SaveCoreOptionsFile()
+        {
+            _coreOptionsList.Cores = _coreOptionsList.Cores.OrderBy(x => x.CoreName).ToList();
+            for (int i = 0; i < _coreOptionsList.Cores.Count; i++)
+            {
+                _coreOptionsList.Cores[i].Options.Sort();
+            }
+            _ = FileSystem.SerializeToJson(_coreOptionsList, CoreOptionsFile);
         }
     }
 }
