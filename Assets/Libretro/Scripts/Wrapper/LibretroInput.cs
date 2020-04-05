@@ -12,7 +12,7 @@ namespace SK.Libretro
         {
             short result = 0;
 
-            if (InputProcessor != null && port < 2)
+            if (InputProcessor != null)
             {
                 switch (device)
                 {

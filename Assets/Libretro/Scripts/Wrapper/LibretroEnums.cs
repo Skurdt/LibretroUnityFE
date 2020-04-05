@@ -250,7 +250,7 @@
             RETRO_HW_CONTEXT_DIRECT3D         = 7
         }
 
-        private enum retro_pixel_format
+        public enum retro_pixel_format
         {
             RETRO_PIXEL_FORMAT_0RGB1555 = 0,
             RETRO_PIXEL_FORMAT_XRGB8888 = 1,

@@ -1,4 +1,4 @@
-﻿using SK.Utilities;
+﻿using SK.Libretro.Utilities;
 using System;
 
 namespace SK.Libretro

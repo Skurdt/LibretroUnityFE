@@ -2,7 +2,7 @@
 using System.Reflection;
 using UnityEngine;
 
-namespace SK.Utilities
+namespace SK.Libretro.Utilities
 {
     public static class Log
     {

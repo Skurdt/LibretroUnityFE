@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace SK.Utilities
+namespace SK.Libretro.Utilities
 {
     public sealed class DllModuleWindows : DllModule
     {
@@ -41,30 +41,24 @@ namespace SK.Utilities
             return result;
         }
 
-        public override bool GetFunction<T>(string functionName, out T functionPtr)
+        public override T GetFunction<T>(string functionName)
         {
-            bool result = false;
-            functionPtr = null;
-
             if (_nativeHandle != IntPtr.Zero)
             {
                 IntPtr procAddress = Win32GetProcAddress(_nativeHandle, functionName);
                 if (procAddress != IntPtr.Zero)
                 {
-                    functionPtr = Marshal.GetDelegateForFunctionPointer<T>(procAddress);
-                    result = true;
+                    return Marshal.GetDelegateForFunctionPointer<T>(procAddress);
                 }
                 else
                 {
-                    Log.Error($"Function '{functionName}' not found in library '{Name}'.");
+                    throw new Exception($"Function '{functionName}' not found in library '{Name}'.");
                 }
             }
             else
             {
-                Log.Error($"Library not loaded, cannot get function '{functionName}'");
+                throw new Exception($"Library not loaded, cannot get function '{functionName}'");
             }
-
-            return result;
         }
 
         public override void Free()

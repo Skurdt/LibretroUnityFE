@@ -1,134 +1,112 @@
-﻿//using SK.Utilities;
-//using System.IO;
-//using UnityEditor;
-//using UnityEngine;
+﻿using System.IO;
+using UnityEditor;
+using UnityEngine;
+using static SK.Libretro.Utilities.FileSystem;
 
-//namespace SK
-//{
-//    [CustomEditor(typeof(GameModelSetup))]
-//    public class GameModelSetupInspector : Editor
-//    {
-//        public GameModelSetup GameModelSetupScript { get; private set; }
+namespace SK
+{
+    [CustomEditor(typeof(GameModelSetup))]
+    public class GameModelSetupInspector : Editor
+    {
+        public GameModelSetup ModelSetupScript { get; private set; }
 
-//        private static readonly string _gameConfigFile = $"{Application.streamingAssetsPath}/Game.json";
+        private void OnEnable()
+        {
+            ModelSetupScript = target as GameModelSetup;
+        }
 
-//        private void OnEnable()
-//        {
-//            GameModelSetupScript = target as GameModelSetup;
-//            LoadConfigFromDisk();
-//        }
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
 
-//        public override void OnInspectorGUI()
-//        {
-//            base.OnInspectorGUI();
+            if (ModelSetupScript.Game != null)
+            {
+                GUILayout.Space(8f);
 
-//            GUILayout.Space(8f);
+                _ = EditorGUILayout.BeginHorizontal();
+                if (GUILayout.Button("Core", GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
+                {
+                    ShowSelectCoreWindow();
+                }
+                ModelSetupScript.Game.Core = EditorGUILayout.TextField(ModelSetupScript.Game.Core);
+                EditorGUILayout.EndHorizontal();
 
-//            if (GUILayout.Button("Load Existing Configuration", GUILayout.Height(EditorGUIUtility.singleLineHeight)))
-//            {
-//                LoadConfigFromDisk();
-//            }
+                _ = EditorGUILayout.BeginHorizontal();
+                if (GUILayout.Button("Directory", GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
+                {
+                    ShowSelectRomDirectoryDialog();
+                }
+                ModelSetupScript.Game.Directory = EditorGUILayout.TextField(ModelSetupScript.Game.Directory);
+                EditorGUILayout.EndHorizontal();
 
-//            GUILayout.Space(8f);
+                _ = EditorGUILayout.BeginHorizontal();
+                if (GUILayout.Button("Rom", GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
+                {
+                    ShowSelectRomDialog();
+                }
+                ModelSetupScript.Game.Name = EditorGUILayout.TextField(ModelSetupScript.Game.Name);
+                EditorGUILayout.EndHorizontal();
 
-//            _ = EditorGUILayout.BeginHorizontal();
-//            if (GUILayout.Button("Core", GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
-//            {
-//                ShowSelectCoreWindow();
-//            }
-//            GameModelSetupScript.Game.Core = EditorGUILayout.TextField(GameModelSetupScript.Game.Core);
-//            EditorGUILayout.EndHorizontal();
+                GUILayout.Space(8f);
 
-//            _ = EditorGUILayout.BeginHorizontal();
-//            if (GUILayout.Button("Directory", GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
-//            {
-//                ShowSelectRomDirectoryDialog();
-//            }
-//            GameModelSetupScript.Game.Directory = EditorGUILayout.TextField(GameModelSetupScript.Game.Directory);
-//            EditorGUILayout.EndHorizontal();
+                if (!string.IsNullOrEmpty(ModelSetupScript.Game.Core))
+                {
+                    _ = EditorGUILayout.BeginHorizontal();
+                    if (!EditorApplication.isPlaying)
+                    {
+                        if (GUILayout.Button("Start", GUILayout.Height(EditorGUIUtility.singleLineHeight)))
+                        {
+                            _ = EditorApplication.ExecuteMenuItem("Edit/Play");
+                        }
+                    }
+                    EditorGUILayout.EndHorizontal();
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox("No core selected!", MessageType.Error);
+                }
+            }
+        }
 
-//            _ = EditorGUILayout.BeginHorizontal();
-//            if (GUILayout.Button("Rom", GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
-//            {
-//                ShowSelectRomDialog();
-//            }
-//            GameModelSetupScript.Game.Name = EditorGUILayout.TextField(GameModelSetupScript.Game.Name);
-//            EditorGUILayout.EndHorizontal();
+        private void ShowSelectCoreWindow()
+        {
+            string startingDirectory = GetAbsolutePath(Libretro.Wrapper.CoresDirectory);
+            string filePath = EditorUtility.OpenFilePanel("Select core", startingDirectory, "dll");
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                ModelSetupScript.Game.Core = Path.GetFileNameWithoutExtension(filePath).Replace("_libretro", string.Empty);
+            }
+        }
 
-//            GUILayout.Space(8f);
+        private void ShowSelectRomDirectoryDialog()
+        {
+            string startingDirectory = string.Empty;
+            if (!string.IsNullOrEmpty(ModelSetupScript.Game.Directory))
+            {
+                startingDirectory = GetAbsolutePath(ModelSetupScript.Game.Directory);
+            }
 
-//            if (!string.IsNullOrEmpty(GameModelSetupScript.Game.Core))
-//            {
-//                _ = EditorGUILayout.BeginHorizontal();
-//                if (GUILayout.Button("Save", GUILayout.Height(EditorGUIUtility.singleLineHeight)))
-//                {
-//                    SaveConfigToDisk();
-//                }
-//                if (!EditorApplication.isPlaying)
-//                {
-//                    if (GUILayout.Button("Start", GUILayout.Height(EditorGUIUtility.singleLineHeight)))
-//                    {
-//                        SaveConfigToDisk();
-//                        _ = EditorApplication.ExecuteMenuItem("Edit/Play");
-//                    }
-//                }
-//                EditorGUILayout.EndHorizontal();
-//            }
-//            else
-//            {
-//                EditorGUILayout.HelpBox("No core selected!", MessageType.Error);
-//            }
-//        }
+            string directory = EditorUtility.OpenFolderPanel("Select rom directory", startingDirectory, startingDirectory);
+            if (!string.IsNullOrEmpty(directory))
+            {
+                ModelSetupScript.Game.Directory = GetRelativePath(directory);
+            }
+        }
 
-//        private void SaveConfigToDisk()
-//        {
-//            _ = FileSystem.SerializeToJson(GameModelSetupScript.Game, _gameConfigFile);
-//        }
+        private void ShowSelectRomDialog()
+        {
+            string startingDirectory = string.Empty;
+            if (!string.IsNullOrEmpty(ModelSetupScript.Game.Directory))
+            {
+                startingDirectory = GetAbsolutePath(ModelSetupScript.Game.Directory);
+            }
 
-//        private void LoadConfigFromDisk()
-//        {
-//            GameModelSetupScript.Game = FileSystem.DeserializeFromJson<Game>(_gameConfigFile);
-//        }
-
-//        private void ShowSelectCoreWindow()
-//        {
-//            string startingDirectory = FileSystem.GetAbsolutePath(Libretro.Wrapper.CoresDirectory);
-//            string filePath = EditorUtility.OpenFilePanel("Select core", startingDirectory, "dll");
-//            if (!string.IsNullOrEmpty(filePath))
-//            {
-//                GameModelSetupScript.Game.Core = Path.GetFileNameWithoutExtension(filePath).Replace("_libretro", string.Empty);
-//            }
-//        }
-
-//        private void ShowSelectRomDirectoryDialog()
-//        {
-//            string startingDirectory = string.Empty;
-//            if (!string.IsNullOrEmpty(GameModelSetupScript.Game.Directory))
-//            {
-//                startingDirectory = FileSystem.GetAbsolutePath(GameModelSetupScript.Game.Directory);
-//            }
-
-//            string directory = EditorUtility.OpenFolderPanel("Select rom directory", startingDirectory, startingDirectory);
-//            if (!string.IsNullOrEmpty(directory))
-//            {
-//                GameModelSetupScript.Game.Directory = FileSystem.GetRelativePath(directory);
-//            }
-//        }
-
-//        private void ShowSelectRomDialog()
-//        {
-//            string startingDirectory = string.Empty;
-//            if (!string.IsNullOrEmpty(GameModelSetupScript.Game.Directory))
-//            {
-//                startingDirectory = FileSystem.GetAbsolutePath(GameModelSetupScript.Game.Directory);
-//            }
-
-//            string filePath = EditorUtility.OpenFilePanel("Select rom", startingDirectory, string.Empty);
-//            if (!string.IsNullOrEmpty(filePath))
-//            {
-//                GameModelSetupScript.Game.Directory = FileSystem.GetRelativePath(Path.GetDirectoryName(filePath));
-//                GameModelSetupScript.Game.Name = Path.GetFileNameWithoutExtension(filePath);
-//            }
-//        }
-//    }
-//}
+            string filePath = EditorUtility.OpenFilePanel("Select rom", startingDirectory, string.Empty);
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                ModelSetupScript.Game.Directory = GetRelativePath(Path.GetDirectoryName(filePath));
+                ModelSetupScript.Game.Name = Path.GetFileNameWithoutExtension(filePath);
+            }
+        }
+    }
+}

@@ -1,10 +1,12 @@
 ﻿using NAudio.Wave;
 using System;
 
-namespace SK
+namespace SK.Libretro
 {
-    public class AudioProcessorExternal : Libretro.IAudioProcessor
+    public class NAudioAudioProcessor : IAudioProcessor
     {
+        private const int AUDIO_BUFFER_SIZE = 65536;
+
         private WaveOutEvent _audioDevice;
         private WaveFormat _audioFormat;
         private BufferedWaveProvider _bufferedWaveProvider;
@@ -23,7 +25,7 @@ namespace SK
             _bufferedWaveProvider = new BufferedWaveProvider(_audioFormat)
             {
                 DiscardOnBufferOverflow = true,
-                BufferLength            = sampleRate * 2
+                BufferLength            = AUDIO_BUFFER_SIZE
             };
 
             _audioDevice.Init(_bufferedWaveProvider);

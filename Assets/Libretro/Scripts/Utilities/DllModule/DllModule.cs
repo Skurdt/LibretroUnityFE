@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SK.Utilities
+namespace SK.Libretro.Utilities
 {
     public abstract class DllModule
     {
@@ -9,7 +9,7 @@ namespace SK.Utilities
         protected IntPtr _nativeHandle = IntPtr.Zero;
 
         public abstract bool Load(string path);
-        public abstract bool GetFunction<T>(string functionName, out T functionPtr) where T : Delegate;
+        public abstract T GetFunction<T>(string functionName) where T : Delegate;
         public abstract void Free();
     }
 }

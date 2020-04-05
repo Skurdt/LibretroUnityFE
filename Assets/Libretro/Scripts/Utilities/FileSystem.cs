@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace SK.Utilities
+namespace SK.Libretro.Utilities
 {
     public static class FileSystem
     {

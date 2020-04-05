@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace SK.Utilities
+namespace SK.Libretro.Utilities
 {
     public unsafe static class StringUtils
     {

@@ -1,25 +1,23 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace SK
+namespace SK.Libretro
 {
     [RequireComponent(typeof(AudioSource))]
-    public class AudioProcessorUnity : MonoBehaviour, Libretro.IAudioProcessor
+    public class UnityAudioProcessorComponent : MonoBehaviour, IAudioProcessor
     {
         private const int AUDIO_BUFFER_SIZE = 65536;
 
         private AudioSource _audioSource;
-        private List<float> _audioBuffer;
+        private readonly List<float> _audioBuffer = new List<float>(AUDIO_BUFFER_SIZE);
 
         private void OnAudioFilterRead(float[] data, int channels)
         {
-            if (_audioBuffer == null || _audioBuffer.Count < data.Length)
+            if (_audioBuffer != null && _audioBuffer.Count >= data.Length)
             {
-                return;
+                _audioBuffer.CopyTo(0, data, 0, data.Length);
+                _audioBuffer.RemoveRange(0, data.Length);
             }
-
-            _audioBuffer.CopyTo(0, data, 0, data.Length);
-            _audioBuffer.RemoveRange(0, data.Length);
         }
 
         public void Init(int sampleRate)
@@ -31,7 +29,6 @@ namespace SK
             _ = AudioSettings.Reset(audioConfig);
 
             _audioSource = GetComponent<AudioSource>();
-            _audioBuffer = new List<float>(AUDIO_BUFFER_SIZE);
             _audioSource.clip = AudioClip.Create("LibretroAudioClip", AUDIO_BUFFER_SIZE, 2, sampleRate, false);
             _audioSource.Play();
         }
@@ -42,12 +39,12 @@ namespace SK
             {
                 _audioSource.Stop();
             }
-            _audioBuffer?.Clear();
+            _audioBuffer.Clear();
         }
 
         public void ProcessSamples(float[] samples)
         {
-            _audioBuffer?.AddRange(samples);
+            _audioBuffer.AddRange(samples);
         }
     }
 }

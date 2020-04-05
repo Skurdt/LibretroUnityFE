@@ -1,4 +1,4 @@
-﻿using SK.Utilities;
+﻿using SK.Libretro.Utilities;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -7,64 +7,110 @@ using UnityEngine.InputSystem;
 
 namespace SK
 {
-    [Serializable]
-    public class Game
-    {
-        public string Core;
-        public string Directory;
-        public string Name;
-    }
-
     [SelectionBase]
     public class GameModelSetup : MonoBehaviour
     {
-        [SerializeField] private Game _game;
+        public Game Game;
 
         public Libretro.Wrapper Wrapper { get; private set; } = new Libretro.Wrapper();
 
         private Renderer _rendererComponent = null;
-        private Material _originalMaterial = null;
+        private Material _originalMaterial  = null;
 
         private void OnEnable()
         {
-            if (!string.IsNullOrEmpty(_game.Name))
+            if (Game != null)
             {
-                if (transform.childCount > 0)
+                if (!string.IsNullOrEmpty(Game.Name))
                 {
-                    Transform modelTransform = transform.GetChild(0);
-                    if (modelTransform != null && modelTransform.childCount > 1)
+                    if (transform.childCount > 0)
                     {
-                        Transform screenTransform = modelTransform.GetChild(1);
-                        if (screenTransform.TryGetComponent(out _rendererComponent))
+                        Transform modelTransform = transform.GetChild(0);
+                        if (modelTransform != null && modelTransform.childCount > 1)
                         {
-                            _originalMaterial = _rendererComponent.sharedMaterial;
-
-                            Wrapper.OnCoreStartedEvent += CoreStartedCallback;
-                            Wrapper.OnCoreStoppedEvent += CoreStoppedCallback;
-                            Wrapper.OnGameStartedEvent += GameStartedCallback;
-                            Wrapper.OnGameStoppedEvent += GameStoppedCallback;
-                            StartGame();
+                            Transform screenTransform = modelTransform.GetChild(1);
+                            if (screenTransform.TryGetComponent(out _rendererComponent))
+                            {
+                                StartGame();
+                            }
+                            else
+                            {
+                                Log.Error($"Screen node '{screenTransform.name}' is missing a 'Renderer' component.", "GameModelSetup.OnEnable");
+                            }
+                        }
+                        else
+                        {
+                            Log.Error($"Screen node expected on transform '{modelTransform.name}' as second child.", "GameModelSetup.OnEnable");
                         }
                     }
+                    else
+                    {
+                        Log.Error($"Model node expected on transform '{transform.name}' as first child.", "GameModelSetup.OnEnable");
+                    }
                 }
+                else
+                {
+                    Log.Error("Game name is null or empty.", "GameModelSetup.OnEnable");
+                }
+            }
+            else
+            {
+                Log.Error("Game is null.", "GameModelSetup.OnEnable");
             }
         }
 
         private void OnDisable()
         {
-            if (Wrapper != null)
+            if (_rendererComponent != null && _rendererComponent.material != null && _originalMaterial != null)
             {
-                Wrapper.OnCoreStartedEvent -= CoreStartedCallback;
-                Wrapper.OnCoreStoppedEvent -= CoreStoppedCallback;
-                Wrapper.OnGameStartedEvent -= GameStartedCallback;
-                Wrapper.OnGameStoppedEvent -= GameStoppedCallback;
-                StopGame();
+                _rendererComponent.material = _originalMaterial;
             }
+            StopGame();
+        }
+
+        public void ActivateGraphics()
+        {
+            if (Wrapper.GraphicsProcessor == null)
+            {
+                Wrapper.GraphicsProcessor = new Libretro.UnityGraphicsProcessor();
+            }
+        }
+
+        public void DeactivateGraphics()
+        {
+            Wrapper.GraphicsProcessor = null;
+        }
+
+        public void ActivateAudio()
+        {
+            if (Wrapper.AudioProcessor == null)
+            {
+                Libretro.UnityAudioProcessorComponent unityAudio = GetComponentInChildren<Libretro.UnityAudioProcessorComponent>();
+                if (unityAudio != null)
+                {
+                    Wrapper.AudioProcessor = unityAudio;
+                }
+                else
+                {
+                    Wrapper.AudioProcessor = new Libretro.NAudioAudioProcessor();
+                }
+
+                Wrapper.AudioProcessor.Init(Wrapper.Game.SampleRate);
+            }
+        }
+
+        public void DeactivateAudio()
+        {
+            Wrapper.AudioProcessor.DeInit();
+            Wrapper.AudioProcessor = null;
         }
 
         public void ActivateInput()
         {
-            Wrapper.InputProcessor = FindObjectOfType<PlayerInputManager>().GetComponent<Libretro.IInputProcessor>();
+            if (Wrapper.InputProcessor == null)
+            {
+                Wrapper.InputProcessor = FindObjectOfType<PlayerInputManager>().GetComponent<Libretro.IInputProcessor>();
+            }
         }
 
         public void DeactivateInput()
@@ -74,11 +120,9 @@ namespace SK
 
         public void StartGame()
         {
-            if (!Wrapper.Game.Running)
+            if (Wrapper != null && Wrapper.Game != null && !Wrapper.Game.Running)
             {
-                Wrapper.AudioProcessor = GetComponentInChildren<Libretro.IAudioProcessor>() ?? new AudioProcessorExternal();
-
-                string corePath = FileSystem.GetAbsolutePath($"{Libretro.Wrapper.WrapperDirectory}/cores/{_game.Core}_libretro.dll");
+                string corePath = FileSystem.GetAbsolutePath($"{Libretro.Wrapper.WrapperDirectory}/cores/{Game.Core}_libretro.dll");
                 if (FileSystem.FileExists(corePath))
                 {
                     string instancePath = FileSystem.GetAbsolutePath($"{Libretro.Wrapper.TempDirectory}/{Path.GetFileName(corePath).Replace("_libretro", $"{Guid.NewGuid()}")}");
@@ -86,13 +130,13 @@ namespace SK
 
                     if (Wrapper.StartCore(instancePath))
                     {
-                        if (!string.IsNullOrEmpty(_game.Name))
+                        if (!string.IsNullOrEmpty(Game.Name))
                         {
-                            string gamePath = Wrapper.GetGamePath(_game.Directory, _game.Name);
+                            string gamePath = Wrapper.GetGamePath(Game.Directory, Game.Name);
                             if (gamePath == null)
                             {
                                 // Try Zip archive
-                                string archivePath = FileSystem.GetAbsolutePath($"{_game.Directory}/{_game.Name}.zip");
+                                string archivePath = FileSystem.GetAbsolutePath($"{Game.Directory}/{Game.Name}.zip");
                                 if (File.Exists(archivePath))
                                 {
                                     string extractPath = FileSystem.GetAbsolutePath($"{Libretro.Wrapper.TempDirectory}/extracted");
@@ -101,7 +145,7 @@ namespace SK
                                         Directory.Delete(extractPath, true);
                                     }
                                     System.IO.Compression.ZipFile.ExtractToDirectory(archivePath, extractPath);
-                                    gamePath = Wrapper.GetGamePath(extractPath, _game.Name);
+                                    gamePath = Wrapper.GetGamePath(extractPath, Game.Name);
                                 }
                             }
 
@@ -109,31 +153,41 @@ namespace SK
                             {
                                 if (Wrapper.StartGame(gamePath))
                                 {
+                                    ActivateGraphics();
+                                    ActivateAudio();
+                                    ActivateInput();
+
+                                    _originalMaterial = _rendererComponent.sharedMaterial;
+                                    _rendererComponent.material.mainTextureScale = new Vector2(1f, -1f);
+                                    _rendererComponent.material.EnableKeyword("_EMISSION");
+                                    _rendererComponent.material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+                                    _rendererComponent.material.SetColor("_EmissionColor", Color.white);
+
                                     InvokeRepeating("LibretroRunLoop", 0f, 1f / Wrapper.Game.Fps);
                                 }
                                 else
                                 {
-                                    Log.Error($"Game '{_game.Name}' failed to start on core '{_game.Core}'.", "GameModelSetup.StartGame");
+                                    Log.Error($"Game '{Game.Name}' failed to start on core '{Game.Core}'.", "GameModelSetup.StartGame");
                                 }
                             }
                             else
                             {
-                                Log.Error($"Game '{_game.Name}' at path '{_game.Directory}' not found.", "GameModelSetup.StartGame");
+                                Log.Error($"Game '{Game.Name}' at path '{Game.Directory}' not found.", "GameModelSetup.StartGame");
                             }
                         }
                         else
                         {
-                            Log.Warning($"Game not set, running '{_game.Core}' core only.", "GameModelSetup.StartGame");
+                            Log.Warning($"Game not set, running '{Game.Core}' core only.", "GameModelSetup.StartGame");
                         }
                     }
                     else
                     {
-                        Log.Warning($"Failed to start core '{_game.Core}'.", "GameModelSetup.StartGame");
+                        Log.Warning($"Failed to start core '{Game.Core}'.", "GameModelSetup.StartGame");
                     }
                 }
                 else
                 {
-                    Log.Error($"Core '{_game.Core}' at path '{corePath}' not found.", "GameModelSetup.StartGame");
+                    Log.Error($"Core '{Game.Core}' at path '{corePath}' not found.", "GameModelSetup.StartGame");
                 }
             }
         }
@@ -148,32 +202,15 @@ namespace SK
         private void LibretroRunLoop()
         {
             Wrapper.Update();
-            if (Wrapper.Texture != null)
+
+            if (Wrapper.GraphicsProcessor != null && Wrapper.GraphicsProcessor is Libretro.UnityGraphicsProcessor unityGraphics)
             {
-                _rendererComponent.material.mainTexture = Wrapper.Texture;
-                _rendererComponent.material.SetTexture("_EmissionMap", Wrapper.Texture);
+                if (unityGraphics.Texture != null)
+                {
+                    _rendererComponent.material.mainTexture = unityGraphics.Texture;
+                    _rendererComponent.material.SetTexture("_EmissionMap", unityGraphics.Texture);
+                }
             }
-        }
-
-        private void CoreStartedCallback(Libretro.LibretroCore core)
-        {
-        }
-
-        private void CoreStoppedCallback(Libretro.LibretroCore core)
-        {
-        }
-
-        private void GameStartedCallback(Libretro.LibretroGame game)
-        {
-            _rendererComponent.material.mainTextureScale = new Vector2(1f, -1f);
-            _rendererComponent.material.EnableKeyword("_EMISSION");
-            _rendererComponent.material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
-            _rendererComponent.material.SetColor("_EmissionColor", Color.white);
-        }
-
-        private void GameStoppedCallback(Libretro.LibretroGame game)
-        {
-            _rendererComponent.material = _originalMaterial;
         }
     }
 }

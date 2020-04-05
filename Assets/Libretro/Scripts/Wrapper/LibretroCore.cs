@@ -1,10 +1,10 @@
-﻿using SK.Utilities;
+﻿using SK.Libretro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using static SK.Libretro.Wrapper;
-using static SK.Utilities.StringUtils;
+using static SK.Libretro.Utilities.StringUtils;
 
 namespace SK.Libretro
 {
@@ -165,36 +165,44 @@ namespace SK.Libretro
 
         private bool GetCoreFunctions()
         {
-            List<bool> shouldBeTrue = new List<bool>
-            {
-                _dll.GetFunction("retro_set_environment", out retro_set_environment),
-                _dll.GetFunction("retro_set_video_refresh", out retro_set_video_refresh),
-                _dll.GetFunction("retro_set_audio_sample", out retro_set_audio_sample),
-                _dll.GetFunction("retro_set_audio_sample_batch", out retro_set_audio_sample_batch),
-                _dll.GetFunction("retro_set_input_poll", out retro_set_input_poll),
-                _dll.GetFunction("retro_set_input_state", out retro_set_input_state),
-                _dll.GetFunction("retro_init", out retro_init),
-                _dll.GetFunction("retro_deinit", out retro_deinit),
-                _dll.GetFunction("retro_api_version", out retro_api_version),
-                _dll.GetFunction("retro_get_system_info", out retro_get_system_info),
-                _dll.GetFunction("retro_get_system_av_info", out retro_get_system_av_info),
-                _dll.GetFunction("retro_set_controller_port_device", out retro_set_controller_port_device),
-                _dll.GetFunction("retro_reset", out retro_reset),
-                _dll.GetFunction("retro_run", out retro_run),
-                _dll.GetFunction("retro_serialize_size", out retro_serialize_size),
-                _dll.GetFunction("retro_serialize", out retro_serialize),
-                _dll.GetFunction("retro_unserialize", out retro_unserialize),
-                _dll.GetFunction("retro_cheat_reset", out retro_cheat_reset),
-                _dll.GetFunction("retro_cheat_set", out retro_cheat_set),
-                _dll.GetFunction("retro_load_game", out retro_load_game),
-                _dll.GetFunction("retro_load_game_special", out retro_load_game_special),
-                _dll.GetFunction("retro_unload_game", out retro_unload_game),
-                _dll.GetFunction("retro_get_region", out retro_get_region),
-                _dll.GetFunction("retro_get_memory_data", out retro_get_memory_data),
-                _dll.GetFunction("retro_get_memory_size", out retro_get_memory_size)
-            };
+            bool result = false;
 
-            return !shouldBeTrue.Contains(false);
+            try
+            {
+                retro_set_environment            = _dll.GetFunction<retro_set_environment_t>("retro_set_environment");
+                retro_set_video_refresh          = _dll.GetFunction<retro_set_video_refresh_t>("retro_set_video_refresh");
+                retro_set_audio_sample           = _dll.GetFunction<retro_set_audio_sample_t>("retro_set_audio_sample");
+                retro_set_audio_sample_batch     = _dll.GetFunction<retro_set_audio_sample_batch_t>("retro_set_audio_sample_batch");
+                retro_set_input_poll             = _dll.GetFunction<retro_set_input_poll_t>("retro_set_input_poll");
+                retro_set_input_state            = _dll.GetFunction<retro_set_input_state_t>("retro_set_input_state");
+                retro_init                       = _dll.GetFunction<retro_init_t>("retro_init");
+                retro_deinit                     = _dll.GetFunction<retro_deinit_t>("retro_deinit");
+                retro_api_version                = _dll.GetFunction<retro_api_version_t>("retro_api_version");
+                retro_get_system_info            = _dll.GetFunction<retro_get_system_info_t>("retro_get_system_info");
+                retro_get_system_av_info         = _dll.GetFunction<retro_get_system_av_info_t>("retro_get_system_av_info");
+                retro_set_controller_port_device = _dll.GetFunction<retro_set_controller_port_device_t>("retro_set_controller_port_device");
+                retro_reset                      = _dll.GetFunction<retro_reset_t>("retro_reset");
+                retro_run                        = _dll.GetFunction<retro_run_t>("retro_run");
+                retro_serialize_size             = _dll.GetFunction<retro_serialize_size_t>("retro_serialize_size");
+                retro_serialize                  = _dll.GetFunction<retro_serialize_t>("retro_serialize");
+                retro_unserialize                = _dll.GetFunction<retro_unserialize_t>("retro_unserialize");
+                retro_cheat_reset                = _dll.GetFunction<retro_cheat_reset_t>("retro_cheat_reset");
+                retro_cheat_set                  = _dll.GetFunction<retro_cheat_set_t>("retro_cheat_set");
+                retro_load_game                  = _dll.GetFunction<retro_load_game_t>("retro_load_game");
+                retro_load_game_special          = _dll.GetFunction<retro_load_game_special_t>("retro_load_game_special");
+                retro_unload_game                = _dll.GetFunction<retro_unload_game_t>("retro_unload_game");
+                retro_get_region                 = _dll.GetFunction<retro_get_region_t>("retro_get_region");
+                retro_get_memory_data            = _dll.GetFunction<retro_get_memory_data_t>("retro_get_memory_data");
+                retro_get_memory_size            = _dll.GetFunction<retro_get_memory_size_t>("retro_get_memory_size");
+
+                result = true;
+            }
+            catch (Exception e)
+            {
+                Log.Exception(e, "Libretro.LibretroCore.GetCoreFunctions");
+            }
+
+            return result;
         }
 
         private unsafe void SetCallbacks(Wrapper wrapper)

@@ -1,9 +1,9 @@
-﻿using SK.Utilities;
+﻿using SK.Libretro.Utilities;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using static SK.Libretro.Wrapper;
-using static SK.Utilities.StringUtils;
+using static SK.Libretro.Utilities.StringUtils;
 
 namespace SK.Libretro
 {
@@ -18,6 +18,8 @@ namespace SK.Libretro
         public float AspectRatio { get; private set; }
         public float Fps { get; private set; }
         public int SampleRate { get; private set; }
+
+        public retro_pixel_format PixelFormat;
 
         public bool Running { get; private set; }
 

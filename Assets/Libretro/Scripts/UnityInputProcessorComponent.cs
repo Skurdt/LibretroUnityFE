@@ -1,13 +1,13 @@
-﻿using SK.Utilities;
+﻿using SK.Libretro.Utilities;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static SK.Libretro.Wrapper;
 using static SK.Libretro.Wrapper.retro_device_id_joypad;
 
-namespace SK
+namespace SK.Libretro
 {
     [RequireComponent(typeof(PlayerInput))]
-    public class PlayerInputProcessor : MonoBehaviour
+    public class UnityInputProcessorComponent : MonoBehaviour
     {
         private const int NUM_MOUSE_BUTTONS = 5;
 

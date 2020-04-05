@@ -706,6 +706,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3af8a54870b61e44caadf04a36209e21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _gameInputMaxDistance: 2.4
 --- !u!1 &1205374636
 GameObject:
   m_ObjectHideFlags: 0
@@ -904,7 +905,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1424017727}
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -924,10 +925,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9380c0e68ae345341a2d7fc4f50cee6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _game:
-    Core: blastem
-    Directory: W:/complete/roms/no-intro-rom-sets/Sega - Mega Drive - Genesis
-    Name: 3 Ninjas Kick Back (USA)
+  Game: {fileID: 11400000, guid: fdbdcc0b2eb5b7a439b8a5bfc4b0f57b, type: 2}
 --- !u!54 &1424017730
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -985,7 +983,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1589050226}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c84facb343e90f43b93fa4dd83e5034, type: 3}
+  m_Script: {fileID: 11500000, guid: 5d648eee90dd93d40906fc8abb22f1af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!82 &1589050229
@@ -1099,7 +1097,7 @@ PrefabInstance:
     - target: {fileID: 7795464710566199421, guid: 9fc10383958895342a5df66b79626ef4,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.34
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7795464710566199421, guid: 9fc10383958895342a5df66b79626ef4,
         type: 3}
@@ -1114,22 +1112,22 @@ PrefabInstance:
     - target: {fileID: 7795464710566199421, guid: 9fc10383958895342a5df66b79626ef4,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7795464710566199421, guid: 9fc10383958895342a5df66b79626ef4,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7795464710566199421, guid: 9fc10383958895342a5df66b79626ef4,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -7.1054274e-15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7795464710566199421, guid: 9fc10383958895342a5df66b79626ef4,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7795464710566199421, guid: 9fc10383958895342a5df66b79626ef4,
         type: 3}

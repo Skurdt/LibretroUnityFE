@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-using retro_perf_tick_t = System.UInt64;
-using retro_time_t = System.Int64;
-using retro_usec_t = System.Int64;
-
 namespace SK.Libretro
 {
     public partial class Wrapper
@@ -228,9 +224,9 @@ namespace SK.Libretro
         public delegate void retro_log_printf_t(retro_log_level level, [MarshalAs(UnmanagedType.LPStr)] string format, IntPtr args);
 
         // typedef retro_time_t(RETRO_CALLCONV* retro_perf_get_time_usec_t)(void);
-        private delegate retro_time_t retro_perf_get_time_usec_t();
+        private delegate long retro_perf_get_time_usec_t();
         // typedef retro_perf_tick_t(RETRO_CALLCONV* retro_perf_get_counter_t)(void);
-        private delegate retro_perf_tick_t retro_perf_get_counter_t();
+        private delegate ulong retro_perf_get_counter_t();
         // typedef uint64_t(RETRO_CALLCONV* retro_get_cpu_features_t)(void);
         private delegate ulong retro_get_cpu_features_t();
         // typedef void (RETRO_CALLCONV* retro_perf_log_t) (void);
@@ -282,7 +278,7 @@ namespace SK.Libretro
         private delegate void retro_audio_set_state_callback_t([MarshalAs(UnmanagedType.U1)] bool enabled);
 
         // typedef void (RETRO_CALLCONV* retro_frame_time_callback_t) (retro_usec_t usec);
-        private delegate void retro_frame_time_callback_t(retro_usec_t usec);
+        private delegate void retro_frame_time_callback_t(long usec);
 
         // typedef void (RETRO_CALLCONV* retro_hw_context_reset_t) (void);
         private delegate void retro_hw_context_reset_t();

@@ -1,8 +1,8 @@
-﻿using SK.Utilities;
+﻿using SK.Libretro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using static SK.Utilities.StringUtils;
+using static SK.Libretro.Utilities.StringUtils;
 
 namespace SK.Libretro
 {
@@ -170,8 +170,8 @@ namespace SK.Libretro
                         case retro_pixel_format.RETRO_PIXEL_FORMAT_XRGB8888:
                         case retro_pixel_format.RETRO_PIXEL_FORMAT_RGB565:
                         {
-                            _pixelFormat = *inPixelFormat;
-                            Log.Info($"in_PixelFormat: {_pixelFormat}", "RETRO_ENVIRONMENT_SET_PIXEL_FORMAT");
+                            Game.PixelFormat = *inPixelFormat;
+                            Log.Info($"in_PixelFormat: {*inPixelFormat}", "RETRO_ENVIRONMENT_SET_PIXEL_FORMAT");
                         }
                         break;
                         default:
