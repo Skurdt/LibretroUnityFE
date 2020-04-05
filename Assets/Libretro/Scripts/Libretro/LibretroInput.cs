@@ -35,8 +35,11 @@ namespace SK.Libretro
                     }
                     break;
                     case retro_device.RETRO_DEVICE_LIGHTGUN:
+                        break;
                     case retro_device.RETRO_DEVICE_ANALOG:
+                        break;
                     case retro_device.RETRO_DEVICE_POINTER:
+                        break;
                     default:
                         break;
                 }

@@ -95,7 +95,7 @@ namespace SK
                                 string archivePath = FileSystem.GetAbsolutePath($"{_game.Directory}/{_game.Name}.zip");
                                 if (File.Exists(archivePath))
                                 {
-                                    string extractPath = FileSystem.GetAbsolutePath(Libretro.Wrapper.TempDirectory);
+                                    string extractPath = FileSystem.GetAbsolutePath($"{Libretro.Wrapper.TempDirectory}/extracted");
                                     if (Directory.Exists(extractPath))
                                     {
                                         Directory.Delete(extractPath, true);

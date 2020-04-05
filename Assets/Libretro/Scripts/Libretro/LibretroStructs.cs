@@ -353,15 +353,18 @@ namespace SK.Libretro
             public char* key;
             public char* desc;
             public char* info;
-            public retro_core_option_value[] values;
+            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.Struct, SizeConst = RETRO_NUM_CORE_OPTION_VALUES_MAX)]
+            public retro_core_option_value[] values; // retro_core_option_value[RETRO_NUM_CORE_OPTION_VALUES_MAX]
             public char* default_value;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct retro_core_options_intl
+        private unsafe struct retro_core_options_intl
         {
-            public retro_core_option_definition[] us;
-            public retro_core_option_definition[] local;
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct)]
+            public IntPtr us; // retro_core_option_definition*
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct)]
+            public IntPtr local; // retro_core_option_definition*
         }
 
         [StructLayout(LayoutKind.Sequential)]
