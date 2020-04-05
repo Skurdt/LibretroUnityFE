@@ -1,5 +1,4 @@
 ﻿using SK.Libretro.Utilities;
-using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -23,26 +22,18 @@ namespace SK.Libretro
 
         private CoreOptionsList _coreOptionsList;
 
-        public unsafe bool StartCore(string corePath)
-        {
-            LoadCoreOptionsFile();
-            return Core.Start(this, corePath);
-        }
-
-        public bool StartGame(string gamePath)
+        public bool StartGame(string coreName, string gameDirectory, string gameName)
         {
             bool result = false;
 
-            if (Core.Initialized)
+            LoadCoreOptionsFile();
+
+            if (Core.Start(this, coreName))
             {
-                if (Game.Start(Core, gamePath))
+                if (Game.Start(Core, gameDirectory, gameName))
                 {
                     result = true;
                 }
-            }
-            else
-            {
-                Log.Error("Core not initialized!", "Libretro.Wrapper.StartGame");
             }
 
             return result;
@@ -66,18 +57,36 @@ namespace SK.Libretro
             Core.retro_run();
         }
 
-        public string GetGamePath(string directory, string gameName)
+        public void ActivateGraphics(IGraphicsProcessor graphicsProcessor)
         {
-            foreach (string extension in Core.ValidExtensions)
-            {
-                string filePath = FileSystem.GetAbsolutePath($"{directory}/{gameName}.{extension}");
-                if (File.Exists(filePath))
-                {
-                    return filePath;
-                }
-            }
+            GraphicsProcessor = graphicsProcessor;
+        }
 
-            return null;
+        public void DeactivateGraphics()
+        {
+            GraphicsProcessor = null;
+        }
+
+        public void ActivateAudio(IAudioProcessor audioProcessor)
+        {
+            AudioProcessor = audioProcessor;
+            AudioProcessor.Init((int)Game.SystemAVInfo.timing.sample_rate);
+        }
+
+        public void DeactivateAudio()
+        {
+            AudioProcessor.DeInit();
+            AudioProcessor = null;
+        }
+
+        public void ActivateInput(IInputProcessor inputProcessor)
+        {
+            InputProcessor = inputProcessor;
+        }
+
+        public void DeactivateInput()
+        {
+            InputProcessor = null;
         }
 
         private void LoadCoreOptionsFile()

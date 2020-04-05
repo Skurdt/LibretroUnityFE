@@ -82,49 +82,63 @@ namespace SK.Libretro
         private retro_input_state_t _inputStateCallback;
         private retro_log_printf_t _logPrintfCallback;
 
-        public unsafe bool Start(Wrapper wrapper, string corePath)
+        public unsafe bool Start(Wrapper wrapper, string coreName)
         {
             bool result = false;
 
-            if (_dll.Load(corePath))
+            string corePath = FileSystem.GetAbsolutePath($"{CoresDirectory}/{coreName}_libretro.dll");
+            if (FileSystem.FileExists(corePath))
             {
-                if (GetCoreFunctions())
+                string instancePath = FileSystem.GetAbsolutePath($"{TempDirectory}/{coreName}_{Guid.NewGuid()}.dll");
+                File.Copy(corePath, instancePath);
+                if (_dll.Load(instancePath))
                 {
-                    try
+                    if (GetCoreFunctions())
                     {
-                        ApiVersion = retro_api_version();
+                        try
+                        {
+                            ApiVersion = retro_api_version();
 
-                        SetCallbacks(wrapper);
+                            SetCallbacks(wrapper);
 
-                        retro_system_info systemInfo = new retro_system_info();
-                        retro_get_system_info(ref systemInfo);
+                            retro_system_info systemInfo = new retro_system_info();
+                            retro_get_system_info(ref systemInfo);
 
-                        CoreName         = CharsToString(systemInfo.library_name);
-                        CoreVersion      = CharsToString(systemInfo.library_version);
-                        ValidExtensions  = CharsToString(systemInfo.valid_extensions).Split('|');
-                        NeedFullPath = systemInfo.need_fullpath;
-                        BlockExtract  = systemInfo.block_extract;
+                            CoreName = CharsToString(systemInfo.library_name);
+                            CoreVersion = CharsToString(systemInfo.library_version);
+                            ValidExtensions = CharsToString(systemInfo.valid_extensions).Split('|');
+                            NeedFullPath = systemInfo.need_fullpath;
+                            BlockExtract = systemInfo.block_extract;
 
-                        retro_set_environment(_environmentCallback);
-                        retro_set_video_refresh(_videoRefreshCallback);
-                        retro_set_audio_sample(_audioSampleCallback);
-                        retro_set_audio_sample_batch(_audioSampleBatchCallback);
-                        retro_set_input_poll(_inputPollCallback);
-                        retro_set_input_state(_inputStateCallback);
-                        retro_init();
+                            retro_set_environment(_environmentCallback);
+                            retro_set_video_refresh(_videoRefreshCallback);
+                            retro_set_audio_sample(_audioSampleCallback);
+                            retro_set_audio_sample_batch(_audioSampleBatchCallback);
+                            retro_set_input_poll(_inputPollCallback);
+                            retro_set_input_state(_inputStateCallback);
+                            retro_init();
 
-                        Initialized = true;
-                        result = true;
+                            Initialized = true;
+                            result = true;
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Exception(e, "Libretro.LibretroCore.Start");
+                        }
                     }
-                    catch (Exception e)
+                    else
                     {
-                        Log.Exception(e, "Libretro.LibretroCore.Start");
+                        Log.Error("One of the function pointers couldn't be retrieved for core '{coreName}'.", "Libretro.LibretroCore.Start");
                     }
                 }
                 else
                 {
-                    Log.Error("One of the function pointers couldn't be retrieved.", "Libretro.LibretroCore.Start");
+                    Log.Error($"Failed to load library for core '{coreName}' .", "Libretro.LibretroCore.Start");
                 }
+            }
+            else
+            {
+                Log.Error($"Core '{coreName}' at path '{corePath}' not found.", "Libretro.LibretroCore.Start");
             }
 
             return result;
