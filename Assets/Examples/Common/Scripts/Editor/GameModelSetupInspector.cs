@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using static SK.Libretro.Utilities.FileSystem;
 
-namespace SK
+namespace SK.Examples.Common
 {
     [CustomEditor(typeof(GameModelSetup))]
     public class GameModelSetupInspector : Editor
@@ -89,7 +89,7 @@ namespace SK
             string directory = EditorUtility.OpenFolderPanel("Select rom directory", startingDirectory, startingDirectory);
             if (!string.IsNullOrEmpty(directory))
             {
-                ModelSetupScript.Game.Directory = GetRelativePath(directory);
+                ModelSetupScript.Game.Directory = GetRelativePath(directory).Replace(Path.DirectorySeparatorChar, '/');
             }
         }
 
@@ -104,7 +104,7 @@ namespace SK
             string filePath = EditorUtility.OpenFilePanel("Select rom", startingDirectory, string.Empty);
             if (!string.IsNullOrEmpty(filePath))
             {
-                ModelSetupScript.Game.Directory = GetRelativePath(Path.GetDirectoryName(filePath));
+                ModelSetupScript.Game.Directory = GetRelativePath(Path.GetDirectoryName(filePath)).Replace(Path.DirectorySeparatorChar, '/');
                 ModelSetupScript.Game.Name = Path.GetFileNameWithoutExtension(filePath);
             }
         }

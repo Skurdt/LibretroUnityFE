@@ -82,7 +82,7 @@ namespace SK.Libretro.Utilities
                 string formattedStreamingAssetsPath = UnityEngine.Application.streamingAssetsPath.Replace('/', Path.DirectorySeparatorChar);
                 if (fullPath.Contains(formattedStreamingAssetsPath))
                 {
-                    result = $"@{fullPath.Replace($"{formattedStreamingAssetsPath}{Path.DirectorySeparatorChar}", string.Empty)}";
+                    result = $"@{fullPath.Replace($"{formattedStreamingAssetsPath}", string.Empty).Remove(0, 1)}";
                 }
             }
             catch (Exception e)

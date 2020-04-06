@@ -38,9 +38,9 @@ namespace SK.Libretro
                     if (File.Exists(archivePath))
                     {
                         string extractPath = FileSystem.GetAbsolutePath($"{TempDirectory}/extracted");
-                        if (System.IO.Directory.Exists(extractPath))
+                        if (Directory.Exists(extractPath))
                         {
-                            System.IO.Directory.Delete(extractPath, true);
+                            Directory.Delete(extractPath, true);
                         }
                         System.IO.Compression.ZipFile.ExtractToDirectory(archivePath, extractPath);
                         gamePath = GetGamePath(extractPath, gameName);
@@ -87,7 +87,7 @@ namespace SK.Libretro
                 Running = false;
             }
 
-            if (_internalData != null)
+            if (_internalData != IntPtr.Zero)
             {
                 Marshal.FreeHGlobal(_internalData);
             }

@@ -2,14 +2,14 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace SK
+namespace SK.Examples.Common
 {
     [System.Serializable]
     public class Game
     {
-        public string Core;
-        public string Directory;
-        public string Name;
+        public string Core      = "mame2003_plus";
+        public string Directory = "D:/mame2003-plus/roms";
+        public string Name      = "pacman";
     }
 
     [SelectionBase]
