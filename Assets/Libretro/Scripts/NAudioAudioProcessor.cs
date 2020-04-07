@@ -20,7 +20,7 @@ namespace SK.Libretro
                 DesiredLatency = 140
             };
 
-            _audioFormat = WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, 2);
+            _audioFormat = WaveFormat.CreateIeeeFloatWaveFormat(sampleRate > 0 ? sampleRate : 44100, 2);
 
             _bufferedWaveProvider = new BufferedWaveProvider(_audioFormat)
             {

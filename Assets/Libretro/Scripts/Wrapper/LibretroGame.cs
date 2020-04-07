@@ -71,6 +71,25 @@ namespace SK.Libretro
                     Log.Error($"Game '{gameName}' not found in directory '{gameDirectory}'.", "Libretro.LibretroGame.Start");
                 }
             }
+            else if (core.SupportNoGame)
+            {
+                retro_game_info gameInfo = new retro_game_info();
+                if (_core.retro_load_game(ref gameInfo))
+                {
+                    try
+                    {
+                        SystemAVInfo = new retro_system_av_info();
+                        _core.retro_get_system_av_info(ref SystemAVInfo);
+
+                        Running = true;
+                        result = true;
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Exception(e, "Libretro.LibretroGame.Start");
+                    }
+                }
+            }
             else
             {
                 Log.Warning($"Game not set, running '{core.CoreName}' core only.", "Libretro.LibretroGame.Start");

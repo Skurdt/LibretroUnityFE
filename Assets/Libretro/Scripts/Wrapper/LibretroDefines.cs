@@ -41,7 +41,9 @@
             RETRO_DEVICE_ID_JOYPAD_L2     = 12,
             RETRO_DEVICE_ID_JOYPAD_R2     = 13,
             RETRO_DEVICE_ID_JOYPAD_L3     = 14,
-            RETRO_DEVICE_ID_JOYPAD_R3     = 15
+            RETRO_DEVICE_ID_JOYPAD_R3     = 15,
+
+            RETRO_DEVICE_ID_JOYPAD_END    = 16
         }
 
         private const int RETRO_DEVICE_ID_JOYPAD_MASK = 256;
@@ -74,7 +76,9 @@
             RETRO_DEVICE_ID_MOUSE_HORIZ_WHEELUP   = 7,
             RETRO_DEVICE_ID_MOUSE_HORIZ_WHEELDOWN = 8,
             RETRO_DEVICE_ID_MOUSE_BUTTON_4        = 9,
-            RETRO_DEVICE_ID_MOUSE_BUTTON_5        = 10
+            RETRO_DEVICE_ID_MOUSE_BUTTON_5        = 10,
+
+            RETRO_DEVICE_ID_MOUSE_END             = 11
         }
 
         // NOTE(Tom): Original defines converted to enum

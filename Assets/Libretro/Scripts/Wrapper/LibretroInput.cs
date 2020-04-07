@@ -11,10 +11,8 @@ namespace SK.Libretro
         private const int FIRST_MISC_CUSTOM_BIND = (int)CustomBinds.LIGHTGUN_BIND_LIST_END;
         public const int FIRST_META_KEY = (int)CustomBinds.CUSTOM_BIND_LIST_END;
 
-        /* Specific bind IDs. */
         private enum CustomBinds
         {
-            // Custom binds that extend the scope of RETRO_DEVICE_JOYPAD
             // Analogs (RETRO_DEVICE_ANALOG)
             ANALOG_LEFT_X_PLUS = FIRST_CUSTOM_BIND,
             ANALOG_LEFT_X_MINUS,
@@ -109,7 +107,7 @@ namespace SK.Libretro
                 {
                     case retro_device.RETRO_DEVICE_JOYPAD:
                     {
-                        if (!Core.HasInputDescriptors)
+                        if (id < (int)retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_END)
                         {
                             result = ProcessJoypadDeviceState((int)port, (int)id);
                         }
@@ -117,12 +115,15 @@ namespace SK.Libretro
                     break;
                     case retro_device.RETRO_DEVICE_MOUSE:
                     {
-                        result = ProcessMouseDeviceState((int)port, (retro_device_id_mouse)id);
+                        if (id < (int)retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_END)
+                        {
+                            result = ProcessMouseDeviceState((int)port, (retro_device_id_mouse)id);
+                        }
                     }
                     break;
                     case retro_device.RETRO_DEVICE_KEYBOARD:
                     {
-                        result = BoolToShort(id < (uint)retro_key.RETROK_OEM_102 ? Input.GetKey((KeyCode)id) : false);
+                        result = BoolToShort(id < (int)retro_key.RETROK_OEM_102 ? Input.GetKey((KeyCode)id) : false);
                     }
                     break;
                     case retro_device.RETRO_DEVICE_LIGHTGUN:

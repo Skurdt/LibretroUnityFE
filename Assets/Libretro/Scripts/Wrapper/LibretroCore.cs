@@ -81,6 +81,13 @@ namespace SK.Libretro
         private retro_input_poll_t _inputPollCallback;
         private retro_input_state_t _inputStateCallback;
         private retro_log_printf_t _logPrintfCallback;
+        private retro_perf_get_time_usec_t _perfGetTimeUsecCallback;
+        private retro_perf_get_counter_t _perfGetCounterCallback;
+        private retro_get_cpu_features_t _getCPUFeaturesCallback;
+        private retro_perf_log_t _perfLogCallback;
+        private retro_perf_register_t _perfRegisterCallback;
+        private retro_perf_start_t _perfStartCallback;
+        private retro_perf_stop_t _perfStopCallback;
 
         public unsafe bool Start(Wrapper wrapper, string coreName)
         {
@@ -106,7 +113,10 @@ namespace SK.Libretro
 
                             CoreName = CharsToString(systemInfo.library_name);
                             CoreVersion = CharsToString(systemInfo.library_version);
-                            ValidExtensions = CharsToString(systemInfo.valid_extensions).Split('|');
+                            if (systemInfo.valid_extensions != null)
+                            {
+                                ValidExtensions = CharsToString(systemInfo.valid_extensions).Split('|');
+                            }
                             NeedFullPath = systemInfo.need_fullpath;
                             BlockExtract = systemInfo.block_extract;
 
@@ -218,12 +228,29 @@ namespace SK.Libretro
             _audioSampleBatchCallback = wrapper.RetroAudioSampleBatchCallback;
             _inputPollCallback        = wrapper.RetroInputPollCallback;
             _inputStateCallback       = wrapper.RetroInputStateCallback;
-            _logPrintfCallback        = wrapper.RetroLogPrintf;
+
+            _logPrintfCallback       = wrapper.RetroLogPrintf;
+            _perfGetTimeUsecCallback = wrapper.RetroPerfGetTimeUsec;
+            _perfGetCounterCallback  = wrapper.RetroPerfGetCounter;
+            _getCPUFeaturesCallback  = wrapper.RetroGetCPUFeatures;
+            _perfLogCallback         = wrapper.RetroPerfLog;
+            _perfRegisterCallback    = wrapper.RetroPerfRegister;
+            _perfStartCallback       = wrapper.RetroPerfStart;
+            _perfStopCallback        = wrapper.RetroPerfStop;
         }
 
-        public IntPtr SetLogCallback()
+        public IntPtr GetLogCallback() => Marshal.GetFunctionPointerForDelegate(_logPrintfCallback);
+
+        public IntPtr GetPerfGetTimeUsecCallback() => Marshal.GetFunctionPointerForDelegate(_perfGetTimeUsecCallback);
+        public IntPtr GetPerfGetCounterCallback()  => Marshal.GetFunctionPointerForDelegate(_perfGetCounterCallback);
+        public IntPtr GetGetCPUFeaturesCallback()  => Marshal.GetFunctionPointerForDelegate(_getCPUFeaturesCallback);
+        public IntPtr GetPerfLogCallback()         => Marshal.GetFunctionPointerForDelegate(_perfLogCallback);
+        public IntPtr GetPerfRegisterCallback()    => Marshal.GetFunctionPointerForDelegate(_perfRegisterCallback);
+        public IntPtr GetPerfStartCallback()       => Marshal.GetFunctionPointerForDelegate(_perfStartCallback);
+        public IntPtr GetPerfStopCallback()        => Marshal.GetFunctionPointerForDelegate(_perfStopCallback);
+
+        public void SetFrameTimeCallback(IntPtr callback, long reference)
         {
-            return Marshal.GetFunctionPointerForDelegate(_logPrintfCallback);
         }
     }
 }

@@ -224,19 +224,19 @@ namespace SK.Libretro
         public delegate void retro_log_printf_t(retro_log_level level, [MarshalAs(UnmanagedType.LPStr)] string format, IntPtr args);
 
         // typedef retro_time_t(RETRO_CALLCONV* retro_perf_get_time_usec_t)(void);
-        private delegate long retro_perf_get_time_usec_t();
+        public delegate long retro_perf_get_time_usec_t();
         // typedef retro_perf_tick_t(RETRO_CALLCONV* retro_perf_get_counter_t)(void);
-        private delegate ulong retro_perf_get_counter_t();
+        public delegate ulong retro_perf_get_counter_t();
         // typedef uint64_t(RETRO_CALLCONV* retro_get_cpu_features_t)(void);
-        private delegate ulong retro_get_cpu_features_t();
+        public delegate ulong retro_get_cpu_features_t();
         // typedef void (RETRO_CALLCONV* retro_perf_log_t) (void);
-        private delegate void retro_perf_log_t();
+        public delegate void retro_perf_log_t();
         // typedef void (RETRO_CALLCONV* retro_perf_register_t) (struct retro_perf_counter *counter);
-        private delegate void retro_perf_register_t(ref retro_perf_counter counter);
+        public delegate void retro_perf_register_t(ref retro_perf_counter counter);
         // typedef void (RETRO_CALLCONV* retro_perf_start_t) (struct retro_perf_counter *counter);
-        private delegate void retro_perf_start_t(ref retro_perf_counter counter);
+        public delegate void retro_perf_start_t(ref retro_perf_counter counter);
         // typedef void (RETRO_CALLCONV* retro_perf_stop_t) (struct retro_perf_counter *counter);
-        private delegate void retro_perf_stop_t(ref retro_perf_counter counter);
+        public delegate void retro_perf_stop_t(ref retro_perf_counter counter);
 
         // typedef bool (RETRO_CALLCONV* retro_set_sensor_state_t) (unsigned port, enum retro_sensor_action action, unsigned rate);
         [return: MarshalAs(UnmanagedType.U1)]

@@ -14,7 +14,7 @@
                 "mame_lightgun_mode;none;none|touchscreen|lightgun;",
                 "mame_mame_paths_enable;disabled;disabled|enabled;",
                 "mame_media_type;rom;rom|cart|flop|cdrm|cass|hard|serl|prin;",
-                "mame_mouse_enable;disabled;disabled|enabled;",
+                "mame_mouse_enable;enabled;disabled|enabled;",
                 "mame_read_config;disabled;disabled|enabled;",
                 "mame_saves;game;game|system;",
                 "mame_softlists_auto_media;enabled;enabled|disabled;",

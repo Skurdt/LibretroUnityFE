@@ -147,7 +147,7 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private unsafe struct retro_perf_counter
+        public unsafe struct retro_perf_counter
         {
             public char* ident;
             public ulong start;
@@ -160,14 +160,14 @@ namespace SK.Libretro
         [StructLayout(LayoutKind.Sequential)]
         private struct retro_perf_callback
         {
-            public retro_perf_get_time_usec_t get_time_usec;
-            public retro_get_cpu_features_t get_cpu_features;
+            public IntPtr get_time_usec;    // retro_perf_get_time_usec_t
+            public IntPtr get_cpu_features; // retro_get_cpu_features_t
 
-            public retro_perf_get_counter_t get_perf_counter;
-            public retro_perf_register_t perf_register;
-            public retro_perf_start_t perf_start;
-            public retro_perf_stop_t perf_stop;
-            public retro_perf_log_t perf_log;
+            public IntPtr get_perf_counter; // retro_perf_get_counter_t
+            public IntPtr perf_register;    // retro_perf_register_t
+            public IntPtr perf_start;       // retro_perf_start_t
+            public IntPtr perf_stop;        // retro_perf_stop_t
+            public IntPtr perf_log;         // retro_perf_log_t
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -211,9 +211,9 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct retro_frame_time_callback
+        public struct retro_frame_time_callback
         {
-            public retro_frame_time_callback_t callback;
+            public IntPtr callback; // retro_frame_time_callback_t
             public retro_usec_t reference;
         }
 

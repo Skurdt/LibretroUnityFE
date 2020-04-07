@@ -42,7 +42,9 @@ namespace SK.Libretro
                 case retro_environment.RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY:
                 {
                     char** outSystemDirectory = (char**)data;
-                    *outSystemDirectory = StringToChars(FileSystem.GetAbsolutePath(SystemDirectory));
+                    string systemDirectory = FileSystem.GetAbsolutePath(SystemDirectory);
+                    *outSystemDirectory = StringToChars(systemDirectory);
+                    Log.Info($"[OUT] SystemDirectory: {systemDirectory}", "RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY");
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_VARIABLE:
@@ -90,37 +92,51 @@ namespace SK.Libretro
                 //break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_SENSOR_INTERFACE:
                 {
-                    data = null;
+                    Log.Warning("Environment not supported: RETRO_ENVIRONMENT_GET_SENSOR_INTERFACE");
+                    return false;
                 }
-                break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_CAMERA_INTERFACE:
                 {
-                    data = null;
+                    Log.Warning("Environment not supported: RETRO_ENVIRONMENT_GET_CAMERA_INTERFACE");
+                    return false;
                 }
-                break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
                 {
                     retro_log_callback* outLogInterface = (retro_log_callback*)data;
-                    outLogInterface->log = Core.SetLogCallback();
+                    outLogInterface->log = Core.GetLogCallback();
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_PERF_INTERFACE:
-                    return false;
-                case retro_environment.RETRO_ENVIRONMENT_GET_LOCATION_INTERFACE:
                 {
-                    data = null;
+                    retro_perf_callback* outPerfInterface = (retro_perf_callback*)data;
+                    outPerfInterface->get_time_usec    = Core.GetPerfGetTimeUsecCallback();
+                    outPerfInterface->get_cpu_features = Core.GetGetCPUFeaturesCallback();
+                    outPerfInterface->get_perf_counter = Core.GetPerfGetCounterCallback();
+                    outPerfInterface->perf_register    = Core.GetPerfRegisterCallback();
+                    outPerfInterface->perf_start       = Core.GetPerfStartCallback();
+                    outPerfInterface->perf_stop        = Core.GetPerfStopCallback();
+                    outPerfInterface->perf_log         = Core.GetPerfLogCallback();
                 }
                 break;
+                case retro_environment.RETRO_ENVIRONMENT_GET_LOCATION_INTERFACE:
+                {
+                    Log.Warning("Environment not supported: RETRO_ENVIRONMENT_GET_LOCATION_INTERFACE");
+                    return false;
+                }
                 case retro_environment.RETRO_ENVIRONMENT_GET_CORE_ASSETS_DIRECTORY:
                 {
                     char** outCoreAssetsDirectory = (char**)data;
-                    *outCoreAssetsDirectory = StringToChars(FileSystem.GetAbsolutePath(SystemDirectory));
+                    string coreAssetsDirectory = FileSystem.GetAbsolutePath(SystemDirectory);
+                    *outCoreAssetsDirectory = StringToChars(coreAssetsDirectory);
+                    Log.Info($"[OUT] CoreAssetsDirectory: {coreAssetsDirectory}", "RETRO_ENVIRONMENT_GET_CORE_ASSETS_DIRECTORY");
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY:
                 {
                     char** outSaveDirectory = (char**)data;
-                    *outSaveDirectory = StringToChars(FileSystem.GetAbsolutePath(SavesDirectory));
+                    string saveDirectory = FileSystem.GetAbsolutePath(SavesDirectory);
+                    *outSaveDirectory = StringToChars(saveDirectory);
+                    Log.Info($"[OUT] SaveDirectory: {saveDirectory}", "RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY");
                 }
                 break;
                 //case retro_environment.RETRO_ENVIRONMENT_GET_USERNAME:
@@ -152,9 +168,7 @@ namespace SK.Libretro
                 //case retro_environment.RETRO_ENVIRONMENT_GET_TARGET_REFRESH_RATE:
                 //    break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_INPUT_BITMASKS:
-                {
-                }
-                break;
+                    return false;
                 case retro_environment.RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
                 {
                     uint* outVersion = (uint*)data;
@@ -341,8 +355,12 @@ namespace SK.Libretro
                     Core.SupportNoGame = *inSupportNoGame;
                 }
                 break;
-                //case retro_environment.RETRO_ENVIRONMENT_SET_FRAME_TIME_CALLBACK:
-                //    break;
+                case retro_environment.RETRO_ENVIRONMENT_SET_FRAME_TIME_CALLBACK:
+                {
+                    retro_frame_time_callback* inFrameTimeCallback = (retro_frame_time_callback*)data;
+                    Core.SetFrameTimeCallback(inFrameTimeCallback->callback, inFrameTimeCallback->reference);
+                }
+                break;
                 //case retro_environment.RETRO_ENVIRONMENT_SET_AUDIO_CALLBACK:
                 //    break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO:
