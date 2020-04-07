@@ -7,29 +7,34 @@ namespace SK.Libretro
     {
         private const int AUDIO_BUFFER_SIZE = 65536;
 
-        private WaveOutEvent _audioDevice;
-        private WaveFormat _audioFormat;
+        private IWavePlayer _audioDevice;
         private BufferedWaveProvider _bufferedWaveProvider;
 
         public void Init(int sampleRate)
         {
-            DeInit();
-
-            _audioDevice = new WaveOutEvent
+            try
             {
-                DesiredLatency = 140
-            };
+                DeInit();
 
-            _audioFormat = WaveFormat.CreateIeeeFloatWaveFormat(sampleRate > 0 ? sampleRate : 44100, 2);
+                _audioDevice = new WaveOutEvent
+                {
+                    DesiredLatency = 140
+                };
 
-            _bufferedWaveProvider = new BufferedWaveProvider(_audioFormat)
+                WaveFormat audioFormat = WaveFormat.CreateIeeeFloatWaveFormat(sampleRate > 0 ? sampleRate : 44100, 2);
+                _bufferedWaveProvider = new BufferedWaveProvider(audioFormat)
+                {
+                    DiscardOnBufferOverflow = true,
+                    BufferLength            = AUDIO_BUFFER_SIZE
+                };
+
+                _audioDevice.Init(_bufferedWaveProvider);
+                _audioDevice.Play();
+            }
+            catch (Exception e)
             {
-                DiscardOnBufferOverflow = true,
-                BufferLength            = AUDIO_BUFFER_SIZE
-            };
-
-            _audioDevice.Init(_bufferedWaveProvider);
-            _audioDevice.Play();
+                Utilities.Log.Exception(e);
+            }
         }
 
         public void DeInit()
@@ -40,9 +45,12 @@ namespace SK.Libretro
 
         public void ProcessSamples(float[] samples)
         {
-            byte[] byteBuffer = new byte[samples.Length * sizeof(float)];
-            Buffer.BlockCopy(samples, 0, byteBuffer, 0, byteBuffer.Length);
-            _bufferedWaveProvider.AddSamples(byteBuffer, 0, byteBuffer.Length);
+            if (_bufferedWaveProvider != null)
+            {
+                byte[] byteBuffer = new byte[samples.Length * sizeof(float)];
+                Buffer.BlockCopy(samples, 0, byteBuffer, 0, byteBuffer.Length);
+                _bufferedWaveProvider.AddSamples(byteBuffer, 0, byteBuffer.Length);
+            }
         }
     }
 }

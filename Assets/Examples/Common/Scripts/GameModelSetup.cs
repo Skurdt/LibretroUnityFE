@@ -17,10 +17,15 @@ namespace SK.Examples.Common
     {
         [HideInInspector] public Game Game;
 
+        [Range(0.5f, 2f)]
+        [SerializeField] private float _timeScale = 1.0f;
+
         public Libretro.Wrapper Wrapper { get; private set; }
 
         private Renderer _rendererComponent = null;
         private Material _originalMaterial = null;
+
+        private float _frameTimer;
 
         private void OnEnable()
         {
@@ -30,6 +35,29 @@ namespace SK.Examples.Common
         private void OnDisable()
         {
             StopGame();
+        }
+
+        private void Update()
+        {
+            if (Wrapper != null && Wrapper.Game.SystemAVInfo.timing.fps > 0.0)
+            {
+                _frameTimer += Time.deltaTime;
+                float timePerFrame = 1f / (float)Wrapper.Game.SystemAVInfo.timing.fps / _timeScale;
+
+                while (_frameTimer >= timePerFrame)
+                {
+                    Wrapper.Update();
+                    _frameTimer -= timePerFrame;
+                }
+
+                if (Wrapper.GraphicsProcessor != null && Wrapper.GraphicsProcessor is Libretro.UnityGraphicsProcessor unityGraphics)
+                {
+                    if (unityGraphics.TextureUpdated)
+                    {
+                        _rendererComponent.material.SetTexture("_EmissionMap", unityGraphics.Texture);
+                    }
+                }
+            }
         }
 
         public void StartGame()
@@ -57,8 +85,6 @@ namespace SK.Examples.Common
                                 _rendererComponent.material.EnableKeyword("_EMISSION");
                                 _rendererComponent.material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
                                 _rendererComponent.material.SetColor("_EmissionColor", Color.white);
-
-                                InvokeRepeating("LibretroRunLoop", 0f, 1f / (float)Wrapper.Game.SystemAVInfo.timing.fps);
                             }
                         }
                     }
@@ -114,23 +140,6 @@ namespace SK.Examples.Common
         public void DeactivateInput()
         {
             Wrapper?.DeactivateInput();
-        }
-
-        [SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Called by InvokeRepeating")]
-        private void LibretroRunLoop()
-        {
-            if (Wrapper != null)
-            {
-                Wrapper.Update();
-
-                if (Wrapper.GraphicsProcessor != null && Wrapper.GraphicsProcessor is Libretro.UnityGraphicsProcessor unityGraphics)
-                {
-                    if (unityGraphics.Texture != null)
-                    {
-                        _rendererComponent.material.SetTexture("_EmissionMap", unityGraphics.Texture);
-                    }
-                }
-            }
         }
     }
 }

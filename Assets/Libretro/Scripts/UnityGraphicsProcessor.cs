@@ -8,16 +8,19 @@ namespace SK.Libretro
 {
     public class UnityGraphicsProcessor : IGraphicsProcessor
     {
-        public Texture2D Texture { get; private set; }
+        public Texture2D Texture { get; private set; } = new Texture2D(256, 256, TextureFormat.BGRA32, false) { filterMode = FilterMode.Trilinear };
+        public bool TextureUpdated = false;
 
         public unsafe void ProcessFrame0RGB1555(ushort* data, int width, int height, int pitchInPixels)
         {
-            if (Texture == null || Texture.format != TextureFormat.BGRA32 || Texture.width != width || Texture.height != height)
+            if (Texture.format != TextureFormat.BGRA32 || Texture.width != width || Texture.height != height)
             {
-                Texture = new Texture2D(width, height, TextureFormat.BGRA32, false)
-                {
-                    filterMode = FilterMode.Trilinear
-                };
+                Texture = new Texture2D(width, height, TextureFormat.BGRA32, false);
+                TextureUpdated = true;
+            }
+            else
+            {
+                TextureUpdated = false;
             }
 
             new ARGB1555Job
@@ -34,12 +37,14 @@ namespace SK.Libretro
 
         public unsafe void ProcessFrameARGB8888(uint* data, int width, int height, int pitchInPixels)
         {
-            if (Texture == null || Texture.format != TextureFormat.BGRA32 || Texture.width != width || Texture.height != height)
+            if (Texture.format != TextureFormat.BGRA32 || Texture.width != width || Texture.height != height)
             {
-                Texture = new Texture2D(width, height, TextureFormat.BGRA32, false)
-                {
-                    filterMode = FilterMode.Trilinear
-                };
+                Texture = new Texture2D(width, height, TextureFormat.BGRA32, false);
+                TextureUpdated = true;
+            }
+            else
+            {
+                TextureUpdated = false;
             }
 
             new ARGB8888Job
@@ -56,12 +61,14 @@ namespace SK.Libretro
 
         public unsafe void ProcessFrameRGB565(ushort* data, int width, int height, int pitchInPixels)
         {
-            if (Texture == null || Texture.format != TextureFormat.RGB565 || Texture.width != width || Texture.height != height)
+            if (Texture.format != TextureFormat.RGB565 || Texture.width != width || Texture.height != height)
             {
-                Texture = new Texture2D(width, height, TextureFormat.RGB565, false)
-                {
-                    filterMode = FilterMode.Trilinear
-                };
+                Texture = new Texture2D(width, height, TextureFormat.RGB565, false);
+                TextureUpdated = true;
+            }
+            else
+            {
+                TextureUpdated = false;
             }
 
             new RGB565Job
