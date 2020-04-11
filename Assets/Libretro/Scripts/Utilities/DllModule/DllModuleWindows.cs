@@ -15,10 +15,8 @@ namespace SK.Libretro.Utilities
         [DllImport("kernel32.dll", EntryPoint = "FreeLibrary", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern bool Win32FreeLibrary(IntPtr hModule);
 
-        public override bool Load(string path)
+        public override void Load(string path)
         {
-            bool result = false;
-
             if (!string.IsNullOrEmpty(path))
             {
                 IntPtr hModule = Win32LoadLibrary(path);
@@ -26,19 +24,16 @@ namespace SK.Libretro.Utilities
                 {
                     Name          = Path.GetFileName(path);
                     _nativeHandle = hModule;
-                    result = true;
                 }
                 else
                 {
-                    Log.Error($"Failed to load library at path '{path}' (ErrorCode: {Marshal.GetLastWin32Error()})");
+                    throw new Exception($"Failed to load library at path '{path}' (ErrorCode: {Marshal.GetLastWin32Error()})");
                 }
             }
             else
             {
-                Log.Error($"Library path is null or empty.");
+                throw new Exception("Library path is null or empty.");
             }
-
-            return result;
         }
 
         public override T GetFunction<T>(string functionName)

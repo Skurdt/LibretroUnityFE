@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-using retro_usec_t = System.Int64;
-
 namespace SK.Libretro
 {
     public partial class Wrapper
@@ -13,25 +11,25 @@ namespace SK.Libretro
         [StructLayout(LayoutKind.Sequential)]
         private class retro_vfs_interface
         {
-            public retro_vfs_get_path_t get_path;
-            public retro_vfs_open_t open;
-            public retro_vfs_close_t close;
-            public retro_vfs_size_t size;
-            public retro_vfs_tell_t tell;
-            public retro_vfs_seek_t seek;
-            public retro_vfs_read_t read;
-            public retro_vfs_write_t write;
-            public retro_vfs_flush_t flush;
-            public retro_vfs_remove_t remove;
-            public retro_vfs_rename_t rename;
-            public retro_vfs_truncate_t truncate;
-            public retro_vfs_stat_t stat;
-            public retro_vfs_mkdir_t mkdir;
-            public retro_vfs_opendir_t opendir;
-            public retro_vfs_readdir_t readdir;
-            public retro_vfs_dirent_get_name_t dirent_get_name;
-            public retro_vfs_dirent_is_dir_t dirent_is_dir;
-            public retro_vfs_closedir_t closedir;
+            public IntPtr get_path;        // retro_vfs_get_path_t
+            public IntPtr open;            // retro_vfs_open_t
+            public IntPtr close;           // retro_vfs_close_t
+            public IntPtr size;            // retro_vfs_size_t
+            public IntPtr tell;            // retro_vfs_tell_t
+            public IntPtr seek;            // retro_vfs_seek_t
+            public IntPtr read;            // retro_vfs_read_t
+            public IntPtr write;           // retro_vfs_write_t
+            public IntPtr flush;           // retro_vfs_flush_t
+            public IntPtr remove;          // retro_vfs_remove_t
+            public IntPtr rename;          // retro_vfs_rename_t
+            public IntPtr truncate;        // retro_vfs_truncate_t
+            public IntPtr stat;            // retro_vfs_stat_t
+            public IntPtr mkdir;           // retro_vfs_mkdir_t
+            public IntPtr opendir;         // retro_vfs_opendir_t
+            public IntPtr readdir;         // retro_vfs_readdir_t
+            public IntPtr dirent_get_name; // retro_vfs_dirent_get_name_t
+            public IntPtr dirent_is_dir;   // retro_vfs_dirent_is_dir_t
+            public IntPtr closedir;        // retro_vfs_closedir_t
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -51,17 +49,17 @@ namespace SK.Libretro
         [StructLayout(LayoutKind.Sequential)]
         private struct retro_led_interface
         {
-            public retro_set_led_state_t set_led_state;
+            public IntPtr set_led_state; // retro_set_led_state_t
         }
 
         [StructLayout(LayoutKind.Sequential)]
         private struct retro_midi_interface
         {
-            public retro_midi_input_enabled_t input_enabled;
-            public retro_midi_output_enabled_t output_enabled;
-            public retro_midi_read_t read;
-            public retro_midi_write_t write;
-            public retro_midi_flush_t flush;
+            public IntPtr input_enabled;  // retro_midi_input_enabled_t
+            public IntPtr output_enabled; // retro_midi_output_enabled_t
+            public IntPtr read;           // retro_midi_read_t
+            public IntPtr write;          // retro_midi_write_t
+            public IntPtr flush;          // retro_midi_flush_t
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -137,13 +135,13 @@ namespace SK.Libretro
         [StructLayout(LayoutKind.Sequential)]
         private struct retro_get_proc_address_interface
         {
-            public retro_get_proc_address_t get_proc_address;
+            public IntPtr get_proc_address; // retro_get_proc_address_t
         }
 
         [StructLayout(LayoutKind.Sequential)]
         private struct retro_log_callback
         {
-            public IntPtr log;
+            public IntPtr log; // retro_log_printf_t
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -177,102 +175,102 @@ namespace SK.Libretro
             public uint width;
             public uint height;
 
-            public retro_camera_start_t start;
-            public retro_camera_stop_t stop;
-            public retro_camera_frame_raw_framebuffer_t frame_raw_framebuffer;
-            public retro_camera_frame_opengl_texture_t frame_opengl_texture;
-            public retro_camera_lifetime_status_t initialized;
-            public retro_camera_lifetime_status_t deinitialized;
+            public IntPtr start;                 // retro_camera_start_t
+            public IntPtr stop;                  // retro_camera_stop_t
+            public IntPtr frame_raw_framebuffer; // retro_camera_frame_raw_framebuffer_t
+            public IntPtr frame_opengl_texture;  // retro_camera_frame_opengl_texture_t
+            public IntPtr initialized;           // retro_camera_lifetime_status_t
+            public IntPtr deinitialized;         // retro_camera_lifetime_status_t
         }
 
         [StructLayout(LayoutKind.Sequential)]
         private struct retro_location_callback
         {
-            public retro_location_start_t start;
-            public retro_location_stop_t stop;
-            public retro_location_get_position_t get_position;
-            public retro_location_set_interval_t set_interval;
+            public IntPtr start;         // retro_location_start_t
+            public IntPtr stop;          // retro_location_stop_t
+            public IntPtr get_position;  // retro_location_get_position_t
+            public IntPtr set_interval;  // retro_location_set_interval_t
 
-            public retro_location_lifetime_status_t initialized;
-            public retro_location_lifetime_status_t deinitialized;
+            public IntPtr initialized;   // retro_location_lifetime_status_t
+            public IntPtr deinitialized; // retro_location_lifetime_status_t
         }
 
         [StructLayout(LayoutKind.Sequential)]
         private struct retro_rumble_interface
         {
-            public retro_set_rumble_state_t set_rumble_state;
+            public IntPtr set_rumble_state; // retro_set_rumble_state_t
         }
 
         [StructLayout(LayoutKind.Sequential)]
         private struct retro_audio_callback
         {
-            public retro_audio_callback_t callback;
-            public retro_audio_set_state_callback_t set_state;
+            public IntPtr callback;  // retro_audio_callback_t
+            public IntPtr set_state; // retro_audio_set_state_callback_t
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct retro_frame_time_callback
         {
             public IntPtr callback; // retro_frame_time_callback_t
-            public retro_usec_t reference;
+            public long reference;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         private struct retro_hw_render_callback
         {
             public retro_hw_context_type context_type;
-            public retro_hw_context_reset_t context_reset;
-            public retro_hw_get_current_framebuffer_t get_current_framebuffer;
-            public retro_hw_get_proc_address_t get_proc_address;
-            public bool depth;
-            public bool stencil;
-            public bool bottom_left_origin;
+            public IntPtr context_reset;           // retro_hw_context_reset_t
+            public IntPtr get_current_framebuffer; // retro_hw_get_current_framebuffer_t
+            public IntPtr get_proc_address;        // retro_hw_get_proc_address_t
+            [MarshalAs(UnmanagedType.U1)] public bool depth;
+            [MarshalAs(UnmanagedType.U1)] public bool stencil;
+            [MarshalAs(UnmanagedType.U1)] public bool bottom_left_origin;
             public uint version_major;
             public uint version_minor;
-            public bool cache_context;
+            [MarshalAs(UnmanagedType.U1)] public bool cache_context;
 
-            public retro_hw_context_reset_t context_destroy;
+            public IntPtr context_destroy; // retro_hw_context_reset_t
 
-            public bool debug_context;
+            [MarshalAs(UnmanagedType.U1)] public bool debug_context;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         private struct retro_keyboard_callback
         {
-            public retro_keyboard_event_t callback;
+            public IntPtr callback; // retro_keyboard_event_t
         }
 
         [StructLayout(LayoutKind.Sequential)]
         private struct retro_disk_control_callback
         {
-            public retro_set_eject_state_t set_eject_state;
-            public retro_get_eject_state_t get_eject_state;
+            public IntPtr set_eject_state; // retro_set_eject_state_t
+            public IntPtr get_eject_state; // retro_get_eject_state_t
 
-            public retro_get_image_index_t get_image_index;
-            public retro_set_image_index_t set_image_index;
-            public retro_get_num_images_t get_num_images;
+            public IntPtr get_image_index; // retro_get_image_index_t
+            public IntPtr set_image_index; // retro_set_image_index_t
+            public IntPtr get_num_images;  // retro_get_num_images_t
 
-            public retro_replace_image_index_t replace_image_index;
-            public retro_add_image_index_t add_image_index;
+            public IntPtr replace_image_index; // retro_replace_image_index_t
+            public IntPtr add_image_index;     // retro_add_image_index_t
         }
 
         [StructLayout(LayoutKind.Sequential)]
         private struct retro_disk_control_ext_callback
         {
-            public retro_set_eject_state_t set_eject_state;
-            public retro_get_eject_state_t get_eject_state;
+            public IntPtr set_eject_state;     // retro_set_eject_state_t
+            public IntPtr get_eject_state;     // retro_get_eject_state_t
 
-            public retro_get_image_index_t get_image_index;
-            public retro_set_image_index_t set_image_index;
-            public retro_get_num_images_t get_num_images;
+            public IntPtr get_image_index;     // retro_get_image_index_t
+            public IntPtr set_image_index;     // retro_set_image_index_t
+            public IntPtr get_num_images;      // retro_get_num_images_t
 
-            public retro_replace_image_index_t replace_image_index;
-            public retro_add_image_index_t add_image_index;
+            public IntPtr replace_image_index; // retro_replace_image_index_t
+            public IntPtr add_image_index;     // retro_add_image_index_t
 
-            public retro_set_initial_image_t set_initial_image;
+            public IntPtr set_initial_image;   // retro_set_initial_image_t
 
-            public retro_get_image_path_t get_image_path;
-            public retro_get_image_label_t get_image_label;
+            public IntPtr get_image_path;      // retro_get_image_path_t
+            public IntPtr get_image_label;     // retro_get_image_label_t
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -362,7 +360,7 @@ namespace SK.Libretro
         private unsafe struct retro_core_options_intl
         {
             [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct)]
-            public IntPtr us; // retro_core_option_definition*
+            public IntPtr us;    // retro_core_option_definition*
             [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct)]
             public IntPtr local; // retro_core_option_definition*
         }
@@ -379,7 +377,7 @@ namespace SK.Libretro
         [StructLayout(LayoutKind.Sequential)]
         private struct retro_framebuffer
         {
-            public IntPtr data;
+            public IntPtr data; // void*
             public uint width;
             public uint height;
             public uint pitch;

@@ -19,6 +19,8 @@ namespace SK.Libretro
         private LibretroCore _core;
         private IntPtr _internalData;
 
+        private string _extractedPath = null;
+
         public bool Start(LibretroCore core, string gameDirectory, string gameName)
         {
             bool result = false;
@@ -37,13 +39,10 @@ namespace SK.Libretro
                     string archivePath = FileSystem.GetAbsolutePath($"{directory}/{gameName}.zip");
                     if (File.Exists(archivePath))
                     {
-                        string extractPath = FileSystem.GetAbsolutePath($"{TempDirectory}/extracted");
-                        if (Directory.Exists(extractPath))
-                        {
-                            Directory.Delete(extractPath, true);
-                        }
-                        System.IO.Compression.ZipFile.ExtractToDirectory(archivePath, extractPath);
-                        gamePath = GetGamePath(extractPath, gameName);
+                        Guid gameGuid = Guid.NewGuid();
+                        System.IO.Compression.ZipFile.ExtractToDirectory(archivePath, $"{ExtractDirectory}/{gameName}_{gameGuid}");
+                        gamePath = GetGamePath($"{ExtractDirectory}/{gameName}_{gameGuid}", gameName);
+                        _extractedPath = gamePath;
                     }
                 }
 
@@ -109,6 +108,11 @@ namespace SK.Libretro
             if (_internalData != IntPtr.Zero)
             {
                 Marshal.FreeHGlobal(_internalData);
+            }
+
+            if (!string.IsNullOrEmpty(_extractedPath) && FileSystem.FileExists(_extractedPath))
+            {
+                Directory.Delete(Path.GetDirectoryName(_extractedPath), true);
             }
         }
 

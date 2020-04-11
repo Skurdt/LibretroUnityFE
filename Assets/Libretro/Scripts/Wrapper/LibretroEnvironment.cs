@@ -25,18 +25,16 @@ namespace SK.Libretro
                 /***********************************************************************************************/
                 case retro_environment.RETRO_ENVIRONMENT_GET_OVERSCAN:
                 {
-                    // TODO: Figure out the value
                     bool* outOverscan = (bool*)data;
-                    *outOverscan = true;
-                    Log.Warning($"[OUT] Overscan: {*outOverscan}", "RETRO_ENVIRONMENT_GET_OVERSCAN");
+                    *outOverscan = !OptionCropOverscan;
+                    Log.Info($"-> Overscan: {!OptionCropOverscan}", "RETRO_ENVIRONMENT_GET_OVERSCAN");
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_CAN_DUPE:
                 {
-                    // TODO: Figure out what that is...
                     bool* outCanDupe = (bool*)data;
                     *outCanDupe = true;
-                    Log.Warning($"[OUT] CanDupe: {*outCanDupe}", "RETRO_ENVIRONMENT_GET_CAN_DUPE");
+                    Log.Info($"-> CanDupe: {*outCanDupe}", "RETRO_ENVIRONMENT_GET_CAN_DUPE");
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY:
@@ -44,7 +42,7 @@ namespace SK.Libretro
                     char** outSystemDirectory = (char**)data;
                     string systemDirectory = FileSystem.GetAbsolutePath(SystemDirectory);
                     *outSystemDirectory = StringToChars(systemDirectory);
-                    Log.Info($"[OUT] SystemDirectory: {systemDirectory}", "RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY");
+                    Log.Info($"-> SystemDirectory: {systemDirectory}", "RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY");
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_VARIABLE:
@@ -78,26 +76,31 @@ namespace SK.Libretro
                     *outVariableUpdate = false;
                 }
                 break;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_LIBRETRO_PATH:
-                //    break;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE:
-                //    break;
+                case retro_environment.RETRO_ENVIRONMENT_GET_LIBRETRO_PATH:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_LIBRETRO_PATH");
+                    return false;
+                }
+                case retro_environment.RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE");
+                    return false;
+                }
                 case retro_environment.RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES:
                 {
-                    Log.Warning("RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES");
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES");
                     //ulong* outBitmask = (ulong*)data;
                     //*outBitmask       = (1 << (int)RetroDevice.RETRO_DEVICE_JOYPAD) | (1 << (int)RetroDevice.RETRO_DEVICE_ANALOG) | (1 << (int)RetroDevice.RETRO_DEVICE_KEYBOARD);
-                    return false; //TODO: Remove when implemented!
+                    return false;
                 }
-                //break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_SENSOR_INTERFACE:
                 {
-                    Log.Warning("Environment not supported: RETRO_ENVIRONMENT_GET_SENSOR_INTERFACE");
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_SENSOR_INTERFACE");
                     return false;
                 }
                 case retro_environment.RETRO_ENVIRONMENT_GET_CAMERA_INTERFACE:
                 {
-                    Log.Warning("Environment not supported: RETRO_ENVIRONMENT_GET_CAMERA_INTERFACE");
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_CAMERA_INTERFACE");
                     return false;
                 }
                 case retro_environment.RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
@@ -120,7 +123,7 @@ namespace SK.Libretro
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_LOCATION_INTERFACE:
                 {
-                    Log.Warning("Environment not supported: RETRO_ENVIRONMENT_GET_LOCATION_INTERFACE");
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_LOCATION_INTERFACE");
                     return false;
                 }
                 case retro_environment.RETRO_ENVIRONMENT_GET_CORE_ASSETS_DIRECTORY:
@@ -128,7 +131,7 @@ namespace SK.Libretro
                     char** outCoreAssetsDirectory = (char**)data;
                     string coreAssetsDirectory = FileSystem.GetAbsolutePath(SystemDirectory);
                     *outCoreAssetsDirectory = StringToChars(coreAssetsDirectory);
-                    Log.Info($"[OUT] CoreAssetsDirectory: {coreAssetsDirectory}", "RETRO_ENVIRONMENT_GET_CORE_ASSETS_DIRECTORY");
+                    Log.Info($"-> CoreAssetsDirectory: {coreAssetsDirectory}", "RETRO_ENVIRONMENT_GET_CORE_ASSETS_DIRECTORY");
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY:
@@ -136,21 +139,39 @@ namespace SK.Libretro
                     char** outSaveDirectory = (char**)data;
                     string saveDirectory = FileSystem.GetAbsolutePath(SavesDirectory);
                     *outSaveDirectory = StringToChars(saveDirectory);
-                    Log.Info($"[OUT] SaveDirectory: {saveDirectory}", "RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY");
+                    Log.Info($"-> SaveDirectory: {saveDirectory}", "RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY");
                 }
                 break;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_USERNAME:
-                //    break;
+                case retro_environment.RETRO_ENVIRONMENT_GET_USERNAME:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_USERNAME");
+                    return false;
+                }
                 case retro_environment.RETRO_ENVIRONMENT_GET_LANGUAGE:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_LANGUAGE");
                     return false;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_CURRENT_SOFTWARE_FRAMEBUFFER:
-                //    break;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_HW_RENDER_INTERFACE:
-                //    break;
+                }
+                case retro_environment.RETRO_ENVIRONMENT_GET_CURRENT_SOFTWARE_FRAMEBUFFER:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_CURRENT_SOFTWARE_FRAMEBUFFER");
+                    return false;
+                }
+                case retro_environment.RETRO_ENVIRONMENT_GET_HW_RENDER_INTERFACE:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_HW_RENDER_INTERFACE");
+                    return false;
+                }
                 case retro_environment.RETRO_ENVIRONMENT_GET_VFS_INTERFACE:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_VFS_INTERFACE");
                     return false;
+                }
                 case retro_environment.RETRO_ENVIRONMENT_GET_LED_INTERFACE:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_LED_INTERFACE");
                     return false;
+                }
                 case retro_environment.RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE:
                 {
                     int result = 0;
@@ -161,24 +182,43 @@ namespace SK.Libretro
                     *outAudioVideoEnabled = result;
                 }
                 break;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_MIDI_INTERFACE:
-                //    break;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_FASTFORWARDING:
-                //    break;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_TARGET_REFRESH_RATE:
-                //    break;
-                case retro_environment.RETRO_ENVIRONMENT_GET_INPUT_BITMASKS:
+                case retro_environment.RETRO_ENVIRONMENT_GET_MIDI_INTERFACE:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_MIDI_INTERFACE");
                     return false;
+                }
+                case retro_environment.RETRO_ENVIRONMENT_GET_FASTFORWARDING:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_FASTFORWARDING");
+                    return false;
+                }
+                case retro_environment.RETRO_ENVIRONMENT_GET_TARGET_REFRESH_RATE:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_TARGET_REFRESH_RATE");
+                    return false;
+                }
+                case retro_environment.RETRO_ENVIRONMENT_GET_INPUT_BITMASKS:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_INPUT_BITMASKS");
+                    return false;
+                }
                 case retro_environment.RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
                 {
                     uint* outVersion = (uint*)data;
                     *outVersion = RETRO_API_VERSION;
+                    Log.Info($"-> Version: {RETRO_API_VERSION}", "RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION");
                 }
                 break;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_PREFERRED_HW_RENDER:
-                //    break;
-                //case retro_environment.RETRO_ENVIRONMENT_GET_DISK_CONTROL_INTERFACE_VERSION:
-                //    break;
+                case retro_environment.RETRO_ENVIRONMENT_GET_PREFERRED_HW_RENDER:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_PREFERRED_HW_RENDER");
+                    return false;
+                }
+                case retro_environment.RETRO_ENVIRONMENT_GET_DISK_CONTROL_INTERFACE_VERSION:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_DISK_CONTROL_INTERFACE_VERSION");
+                    return false;
+                }
 
                 /************************************************************************************************
                 / Data passed from the core to the frontend
@@ -190,7 +230,7 @@ namespace SK.Libretro
                     // Result: 0, 90, 180, 270 degrees
                     uint* inRotation = (uint*)data;
                     Core.Rotation = (int)*inRotation;
-                    Log.Warning($"[IN] Rotation: {*inRotation}", "RETRO_ENVIRONMENT_SET_ROTATION");
+                    Log.Warning($"<- Rotation: {*inRotation}", "RETRO_ENVIRONMENT_SET_ROTATION");
                     return false;
                 }
                 //break;
@@ -198,13 +238,15 @@ namespace SK.Libretro
                 {
                     // TODO: Do I need something from this?
                     retro_message* inMessage = (retro_message*)data;
-                    Log.Warning($"[IN] Message: {CharsToString(inMessage->msg)}", "RETRO_ENVIRONMENT_SET_MESSAGE");
+                    Log.Warning($"<- Message: {CharsToString(inMessage->msg)}", "RETRO_ENVIRONMENT_SET_MESSAGE");
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL:
                 {
                     int* inPerformanceLevel = (int*)data;
                     Core.PerformanceLevel = *inPerformanceLevel;
+                    Log.Warning($"Environment not fully implemented!", "RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL");
+                    Log.Warning($"<- PerformanceLevel: {Core.PerformanceLevel}", "RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL");
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
@@ -305,12 +347,23 @@ namespace SK.Libretro
                     Core.HasInputDescriptors = true;
                 }
                 break;
-                //case retro_environment.RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK:
-                //    break;
-                //case retro_environment.RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:
-                //    return false;
-                //case retro_environment.RETRO_ENVIRONMENT_SET_HW_RENDER:
-                //    return false;
+                case retro_environment.RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK");
+                    return false;
+                }
+                case retro_environment.RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE");
+                    return false;
+                }
+                case retro_environment.RETRO_ENVIRONMENT_SET_HW_RENDER:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_SET_HW_RENDER");
+                    retro_hw_render_callback* inHwRenderCallback = (retro_hw_render_callback*)data;
+                    Log.Error($"Context type: {inHwRenderCallback->context_type}", "RETRO_ENVIRONMENT_SET_HW_RENDER");
+                    return false;
+                }
                 case retro_environment.RETRO_ENVIRONMENT_SET_VARIABLES:
                 {
                     try
@@ -361,16 +414,22 @@ namespace SK.Libretro
                     Core.SetFrameTimeCallback(inFrameTimeCallback->callback, inFrameTimeCallback->reference);
                 }
                 break;
-                //case retro_environment.RETRO_ENVIRONMENT_SET_AUDIO_CALLBACK:
-                //    break;
+                case retro_environment.RETRO_ENVIRONMENT_SET_AUDIO_CALLBACK:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_SET_AUDIO_CALLBACK");
+                    return false;
+                }
                 case retro_environment.RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO:
                 {
                     retro_system_av_info* inSystemAVnfo = (retro_system_av_info*)data;
                     Game.SystemAVInfo = *inSystemAVnfo;
                 }
                 break;
-                //case retro_environment.RETRO_ENVIRONMENT_SET_PROC_ADDRESS_CALLBACK:
-                //    break;
+                case retro_environment.RETRO_ENVIRONMENT_SET_PROC_ADDRESS_CALLBACK:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_SET_PROC_ADDRESS_CALLBACK");
+                    return false;
+                }
                 //case retro_environment.RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO:
                 //{
                 //    //RetroSubsystemInfo* subsytemInfo = (RetroSubsystemInfo*)data;
@@ -487,8 +546,11 @@ namespace SK.Libretro
                     }
                 }
                 break;
-                //case retro_environment.RETRO_ENVIRONMENT_SET_MEMORY_MAPS:
-                //    break;
+                case retro_environment.RETRO_ENVIRONMENT_SET_MEMORY_MAPS:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_SET_MEMORY_MAPS");
+                    return false;
+                }
                 case retro_environment.RETRO_ENVIRONMENT_SET_GEOMETRY:
                 {
                     if (Game.Running)
@@ -505,18 +567,31 @@ namespace SK.Libretro
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_SUPPORT_ACHIEVEMENTS:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_SET_SUPPORT_ACHIEVEMENTS");
                     return false;
-                //case retro_environment.RETRO_ENVIRONMENT_SET_HW_RENDER_CONTEXT_NEGOTIATION_INTERFACE:
-                //    break;
+                }
+                case retro_environment.RETRO_ENVIRONMENT_SET_HW_RENDER_CONTEXT_NEGOTIATION_INTERFACE:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_SET_HW_RENDER_CONTEXT_NEGOTIATION_INTERFACE");
+                    return false;
+                }
                 case retro_environment.RETRO_ENVIRONMENT_SET_SERIALIZATION_QUIRKS:
                 {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_SET_SERIALIZATION_QUIRKS");
                     ulong* quirk = (ulong*)data;
+                    return false;
                 }
-                break;
-                //case retro_environment.RETRO_ENVIRONMENT_SET_HW_SHARED_CONTEXT:
-                //    break;
-                //case retro_environment.RETRO_ENVIRONMENT_SET_CORE_OPTIONS:
-                //    break;
+                case retro_environment.RETRO_ENVIRONMENT_SET_HW_SHARED_CONTEXT:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_SET_HW_SHARED_CONTEXT");
+                    return false;
+                }
+                case retro_environment.RETRO_ENVIRONMENT_SET_CORE_OPTIONS:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_SET_CORE_OPTIONS");
+                    return false;
+                }
                 case retro_environment.RETRO_ENVIRONMENT_SET_CORE_OPTIONS_INTL:
                 {
                     retro_core_options_intl inOptionsIntl = Marshal.PtrToStructure<retro_core_options_intl>((IntPtr)data);
@@ -573,15 +648,24 @@ namespace SK.Libretro
                     SaveCoreOptionsFile();
                 }
                 break;
-                //case retro_environment.RETRO_ENVIRONMENT_SET_CORE_OPTIONS_DISPLAY:
-                //    break;
-                //case retro_environment.RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT_INTERFACE:
-                //    break;
-                //case retro_environment.RETRO_ENVIRONMENT_SHUTDOWN:
-                //    break;
+                case retro_environment.RETRO_ENVIRONMENT_SET_CORE_OPTIONS_DISPLAY:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_SET_CORE_OPTIONS_DISPLAY");
+                    return false;
+                }
+                case retro_environment.RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT_INTERFACE:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT_INTERFACE");
+                    return false;
+                }
+                case retro_environment.RETRO_ENVIRONMENT_SHUTDOWN:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_SHUTDOWN");
+                    return false;
+                }
                 default:
                 {
-                    Log.Error($"Not implemented: {Enum.GetName(typeof(retro_environment), cmd)}", "RetroEnvironmentCallback");
+                    Log.Error($"Environment unknown: {cmd}", "RetroEnvironmentCallback");
                     return false;
                 }
             }

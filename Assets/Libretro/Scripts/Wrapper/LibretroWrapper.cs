@@ -11,7 +11,10 @@ namespace SK.Libretro
         public static readonly string SystemDirectory  = $"{WrapperDirectory}/system";
         public static readonly string SavesDirectory   = $"{WrapperDirectory}/saves";
         public static readonly string TempDirectory    = $"{WrapperDirectory}/temp";
+        public static readonly string ExtractDirectory = $"{TempDirectory}/extracted";
         public static readonly string CoreOptionsFile  = $"{WrapperDirectory}/core_options.json";
+
+        public bool OptionCropOverscan = true;
 
         public IGraphicsProcessor GraphicsProcessor;
         public IAudioProcessor AudioProcessor;

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace SK.Examples.Common
@@ -17,8 +16,8 @@ namespace SK.Examples.Common
     {
         [HideInInspector] public Game Game;
 
-        [Range(0.5f, 2f)]
-        [SerializeField] private float _timeScale = 1.0f;
+        [SerializeField] [Range(0.5f, 2f)] private float _timeScale = 1.0f;
+        [SerializeField] private bool _cropOverscan = true;
 
         public Libretro.Wrapper Wrapper { get; private set; }
 
@@ -72,7 +71,11 @@ namespace SK.Examples.Common
                         Transform screenTransform = modelTransform.GetChild(1);
                         if (screenTransform.TryGetComponent(out _rendererComponent))
                         {
-                            Wrapper = new Libretro.Wrapper();
+                            Wrapper = new Libretro.Wrapper
+                            {
+                                OptionCropOverscan = _cropOverscan
+                            };
+
                             if (Wrapper.StartGame(Game.Core, Game.Directory, Game.Name))
                             {
                                 ActivateGraphics();
@@ -99,7 +102,6 @@ namespace SK.Examples.Common
                 _rendererComponent.material = _originalMaterial;
             }
 
-            CancelInvoke();
             Wrapper?.StopGame();
             Wrapper = null;
         }

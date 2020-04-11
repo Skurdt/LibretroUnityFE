@@ -93,62 +93,53 @@ namespace SK.Libretro
         {
             bool result = false;
 
-            string corePath = FileSystem.GetAbsolutePath($"{CoresDirectory}/{coreName}_libretro.dll");
-            if (FileSystem.FileExists(corePath))
+            try
             {
-                string instancePath = FileSystem.GetAbsolutePath($"{TempDirectory}/{coreName}_{Guid.NewGuid()}.dll");
-                File.Copy(corePath, instancePath);
-                if (_dll.Load(instancePath))
+                string corePath = FileSystem.GetAbsolutePath($"{CoresDirectory}/{coreName}_libretro.dll");
+                if (FileSystem.FileExists(corePath))
                 {
-                    if (GetCoreFunctions())
+                    string instancePath = FileSystem.GetAbsolutePath($"{TempDirectory}/{coreName}_{Guid.NewGuid()}.dll");
+                    File.Copy(corePath, instancePath);
+
+                    _dll.Load(instancePath);
+
+                    GetCoreFunctions();
+
+                    ApiVersion = retro_api_version();
+
+                    SetCallbacks(wrapper);
+
+                    retro_system_info systemInfo = new retro_system_info();
+                    retro_get_system_info(ref systemInfo);
+
+                    CoreName = CharsToString(systemInfo.library_name);
+                    CoreVersion = CharsToString(systemInfo.library_version);
+                    if (systemInfo.valid_extensions != null)
                     {
-                        try
-                        {
-                            ApiVersion = retro_api_version();
-
-                            SetCallbacks(wrapper);
-
-                            retro_system_info systemInfo = new retro_system_info();
-                            retro_get_system_info(ref systemInfo);
-
-                            CoreName = CharsToString(systemInfo.library_name);
-                            CoreVersion = CharsToString(systemInfo.library_version);
-                            if (systemInfo.valid_extensions != null)
-                            {
-                                ValidExtensions = CharsToString(systemInfo.valid_extensions).Split('|');
-                            }
-                            NeedFullPath = systemInfo.need_fullpath;
-                            BlockExtract = systemInfo.block_extract;
-
-                            retro_set_environment(_environmentCallback);
-                            retro_set_video_refresh(_videoRefreshCallback);
-                            retro_set_audio_sample(_audioSampleCallback);
-                            retro_set_audio_sample_batch(_audioSampleBatchCallback);
-                            retro_set_input_poll(_inputPollCallback);
-                            retro_set_input_state(_inputStateCallback);
-                            retro_init();
-
-                            Initialized = true;
-                            result = true;
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Exception(e, "Libretro.LibretroCore.Start");
-                        }
+                        ValidExtensions = CharsToString(systemInfo.valid_extensions).Split('|');
                     }
-                    else
-                    {
-                        Log.Error("One of the function pointers couldn't be retrieved for core '{coreName}'.", "Libretro.LibretroCore.Start");
-                    }
+                    NeedFullPath = systemInfo.need_fullpath;
+                    BlockExtract = systemInfo.block_extract;
+
+                    retro_set_environment(_environmentCallback);
+                    retro_init();
+                    retro_set_video_refresh(_videoRefreshCallback);
+                    retro_set_audio_sample(_audioSampleCallback);
+                    retro_set_audio_sample_batch(_audioSampleBatchCallback);
+                    retro_set_input_poll(_inputPollCallback);
+                    retro_set_input_state(_inputStateCallback);
+
+                    Initialized = true;
+                    result = true;
                 }
                 else
                 {
-                    Log.Error($"Failed to load library for core '{coreName}' .", "Libretro.LibretroCore.Start");
+                    Log.Error($"Core '{coreName}' at path '{corePath}' not found.", "Libretro.LibretroCore.Start");
                 }
             }
-            else
+            catch (Exception e )
             {
-                Log.Error($"Core '{coreName}' at path '{corePath}' not found.", "Libretro.LibretroCore.Start");
+                Log.Exception(e, "Libretro.LibretroCore.Start");
             }
 
             return result;
@@ -178,10 +169,8 @@ namespace SK.Libretro
             }
         }
 
-        private bool GetCoreFunctions()
+        private void GetCoreFunctions()
         {
-            bool result = false;
-
             try
             {
                 retro_set_environment            = _dll.GetFunction<retro_set_environment_t>("retro_set_environment");
@@ -209,15 +198,11 @@ namespace SK.Libretro
                 retro_get_region                 = _dll.GetFunction<retro_get_region_t>("retro_get_region");
                 retro_get_memory_data            = _dll.GetFunction<retro_get_memory_data_t>("retro_get_memory_data");
                 retro_get_memory_size            = _dll.GetFunction<retro_get_memory_size_t>("retro_get_memory_size");
-
-                result = true;
             }
             catch (Exception e)
             {
-                Log.Exception(e, "Libretro.LibretroCore.GetCoreFunctions");
+                throw e;
             }
-
-            return result;
         }
 
         private unsafe void SetCallbacks(Wrapper wrapper)
@@ -228,15 +213,14 @@ namespace SK.Libretro
             _audioSampleBatchCallback = wrapper.RetroAudioSampleBatchCallback;
             _inputPollCallback        = wrapper.RetroInputPollCallback;
             _inputStateCallback       = wrapper.RetroInputStateCallback;
-
-            _logPrintfCallback       = wrapper.RetroLogPrintf;
-            _perfGetTimeUsecCallback = wrapper.RetroPerfGetTimeUsec;
-            _perfGetCounterCallback  = wrapper.RetroPerfGetCounter;
-            _getCPUFeaturesCallback  = wrapper.RetroGetCPUFeatures;
-            _perfLogCallback         = wrapper.RetroPerfLog;
-            _perfRegisterCallback    = wrapper.RetroPerfRegister;
-            _perfStartCallback       = wrapper.RetroPerfStart;
-            _perfStopCallback        = wrapper.RetroPerfStop;
+            _logPrintfCallback        = wrapper.RetroLogPrintf;
+            _perfGetTimeUsecCallback  = wrapper.RetroPerfGetTimeUsec;
+            _perfGetCounterCallback   = wrapper.RetroPerfGetCounter;
+            _getCPUFeaturesCallback   = wrapper.RetroGetCPUFeatures;
+            _perfLogCallback          = wrapper.RetroPerfLog;
+            _perfRegisterCallback     = wrapper.RetroPerfRegister;
+            _perfStartCallback        = wrapper.RetroPerfStart;
+            _perfStopCallback         = wrapper.RetroPerfStop;
         }
 
         public IntPtr GetLogCallback() => Marshal.GetFunctionPointerForDelegate(_logPrintfCallback);
@@ -251,6 +235,9 @@ namespace SK.Libretro
 
         public void SetFrameTimeCallback(IntPtr callback, long reference)
         {
+            _ = callback;
+            _ = reference;
+            Log.Warning("Not Implemented", "Libretro.LibretroCore.SetFrameTimeCallback");
         }
     }
 }

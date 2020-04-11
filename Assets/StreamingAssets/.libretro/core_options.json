@@ -1,6 +1,71 @@
 {
     "Cores": [
         {
+            "CoreName": "Atari800",
+            "Options": [
+                "atari800_artifacting;disabled;disabled|enabled;",
+                "atari800_cassboot;disabled;disabled|enabled;",
+                "atari800_internalbasic;disabled;disabled|enabled;",
+                "atari800_keyboard;poll;poll|callback;",
+                "atari800_ntscpal;NTSC;NTSC|PAL;",
+                "atari800_opt1;disabled;disabled|enabled;",
+                "atari800_opt2;disabled;disabled|enabled;",
+                "atari800_resolution;336x240;336x240|320x240|384x240|384x272|384x288|400x300;",
+                "atari800_sioaccel;disabled;disabled|enabled;",
+                "atari800_system;400/800 (OS B);400/800 (OS B)|800XL (64K)|130XE (128K)|5200;"
+            ]
+        },
+        {
+            "CoreName": "blueMSX",
+            "Options": [
+                "bluemsx_auto_rewind_cas;ON;ON|OFF",
+                "bluemsx_cartmapper;Auto;Auto|Normal|mirrored|basic|0x4000|0xC000|ascii8|ascii8sram|ascii16|ascii16sram|ascii16nf|konami4|konami4nf|konami5|konamisynth|korean80|korean90|korean126|MegaFlashRomScc|MegaFlashRomSccPlus|msxdos2|scc|sccexpanded|sccmirrored|sccplus|snatcher|sdsnatcher|SegaBasic|SG1000|SG1000Castle|SG1000RamA|SG1000RamB|SC3000",
+                "bluemsx_msxtype;Auto;Auto|MSX|MSXturboR|MSX2|MSX2+|SEGA - SG-1000|SEGA - SC-3000|SEGA - SF-7000|SVI - Spectravideo SVI-318|SVI - Spectravideo SVI-328|SVI - Spectravideo SVI-328 MK2|ColecoVision|Coleco (Spectravideo SVI-603)",
+                "bluemsx_nospritelimits;OFF;OFF|ON",
+                "bluemsx_overscan;disabled;disabled|enabled|MSX2",
+                "bluemsx_vdp_synctype;Auto;Auto|50Hz|60Hz",
+                "bluemsx_ym2413_enable;enabled;enabled|disabled"
+            ]
+        },
+        {
+            "CoreName": "EightyOne",
+            "Options": [
+                "81_8_16_contents;auto;auto|ROM shadow|RAM|dK'tronics 4K Graphics ROM + 4K RAM;",
+                "81_chroma_81;auto;auto|disabled|enabled;",
+                "81_fast_load;enabled;enabled|disabled;",
+                "81_highres;auto;auto|none|WRX;",
+                "81_joypad_a;auto;auto|default|new line|shift|space|.|0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z;",
+                "81_joypad_b;auto;auto|default|new line|shift|space|.|0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z;",
+                "81_joypad_down;auto;auto|default|new line|shift|space|.|0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z;",
+                "81_joypad_l2;auto;auto|default|new line|shift|space|.|0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z;",
+                "81_joypad_left;auto;auto|default|new line|shift|space|.|0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z;",
+                "81_joypad_r2;auto;auto|default|new line|shift|space|.|0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z;",
+                "81_joypad_right;auto;auto|default|new line|shift|space|.|0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z;",
+                "81_joypad_up;auto;auto|default|new line|shift|space|.|0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z;",
+                "81_joypad_x;auto;auto|default|new line|shift|space|.|0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z;",
+                "81_joypad_y;auto;auto|default|new line|shift|space|.|0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z;",
+                "81_key_hold_time;100;100|300|500|1000;",
+                "81_keybovl_transp;enabled;enabled|disabled;",
+                "81_sound;auto;auto|none|Zon X-81;",
+                "81_video_presets;clean;clean|tv|noisy;"
+            ]
+        },
+        {
+            "CoreName": "Libretro 3DEngine",
+            "Options": [
+                "3dengine-camera-enable;disabled;disabled|enabled;",
+                "3dengine-camera-type;texture;texture|raw framebuffer;",
+                "3dengine-cube-size;0;0|1|2|4|8|16|32|64|128;",
+                "3dengine-cube-stride;2.0;2.0|3.0|4.0|5.0|6.0|7.0|8.0;",
+                "3dengine-location-camera-control-enable;disabled;disabled|enabled;",
+                "3dengine-location-display-position;disabled;disabled|enabled;",
+                "3dengine-location-enable;disabled;disabled|enabled;",
+                "3dengine-modelviewer-discard-hack;disabled;disabled|enabled;",
+                "3dengine-resolution;320x240;320x240|360x480|480x272|512x384|512x512|640x240|640x448|640x480|720x576|800x600|960x720|1024x768|1024x1024|1280x720|1280x960|1600x1200|1920x1080|1920x1440|1920x1600|2048x1152|2048x1536|2048x2048|320x240;",
+                "3dengine-sensor-enable;disabled;disabled|enabled;"
+            ]
+        },
+        {
             "CoreName": "MAME",
             "Options": [
                 "mame_alternate_renderer;disabled;disabled|enabled;",
@@ -57,6 +122,52 @@
                 "mame2003-plus_vector_intensity;1.5;1.5|0.5|1|2|2.5|3;",
                 "mame2003-plus_vector_resolution;1600x1200;1024x768|640x480|1280x960|1440x1080|1600x1200|original;",
                 "mame2003-plus_vector_translucency;enabled;enabled|disabled;"
+            ]
+        },
+        {
+            "CoreName": "Snes9x",
+            "Options": [
+                "snes9x_aspect;4:3;4:3|uncorrected|auto|ntsc|pal",
+                "snes9x_audio_interpolation;gaussian;gaussian|cubic|sinc|none|linear",
+                "snes9x_blargg;disabled;disabled|monochrome|rf|composite|s-video|rgb",
+                "snes9x_block_invalid_vram_access;enabled;enabled|disabled",
+                "snes9x_echo_buffer_hack;disabled;disabled|enabled",
+                "snes9x_gfx_clip;enabled;enabled|disabled",
+                "snes9x_gfx_hires;enabled;enabled|disabled",
+                "snes9x_gfx_transp;enabled;enabled|disabled",
+                "snes9x_hires_blend;disabled;disabled|merge|blur",
+                "snes9x_justifier1_color;Blue;Blue|Blue (blend)|Violet|Violet (blend)|Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)|White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)",
+                "snes9x_justifier1_crosshair;4;0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16",
+                "snes9x_justifier2_color;Pink;Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)|White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)|Blue|Blue (blend)|Violet|Violet (blend)",
+                "snes9x_justifier2_crosshair;4;0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16",
+                "snes9x_layer_1;enabled;enabled|disabled",
+                "snes9x_layer_2;enabled;enabled|disabled",
+                "snes9x_layer_3;enabled;enabled|disabled",
+                "snes9x_layer_4;enabled;enabled|disabled",
+                "snes9x_layer_5;enabled;enabled|disabled",
+                "snes9x_lightgun_mode;Lightgun;Lightgun|Touchscreen",
+                "snes9x_overclock_cycles;disabled;disabled|light|compatible|max",
+                "snes9x_overclock_superfx;100%;50%|60%|70%|80%|90%|100%|150%|200%|250%|300%|350%|400%|450%|500%",
+                "snes9x_overscan;enabled;enabled|disabled|auto",
+                "snes9x_randomize_memory;disabled;disabled|enabled",
+                "snes9x_reduce_sprite_flicker;disabled;disabled|enabled",
+                "snes9x_region;auto;auto|ntsc|pal",
+                "snes9x_rifle_color;White;White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)|Blue|Blue (blend)|Violet|Violet (blend)|Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)",
+                "snes9x_rifle_crosshair;2;0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16",
+                "snes9x_show_advanced_av_settings;disabled;enabled|disabled",
+                "snes9x_show_lightgun_settings;disabled;enabled|disabled",
+                "snes9x_sndchan_1;enabled;enabled|disabled",
+                "snes9x_sndchan_2;enabled;enabled|disabled",
+                "snes9x_sndchan_3;enabled;enabled|disabled",
+                "snes9x_sndchan_4;enabled;enabled|disabled",
+                "snes9x_sndchan_5;enabled;enabled|disabled",
+                "snes9x_sndchan_6;enabled;enabled|disabled",
+                "snes9x_sndchan_7;enabled;enabled|disabled",
+                "snes9x_sndchan_8;enabled;enabled|disabled",
+                "snes9x_superscope_color;White;White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)|Blue|Blue (blend)|Violet|Violet (blend)|Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)",
+                "snes9x_superscope_crosshair;2;0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16",
+                "snes9x_superscope_reverse_buttons;disabled;disabled|enabled",
+                "snes9x_up_down_allowed;disabled;disabled|enabled"
             ]
         }
     ]

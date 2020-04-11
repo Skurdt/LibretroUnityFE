@@ -8,7 +8,7 @@ namespace SK.Libretro.Utilities
 
         protected IntPtr _nativeHandle = IntPtr.Zero;
 
-        public abstract bool Load(string path);
+        public abstract void Load(string path);
         public abstract T GetFunction<T>(string functionName) where T : Delegate;
         public abstract void Free();
     }

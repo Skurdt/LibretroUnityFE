@@ -175,10 +175,6 @@ namespace SK.Libretro
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_WHEELDOWN:
                 {
                     result = FloatToShort(InputProcessor.MouseWheelDelta(port, 0));
-                    if (result != 0f)
-                    {
-                        Debug.Log(result);
-                    }
                 }
                 break;
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_MIDDLE:
