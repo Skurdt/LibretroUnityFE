@@ -200,6 +200,100 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 26336453}
   m_Mesh: {fileID: -6578603656803368000, guid: fe110bce40a1dbd479dd74f9d3116234, type: 3}
+--- !u!1001 &55353052
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3916293086420498493, guid: 1bae9eae60c713d4d89eacef8296a999,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916293086420498493, guid: 1bae9eae60c713d4d89eacef8296a999,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916293086420498493, guid: 1bae9eae60c713d4d89eacef8296a999,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916293086653659875, guid: 1bae9eae60c713d4d89eacef8296a999,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916293086653659875, guid: 1bae9eae60c713d4d89eacef8296a999,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916293086997602440, guid: 1bae9eae60c713d4d89eacef8296a999,
+        type: 3}
+      propertyPath: m_Name
+      value: UI
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916293086997602447, guid: 1bae9eae60c713d4d89eacef8296a999,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916293086997602447, guid: 1bae9eae60c713d4d89eacef8296a999,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916293086997602447, guid: 1bae9eae60c713d4d89eacef8296a999,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916293086997602447, guid: 1bae9eae60c713d4d89eacef8296a999,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916293086997602447, guid: 1bae9eae60c713d4d89eacef8296a999,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916293086997602447, guid: 1bae9eae60c713d4d89eacef8296a999,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916293086997602447, guid: 1bae9eae60c713d4d89eacef8296a999,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916293086997602447, guid: 1bae9eae60c713d4d89eacef8296a999,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916293086997602447, guid: 1bae9eae60c713d4d89eacef8296a999,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916293086997602447, guid: 1bae9eae60c713d4d89eacef8296a999,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916293086997602447, guid: 1bae9eae60c713d4d89eacef8296a999,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1bae9eae60c713d4d89eacef8296a999, type: 3}
 --- !u!1 &122051328
 GameObject:
   m_ObjectHideFlags: 0
@@ -1243,6 +1337,8 @@ MonoBehaviour:
     Core: mame2003_plus
     Directory: D:/mame2003-plus/roms
     Name: tempest
+  _timeScale: 1
+  _cropOverscan: 1
 --- !u!54 &593039302
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1308,6 +1404,8 @@ MonoBehaviour:
     Core: mame2003_plus
     Directory: D:/mame2003-plus/roms
     Name: ssf2
+  _timeScale: 1
+  _cropOverscan: 1
 --- !u!54 &647342618
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1513,7 +1611,7 @@ Transform:
   - {fileID: 593039300}
   - {fileID: 647342616}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1163974859
 GameObject:
@@ -1743,7 +1841,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1248961495
 GameObject:
@@ -1873,6 +1971,8 @@ MonoBehaviour:
     Core: mame2003_plus
     Directory: D:/mame2003-plus/roms
     Name: pacman
+  _timeScale: 1
+  _cropOverscan: 1
 --- !u!54 &1424017730
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2476,7 +2576,7 @@ PrefabInstance:
     - target: {fileID: 7795464710566199421, guid: 9fc10383958895342a5df66b79626ef4,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7795464710566199421, guid: 9fc10383958895342a5df66b79626ef4,
         type: 3}

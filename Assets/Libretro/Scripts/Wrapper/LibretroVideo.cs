@@ -30,26 +30,25 @@ namespace SK.Libretro
         {
             if (GraphicsProcessor != null)
             {
-                int intWidth = (int)width;
+                int intWidth  = (int)width;
                 int intHeight = (int)height;
-                int intPitch = (int)pitch;
+                int intPitch  = (int)pitch;
 
                 switch (Game.PixelFormat)
                 {
                     case retro_pixel_format.RETRO_PIXEL_FORMAT_0RGB1555:
                     {
-                        GraphicsProcessor.ProcessFrame0RGB1555((ushort*)data, intWidth, intHeight, intPitch / sizeof(ushort));
+                        GraphicsProcessor.ProcessFrame0RGB1555((ushort*)data, intWidth, intHeight, intPitch);
                     }
                     break;
                     case retro_pixel_format.RETRO_PIXEL_FORMAT_XRGB8888:
                     {
-
-                        GraphicsProcessor.ProcessFrameARGB8888((uint*)data, intWidth, intHeight, intPitch / sizeof(uint));
+                        GraphicsProcessor.ProcessFrameXRGB8888((uint*)data, intWidth, intHeight, intPitch);
                     }
                     break;
                     case retro_pixel_format.RETRO_PIXEL_FORMAT_RGB565:
                     {
-                        GraphicsProcessor.ProcessFrameRGB565((ushort*)data, intWidth, intHeight, intPitch / sizeof(ushort));
+                        GraphicsProcessor.ProcessFrameRGB565((ushort*)data, intWidth, intHeight, intPitch);
                     }
                     break;
                     default:

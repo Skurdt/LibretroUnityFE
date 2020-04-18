@@ -165,5 +165,11 @@ namespace SK.Examples.Common
         {
             Wrapper?.DeactivateInput();
         }
+
+        public void SetVideoUseFiltering(bool filtering)
+        {
+            Libretro.UnityGraphicsProcessor.VideoFilterMode = filtering ? FilterMode.Trilinear : FilterMode.Point;
+            GameObject.Find("VideoFilteringValue").GetComponent<UnityEngine.UI.Text>().text = filtering.ToString();
+        }
     }
 }

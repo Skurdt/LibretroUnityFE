@@ -1,4 +1,4 @@
-// GENERATED AUTOMATICALLY FROM 'Assets/LibretroControls.inputactions'
+// GENERATED AUTOMATICALLY FROM 'Assets/Libretro/LibretroControls.inputactions'
 
 using System;
 using System.Collections;
