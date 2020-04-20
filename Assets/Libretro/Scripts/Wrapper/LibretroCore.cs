@@ -120,7 +120,13 @@ namespace SK.Libretro
                 string corePath = FileSystem.GetAbsolutePath($"{CoresDirectory}/{coreName}_libretro.dll");
                 if (FileSystem.FileExists(corePath))
                 {
-                    string instancePath = FileSystem.GetAbsolutePath($"{TempDirectory}/{coreName}_{Guid.NewGuid()}.dll");
+                    string tempDirectory = FileSystem.GetAbsolutePath(TempDirectory);
+                    if (!Directory.Exists(tempDirectory))
+                    {
+                        _ = Directory.CreateDirectory(tempDirectory);
+                    }
+
+                    string instancePath = Path.Combine(tempDirectory, $"{coreName}_{Guid.NewGuid()}.dll");
                     File.Copy(corePath, instancePath);
 
                     _dll.Load(instancePath);
