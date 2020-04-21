@@ -23,6 +23,7 @@
 using SK.Libretro.Utilities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using static SK.Libretro.Utilities.StringUtils;
 
@@ -62,8 +63,8 @@ namespace SK.Libretro
                 case retro_environment.RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY:
                 {
                     char** outSystemDirectory = (char**)data;
-                    string systemDirectory = FileSystem.GetAbsolutePath(SystemDirectory);
-                    *outSystemDirectory = StringToChars(systemDirectory);
+                    string systemDirectory = FileSystem.GetAbsolutePath(Path.Combine(SystemDirectory, Core.CoreName));
+                    _unsafeStrings.Add(StringToChars(systemDirectory, out *outSystemDirectory));
                     Log.Info($"-> SystemDirectory: {systemDirectory}", "RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY");
                 }
                 break;
@@ -77,7 +78,7 @@ namespace SK.Libretro
                         string coreOption = Core.CoreOptions.Options.Find(x => x.StartsWith(key, StringComparison.OrdinalIgnoreCase));
                         if (coreOption != null)
                         {
-                            outVariable->value = StringToChars(coreOption.Split(';')[1]);
+                            _unsafeStrings.Add(StringToChars(coreOption.Split(';')[1], out outVariable->value));
                         }
                         else
                         {
@@ -151,16 +152,16 @@ namespace SK.Libretro
                 case retro_environment.RETRO_ENVIRONMENT_GET_CORE_ASSETS_DIRECTORY:
                 {
                     char** outCoreAssetsDirectory = (char**)data;
-                    string coreAssetsDirectory = FileSystem.GetAbsolutePath(SystemDirectory);
-                    *outCoreAssetsDirectory = StringToChars(coreAssetsDirectory);
+                    string coreAssetsDirectory = FileSystem.GetAbsolutePath(Path.Combine(CoreAssetsDirectory, Core.CoreName));
+                    _unsafeStrings.Add(StringToChars(coreAssetsDirectory, out *outCoreAssetsDirectory));
                     Log.Info($"-> CoreAssetsDirectory: {coreAssetsDirectory}", "RETRO_ENVIRONMENT_GET_CORE_ASSETS_DIRECTORY");
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY:
                 {
                     char** outSaveDirectory = (char**)data;
-                    string saveDirectory = FileSystem.GetAbsolutePath(SavesDirectory);
-                    *outSaveDirectory = StringToChars(saveDirectory);
+                    string saveDirectory = FileSystem.GetAbsolutePath(Path.Combine(SavesDirectory, Core.CoreName));
+                    _unsafeStrings.Add(StringToChars(saveDirectory, out *outSaveDirectory));
                     Log.Info($"-> SaveDirectory: {saveDirectory}", "RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY");
                 }
                 break;
@@ -267,8 +268,7 @@ namespace SK.Libretro
                 {
                     int* inPerformanceLevel = (int*)data;
                     Core.PerformanceLevel = *inPerformanceLevel;
-                    Log.Warning($"Environment not fully implemented!", "RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL");
-                    Log.Warning($"<- PerformanceLevel: {Core.PerformanceLevel}", "RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL");
+                    Log.Info($"<- PerformanceLevel: {Core.PerformanceLevel}", "RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL");
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
@@ -281,7 +281,7 @@ namespace SK.Libretro
                         case retro_pixel_format.RETRO_PIXEL_FORMAT_RGB565:
                         {
                             Game.PixelFormat = *inPixelFormat;
-                            Log.Info($"[IN] PixelFormat: {*inPixelFormat}", "RETRO_ENVIRONMENT_SET_PIXEL_FORMAT");
+                            Log.Info($"<- PixelFormat: {*inPixelFormat}", "RETRO_ENVIRONMENT_SET_PIXEL_FORMAT");
                         }
                         break;
                         default:

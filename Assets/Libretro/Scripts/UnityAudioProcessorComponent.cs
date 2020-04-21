@@ -35,7 +35,7 @@ namespace SK.Libretro
 
         private void OnAudioFilterRead(float[] data, int channels)
         {
-            if (_audioBuffer != null && _audioBuffer.Count >= data.Length)
+            if (_audioBuffer.Count >= data.Length)
             {
                 _audioBuffer.CopyTo(0, data, 0, data.Length);
                 _audioBuffer.RemoveRange(0, data.Length);
@@ -51,7 +51,6 @@ namespace SK.Libretro
             _ = AudioSettings.Reset(audioConfig);
 
             _audioSource = GetComponent<AudioSource>();
-            _audioSource.clip = AudioClip.Create("LibretroAudioClip", AUDIO_BUFFER_SIZE, 2, sampleRate, false);
             _audioSource.Play();
         }
 
@@ -61,7 +60,6 @@ namespace SK.Libretro
             {
                 _audioSource.Stop();
             }
-            _audioBuffer.Clear();
         }
 
         public void ProcessSamples(float[] samples)

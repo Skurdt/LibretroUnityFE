@@ -27,10 +27,11 @@ namespace SK.Libretro.Utilities
 {
     public unsafe static class StringUtils
     {
-        public unsafe static char* StringToChars(string str)
+        public unsafe static IntPtr StringToChars(string src, out char* dst)
         {
-            IntPtr p = Marshal.StringToHGlobalAnsi(str);
-            return (char*)(p.ToPointer());
+            IntPtr srcPtr = Marshal.StringToHGlobalAnsi(src);
+            dst = (char*)srcPtr.ToPointer();
+            return srcPtr;
         }
 
         public unsafe static string CharsToString(char* str)

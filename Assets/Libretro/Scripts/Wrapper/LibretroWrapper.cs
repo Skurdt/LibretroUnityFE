@@ -21,20 +21,25 @@
  * SOFTWARE. */
 
 using SK.Libretro.Utilities;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace SK.Libretro
 {
     public partial class Wrapper
     {
-        public static readonly string WrapperDirectory = $"{Application.streamingAssetsPath}/.libretro";
-        public static readonly string CoresDirectory   = $"{WrapperDirectory}/cores";
-        public static readonly string SystemDirectory  = $"{WrapperDirectory}/system";
-        public static readonly string SavesDirectory   = $"{WrapperDirectory}/saves";
-        public static readonly string TempDirectory    = $"{WrapperDirectory}/temp";
-        public static readonly string ExtractDirectory = $"{TempDirectory}/extracted";
-        public static readonly string CoreOptionsFile  = $"{WrapperDirectory}/core_options.json";
+        public static string WrapperDirectory    = null;
+        public static string CoresDirectory      = null;
+        public static string SystemDirectory     = null;
+        public static string CoreAssetsDirectory = null;
+        public static string SavesDirectory      = null;
+        public static string TempDirectory       = null;
+        public static string ExtractDirectory    = null;
+        public static string CoreOptionsFile     = null;
 
         public bool OptionCropOverscan = true;
 
@@ -46,6 +51,34 @@ namespace SK.Libretro
         public LibretroGame Game { get; private set; } = new LibretroGame();
 
         private CoreOptionsList _coreOptionsList;
+
+        private readonly List<IntPtr> _unsafeStrings = new List<IntPtr>();
+
+        public Wrapper(string baseDirectory = null)
+        {
+            if (WrapperDirectory == null)
+            {
+                if (baseDirectory == null)
+                {
+                    baseDirectory = $"{Application.streamingAssetsPath}/libretro~";
+                }
+
+                WrapperDirectory    = baseDirectory;
+                CoresDirectory      = $"{WrapperDirectory}/cores";
+                SystemDirectory     = $"{WrapperDirectory}/system";
+                CoreAssetsDirectory = $"{WrapperDirectory}/core_assets";
+                SavesDirectory      = $"{WrapperDirectory}/saves";
+                TempDirectory       = $"{WrapperDirectory}/temp";
+                ExtractDirectory    = $"{TempDirectory}/extracted";
+                CoreOptionsFile     = $"{WrapperDirectory}/core_options.json";
+            }
+
+            string wrapperDirectoryAbs = FileSystem.GetAbsolutePath(WrapperDirectory);
+            if (!Directory.Exists(wrapperDirectoryAbs))
+            {
+                _ = Directory.CreateDirectory(wrapperDirectoryAbs);
+            }
+        }
 
         public bool StartGame(string coreName, string gameDirectory, string gameName)
         {
@@ -70,6 +103,11 @@ namespace SK.Libretro
 
             Game.Stop();
             Core.Stop();
+
+            for (int i = 0; i < _unsafeStrings.Count; ++i)
+            {
+                Marshal.FreeHGlobal(_unsafeStrings[i]);
+            }
         }
 
         public void Update()
@@ -95,12 +133,12 @@ namespace SK.Libretro
         public void ActivateAudio(IAudioProcessor audioProcessor)
         {
             AudioProcessor = audioProcessor;
-            AudioProcessor.Init((int)Game.SystemAVInfo.timing.sample_rate);
+            AudioProcessor?.Init((int)Game.SystemAVInfo.timing.sample_rate);
         }
 
         public void DeactivateAudio()
         {
-            AudioProcessor.DeInit();
+            AudioProcessor?.DeInit();
             AudioProcessor = null;
         }
 
@@ -125,12 +163,15 @@ namespace SK.Libretro
 
         private void SaveCoreOptionsFile()
         {
-            _coreOptionsList.Cores = _coreOptionsList.Cores.OrderBy(x => x.CoreName).ToList();
-            for (int i = 0; i < _coreOptionsList.Cores.Count; i++)
+            if (_coreOptionsList != null)
             {
-                _coreOptionsList.Cores[i].Options.Sort();
+                _coreOptionsList.Cores = _coreOptionsList.Cores.OrderBy(x => x.CoreName).ToList();
+                for (int i = 0; i < _coreOptionsList.Cores.Count; ++i)
+                {
+                    _coreOptionsList.Cores[i].Options.Sort();
+                }
+                _ = FileSystem.SerializeToJson(_coreOptionsList, CoreOptionsFile);
             }
-            _ = FileSystem.SerializeToJson(_coreOptionsList, CoreOptionsFile);
         }
     }
 }

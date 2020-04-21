@@ -20,6 +20,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+// using System.Diagnostics.CodeAnalysis;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -36,17 +38,27 @@ namespace SK.Examples.Common
     [SelectionBase]
     public class GameModelSetup : MonoBehaviour
     {
+        public Libretro.Wrapper Wrapper { get; private set; }
+        public bool InputEnabled { get; private set; }
+
         [HideInInspector] public Game Game;
 
+        [SerializeField] private PlayerControls _player;
         [SerializeField] [Range(0.5f, 2f)] private float _timeScale = 1.0f;
-        [SerializeField] private bool _cropOverscan = true;
-
-        public Libretro.Wrapper Wrapper { get; private set; }
+        [SerializeField] private bool _useAudioRateForSync          = false;  // Very dirty workaround... FIX ME!
+        [SerializeField] private float _audioMinDistance            = 2f;
+        [SerializeField] private float _audioMaxDistance            = 10f;
+        [SerializeField] private FilterMode _videoFilterMode        = FilterMode.Point;
+        [SerializeField] private bool _cropOverscan                 = true;
 
         private Renderer _rendererComponent = null;
-        private Material _originalMaterial = null;
+        private Material _originalMaterial  = null;
 
-        private float _frameTimer;
+        private float _gameFps         = 0f;
+        private float _gameSampleRate  = 0f;
+
+        private float _frameTimer      = 0f;
+        private float _audioVolume     = 1f;
 
         private void OnEnable()
         {
@@ -60,22 +72,29 @@ namespace SK.Examples.Common
 
         private void Update()
         {
-            if (Wrapper != null && Wrapper.Game.SystemAVInfo.timing.fps > 0.0)
+            if (Wrapper != null && _gameFps > 0f && _gameSampleRate > 0f)
             {
                 _frameTimer += Time.deltaTime;
-                float timePerFrame = 1f / (float)Wrapper.Game.SystemAVInfo.timing.fps / _timeScale;
-
-                while (_frameTimer >= timePerFrame)
+                float targetFrameTime = 1f / (_useAudioRateForSync ?_gameSampleRate / 1000f : _gameFps) / _timeScale;
+                while (_frameTimer >= targetFrameTime)
                 {
                     Wrapper.Update();
-                    _frameTimer -= timePerFrame;
+                    _frameTimer -= targetFrameTime;
                 }
 
-                if (Wrapper.GraphicsProcessor != null && Wrapper.GraphicsProcessor is Libretro.UnityGraphicsProcessor unityGraphics)
+                VideoSetFilterMode(_videoFilterMode);
+
+                if (Wrapper.AudioProcessor != null && Wrapper.AudioProcessor is Libretro.NAudioAudioProcessor NAudioAudio)
                 {
-                    if (unityGraphics.TextureUpdated)
+                    float distance = Vector3.Distance(transform.position, _player.transform.position);
+                    if (distance > 0f)
                     {
-                        _rendererComponent.material.SetTexture("_EmissionMap", unityGraphics.Texture);
+                        _audioVolume = math.clamp(math.pow((distance - _audioMaxDistance) / (_audioMinDistance - _audioMaxDistance), 2f), 0f, 1f);
+                        NAudioAudio.SetVolume(_audioVolume);
+                    }
+                    else
+                    {
+                        NAudioAudio.SetVolume(1f);
                     }
                 }
             }
@@ -100,16 +119,23 @@ namespace SK.Examples.Common
 
                             if (Wrapper.StartGame(Game.Core, Game.Directory, Game.Name))
                             {
+                                _gameFps = (float)Wrapper.Game.SystemAVInfo.timing.fps;
+                                _gameSampleRate = (float)Wrapper.Game.SystemAVInfo.timing.sample_rate;
+
                                 ActivateGraphics();
                                 ActivateAudio();
-                                ActivateInput();
 
                                 _originalMaterial = _rendererComponent.sharedMaterial;
                                 _rendererComponent.material.mainTextureScale = new Vector2(1f, -1f);
                                 _rendererComponent.material.color = Color.black;
                                 _rendererComponent.material.EnableKeyword("_EMISSION");
-                                _rendererComponent.material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+                                _rendererComponent.material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.BakedEmissive;
                                 _rendererComponent.material.SetColor("_EmissionColor", Color.white);
+                            }
+                            else
+                            {
+                                Wrapper.StopGame();
+                                Wrapper = null;
                             }
                         }
                     }
@@ -130,7 +156,12 @@ namespace SK.Examples.Common
 
         public void ActivateGraphics()
         {
-            Wrapper?.ActivateGraphics(new Libretro.UnityGraphicsProcessor());
+            Libretro.UnityGraphicsProcessor unityGraphics = new Libretro.UnityGraphicsProcessor
+            {
+                OnTextureRecreated = VideoSetTextureCallback,
+                VideoFilterMode    = _videoFilterMode
+            };
+            Wrapper?.ActivateGraphics(unityGraphics);
         }
 
         public void DeactivateGraphics()
@@ -158,18 +189,30 @@ namespace SK.Examples.Common
 
         public void ActivateInput()
         {
+            InputEnabled = true;
             Wrapper?.ActivateInput(FindObjectOfType<PlayerInputManager>().GetComponent<Libretro.IInputProcessor>());
         }
 
         public void DeactivateInput()
         {
+            InputEnabled = false;
             Wrapper?.DeactivateInput();
         }
 
-        public void SetVideoUseFiltering(bool filtering)
+        public void VideoSetFilterMode(FilterMode filterMode)
         {
-            Libretro.UnityGraphicsProcessor.VideoFilterMode = filtering ? FilterMode.Trilinear : FilterMode.Point;
-            GameObject.Find("VideoFilteringValue").GetComponent<UnityEngine.UI.Text>().text = filtering.ToString();
+            if (Wrapper != null && Wrapper.GraphicsProcessor != null && Wrapper.GraphicsProcessor is Libretro.UnityGraphicsProcessor unityGraphics)
+            {
+                unityGraphics.VideoFilterMode = filterMode;
+            }
+        }
+
+        private void VideoSetTextureCallback(Texture2D texture)
+        {
+            if (_rendererComponent != null)
+            {
+                _rendererComponent.material.SetTexture("_EmissionMap", texture);
+            }
         }
     }
 }

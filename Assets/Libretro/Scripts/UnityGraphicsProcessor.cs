@@ -20,6 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -30,10 +31,20 @@ namespace SK.Libretro
 {
     public class UnityGraphicsProcessor : IGraphicsProcessor
     {
-        public static FilterMode VideoFilterMode = FilterMode.Point;
+        public Action<Texture2D> OnTextureRecreated;
 
-        public Texture2D Texture { get; private set; } = new Texture2D(8, 8, TextureFormat.BGRA32, false) { filterMode = VideoFilterMode };
-        public bool TextureUpdated = false;
+        public Texture2D Texture { get; private set; } = new Texture2D(8, 8, TextureFormat.BGRA32, false) { filterMode = FilterMode.Point };
+        public FilterMode VideoFilterMode
+        {
+            get => _filterMode;
+            set
+            {
+                _filterMode = value;
+                CreateTexture(Texture.width, Texture.height);
+            }
+        }
+
+        private FilterMode _filterMode = FilterMode.Point;
 
         public unsafe void ProcessFrame0RGB1555(ushort* data, int width, int height, int pitch)
         {
@@ -91,11 +102,7 @@ namespace SK.Libretro
                 {
                     filterMode = VideoFilterMode
                 };
-                TextureUpdated = true;
-            }
-            else
-            {
-                TextureUpdated = false;
+                OnTextureRecreated?.Invoke(Texture);
             }
         }
 

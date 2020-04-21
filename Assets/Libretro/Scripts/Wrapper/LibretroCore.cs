@@ -78,7 +78,8 @@ namespace SK.Libretro
         public int ApiVersion { get; private set; }
 
         public string CoreName { get; private set; }
-        public string CoreVersion { get; private set; }
+        public string CoreLibraryName { get; private set; }
+        public string CoreLibraryVersion { get; private set; }
         public string[] ValidExtensions { get; private set; }
         public bool NeedFullPath { get; private set; }
         public bool BlockExtract { get; private set; }
@@ -140,8 +141,9 @@ namespace SK.Libretro
                     retro_system_info systemInfo = new retro_system_info();
                     retro_get_system_info(ref systemInfo);
 
-                    CoreName = CharsToString(systemInfo.library_name);
-                    CoreVersion = CharsToString(systemInfo.library_version);
+                    CoreName           = coreName;
+                    CoreLibraryName    = CharsToString(systemInfo.library_version);
+                    CoreLibraryVersion = CharsToString(systemInfo.library_version);
                     if (systemInfo.valid_extensions != null)
                     {
                         ValidExtensions = CharsToString(systemInfo.valid_extensions).Split('|');

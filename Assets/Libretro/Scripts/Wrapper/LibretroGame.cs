@@ -39,6 +39,7 @@ namespace SK.Libretro
         public bool Running { get; private set; }
 
         private LibretroCore _core;
+        private IntPtr _internalPathString;
         private IntPtr _internalData;
 
         private string _extractedPath = null;
@@ -127,6 +128,11 @@ namespace SK.Libretro
                 Running = false;
             }
 
+            if (_internalPathString != IntPtr.Zero)
+            {
+                Marshal.FreeHGlobal(_internalPathString);
+            }
+
             if (_internalData != IntPtr.Zero)
             {
                 Marshal.FreeHGlobal(_internalData);
@@ -160,12 +166,12 @@ namespace SK.Libretro
                 _ = stream.Read(data, 0, (int)stream.Length);
                 _internalData = Marshal.AllocHGlobal(data.Length * Marshal.SizeOf<byte>());
                 Marshal.Copy(data, 0, _internalData, data.Length);
-                return new retro_game_info
-                {
-                    path = StringToChars(gamePath),
-                    size = Convert.ToUInt32(data.Length),
-                    data = _internalData.ToPointer()
-                };
+
+                retro_game_info result = new retro_game_info();
+                _internalPathString = StringToChars(gamePath, out result.path);
+                result.size = Convert.ToUInt32(data.Length);
+                result.data = _internalData.ToPointer();
+                return result;
             }
         }
     }

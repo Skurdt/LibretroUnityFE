@@ -20,23 +20,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using UnityEngine;
-using UnityEngine.InputSystem;
-
-namespace SK.Examples.Common
+namespace SK.Libretro.Utilities
 {
-    public class ExitWithEscapeKey : MonoBehaviour
+    public static class Audio
     {
-        private void Update()
+        public static float[] ConvertShortToFloat(short left, short right, float gain)
         {
-            if (Keyboard.current.escapeKey.wasPressedThisFrame)
+            gain /= 0x8000;
+            return new float[]
             {
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-#else
-                Application.Quit(0);
-#endif
+                left * gain,
+                right * gain
+            };
+        }
+
+        public static unsafe float[] ConvertShortToFloat(short* data, uint samples, float gain)
+        {
+            float[] result = new float[samples];
+            gain /= 0x8000;
+            for (int i = 0; i < samples; ++i)
+            {
+                result[i] = data[i] * gain;
             }
+            return result;
         }
     }
 }

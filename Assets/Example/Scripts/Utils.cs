@@ -25,33 +25,44 @@ using UnityEngine.InputSystem;
 
 namespace SK.Examples.Common
 {
-    public class ControlPositionWithIJKL : MonoBehaviour
+    public static class Utils
     {
-        private void Update()
+        public static bool SpaceKeyPressed() => Keyboard.current.spaceKey.wasPressedThisFrame;
+        public static bool LShiftKeyDown() => Keyboard.current.leftShiftKey.isPressed;
+
+        public static bool ToggleMouseCursor()
         {
-            Vector3 velocity = Vector3.zero;
-
-            if (Keyboard.current.iKey.isPressed)
+            if (Cursor.lockState == CursorLockMode.Locked)
             {
-                velocity += new Vector3(0f, 0f, 1f);
+                return ShowMouseCursor();
             }
-
-            if (Keyboard.current.kKey.isPressed)
+            else
             {
-                velocity -= new Vector3(0f, 0f, 1f);
+                return HideMouseCursor();
             }
+        }
 
-            if (Keyboard.current.jKey.isPressed)
-            {
-                velocity -= new Vector3(1.0f, 0f, 0f);
-            }
+        public static bool ShowMouseCursor()
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible   = true;
+            return true;
+        }
 
-            if (Keyboard.current.lKey.isPressed)
-            {
-                velocity += new Vector3(1.0f, 0f, 0f);
-            }
+        public static bool HideMouseCursor()
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible   = false;
+            return false;
+        }
 
-            transform.Translate(velocity.normalized * Time.deltaTime);
+        public static void ExitApp()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit(0);
+#endif
         }
     }
 }

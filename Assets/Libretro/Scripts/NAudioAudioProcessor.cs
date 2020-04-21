@@ -21,7 +21,9 @@
  * SOFTWARE. */
 
 using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using System;
+using Unity.Mathematics;
 
 namespace SK.Libretro
 {
@@ -29,19 +31,15 @@ namespace SK.Libretro
     {
         private const int AUDIO_BUFFER_SIZE = 65536;
 
-        private IWavePlayer _audioDevice;
+        private WaveOutEvent _audioDevice;
         private BufferedWaveProvider _bufferedWaveProvider;
+        private VolumeSampleProvider _volumeProvider;
 
         public void Init(int sampleRate)
         {
             try
             {
                 DeInit();
-
-                _audioDevice = new WaveOutEvent
-                {
-                    DesiredLatency = 140
-                };
 
                 WaveFormat audioFormat = WaveFormat.CreateIeeeFloatWaveFormat(sampleRate > 0 ? sampleRate : 44100, 2);
                 _bufferedWaveProvider = new BufferedWaveProvider(audioFormat)
@@ -50,7 +48,16 @@ namespace SK.Libretro
                     BufferLength            = AUDIO_BUFFER_SIZE
                 };
 
-                _audioDevice.Init(_bufferedWaveProvider);
+                _volumeProvider = new VolumeSampleProvider(_bufferedWaveProvider.ToSampleProvider())
+                {
+                    Volume = 1f
+                };
+
+                _audioDevice = new WaveOutEvent
+                {
+                    DesiredLatency = 140
+                };
+                _audioDevice.Init(_volumeProvider);
                 _audioDevice.Play();
             }
             catch (Exception e)
@@ -73,6 +80,11 @@ namespace SK.Libretro
                 Buffer.BlockCopy(samples, 0, byteBuffer, 0, byteBuffer.Length);
                 _bufferedWaveProvider.AddSamples(byteBuffer, 0, byteBuffer.Length);
             }
+        }
+
+        public void SetVolume(float volume)
+        {
+            _volumeProvider.Volume = math.clamp(volume, 0f, 1f);
         }
     }
 }
