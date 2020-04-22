@@ -137,9 +137,12 @@ namespace SK.Libretro
         {
             public char* desc;
             public char* valid_extensions;
-            [MarshalAs(UnmanagedType.U1)] public bool need_fullpath;
-            [MarshalAs(UnmanagedType.U1)] public bool block_extract;
-            [MarshalAs(UnmanagedType.U1)] public bool required;
+            [MarshalAs(UnmanagedType.U1)]
+            public bool need_fullpath;
+            [MarshalAs(UnmanagedType.U1)]
+            public bool block_extract;
+            [MarshalAs(UnmanagedType.U1)]
+            public bool required;
             public retro_subsystem_memory_info* memory;
             public uint num_memory;
         }
@@ -174,7 +177,8 @@ namespace SK.Libretro
             public ulong total;
             public ulong call_cnt;
 
-            [MarshalAs(UnmanagedType.U1)] public bool registered;
+            [MarshalAs(UnmanagedType.U1)]
+            public bool registered;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -244,16 +248,21 @@ namespace SK.Libretro
             public IntPtr context_reset;           // retro_hw_context_reset_t
             public IntPtr get_current_framebuffer; // retro_hw_get_current_framebuffer_t
             public IntPtr get_proc_address;        // retro_hw_get_proc_address_t
-            [MarshalAs(UnmanagedType.U1)] public bool depth;
-            [MarshalAs(UnmanagedType.U1)] public bool stencil;
-            [MarshalAs(UnmanagedType.U1)] public bool bottom_left_origin;
+            [MarshalAs(UnmanagedType.U1)]
+            public bool depth;
+            [MarshalAs(UnmanagedType.U1)]
+            public bool stencil;
+            [MarshalAs(UnmanagedType.U1)]
+            public bool bottom_left_origin;
             public uint version_major;
             public uint version_minor;
-            [MarshalAs(UnmanagedType.U1)] public bool cache_context;
+            [MarshalAs(UnmanagedType.U1)]
+            public bool cache_context;
 
             public IntPtr context_destroy; // retro_hw_context_reset_t
 
-            [MarshalAs(UnmanagedType.U1)] public bool debug_context;
+            [MarshalAs(UnmanagedType.U1)]
+            public bool debug_context;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -318,8 +327,10 @@ namespace SK.Libretro
             public char* library_name;
             public char* library_version;
             public char* valid_extensions;
-            [MarshalAs(UnmanagedType.U1)] public bool need_fullpath;
-            [MarshalAs(UnmanagedType.U1)] public bool block_extract;
+            [MarshalAs(UnmanagedType.U1)]
+            public bool need_fullpath;
+            [MarshalAs(UnmanagedType.U1)]
+            public bool block_extract;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -357,7 +368,8 @@ namespace SK.Libretro
         private unsafe struct retro_core_option_display
         {
             public char* key;
-            [MarshalAs(UnmanagedType.U1)] public bool visible;
+            [MarshalAs(UnmanagedType.U1)]
+            public bool visible;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -387,13 +399,15 @@ namespace SK.Libretro
             public IntPtr local; // retro_core_option_definition*
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        public unsafe struct retro_game_info
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct retro_game_info
         {
-            public char* path;
-            public void* data;
-            public uint size;
-            public char* meta;
+            [MarshalAs(UnmanagedType.LPStr)]
+            public string path; // const char*
+            public IntPtr data; // const void*
+            public uint size; // size_t
+            [MarshalAs(UnmanagedType.LPStr)]
+            public string meta; // const char*
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -402,7 +416,7 @@ namespace SK.Libretro
             public IntPtr data; // void*
             public uint width;
             public uint height;
-            public uint pitch;
+            public uint pitch; // size_t
             public retro_pixel_format format;
             public uint access_flags;
             public uint memory_flags;

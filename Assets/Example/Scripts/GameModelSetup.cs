@@ -51,6 +51,7 @@ namespace SK.Examples.Common
         [SerializeField] private FilterMode _videoFilterMode        = FilterMode.Point;
         [SerializeField] private bool _cropOverscan                 = true;
 
+        private Transform _screenTransform   = null;
         private Renderer _rendererComponent = null;
         private Material _originalMaterial  = null;
 
@@ -109,10 +110,10 @@ namespace SK.Examples.Common
                     Transform modelTransform = transform.GetChild(0);
                     if (modelTransform != null && modelTransform.childCount > 1)
                     {
-                        Transform screenTransform = modelTransform.GetChild(1);
-                        if (screenTransform.TryGetComponent(out _rendererComponent))
+                        _screenTransform = modelTransform.GetChild(1);
+                        if (_screenTransform.TryGetComponent(out _rendererComponent))
                         {
-                            Wrapper = new Libretro.Wrapper
+                            Wrapper = new Libretro.Wrapper((Libretro.TargetPlatform)Application.platform)
                             {
                                 OptionCropOverscan = _cropOverscan
                             };
@@ -171,14 +172,39 @@ namespace SK.Examples.Common
 
         public void ActivateAudio()
         {
-            Libretro.UnityAudioProcessorComponent unityAudio = GetComponentInChildren<Libretro.UnityAudioProcessorComponent>();
-            if (unityAudio != null)
+            switch (Application.platform)
             {
-                Wrapper?.ActivateAudio(unityAudio);
-            }
-            else
-            {
-                Wrapper?.ActivateAudio(new Libretro.NAudioAudioProcessor());
+                case RuntimePlatform.WindowsEditor:
+                case RuntimePlatform.WindowsPlayer:
+                {
+                    Libretro.UnityAudioProcessorComponent unityAudio = GetComponentInChildren<Libretro.UnityAudioProcessorComponent>();
+                    if (unityAudio != null)
+                    {
+                        Wrapper?.ActivateAudio(unityAudio);
+                    }
+                    else
+                    {
+                        Wrapper?.ActivateAudio(new Libretro.NAudioAudioProcessor());
+                    }
+                }
+                break;
+                case RuntimePlatform.OSXEditor:
+                case RuntimePlatform.OSXPlayer:
+                {
+                    Libretro.UnityAudioProcessorComponent unityAudio = GetComponentInChildren<Libretro.UnityAudioProcessorComponent>(true);
+                    if (unityAudio != null)
+                    {
+                        unityAudio.gameObject.SetActive(true);
+                        Wrapper?.ActivateAudio(unityAudio);
+                    }
+                    else
+                    {
+                        GameObject audioProcessorGameObject = new GameObject("AudioProcessor", typeof(Libretro.UnityAudioProcessorComponent));
+                        audioProcessorGameObject.transform.SetParent(_screenTransform);
+                        Wrapper?.ActivateAudio(audioProcessorGameObject.GetComponent<Libretro.UnityAudioProcessorComponent>());
+                    }
+                }
+                break;
             }
         }
 

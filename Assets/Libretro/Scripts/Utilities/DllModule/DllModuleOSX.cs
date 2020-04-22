@@ -26,30 +26,36 @@ using System.Runtime.InteropServices;
 
 namespace SK.Libretro.Utilities
 {
-    public sealed class DllModuleWindows : IDllModule
+    public sealed class DllModuleOSX : IDllModule
     {
-        [DllImport("kernel32.dll", EntryPoint = "LoadLibraryA", CharSet = CharSet.Ansi, SetLastError = true)]
-        private static extern IntPtr PlatformLoadLibrary([MarshalAs(UnmanagedType.LPStr)] string lpLibFileName);
+        [DllImport("libdl.dylib", EntryPoint = "dlopen", SetLastError = true)]
+        private static extern IntPtr PlatformLoadLibrary(string fileName, int flags);
 
-        [DllImport("kernel32.dll", EntryPoint = "GetProcAddress", CharSet = CharSet.Ansi, SetLastError = true)]
-        private static extern IntPtr PlatformGetProcAddress(IntPtr hModule, [MarshalAs(UnmanagedType.LPStr)] string lpProcName);
+        [DllImport("libdl.dylib", EntryPoint = "dlsym", SetLastError = true)]
+        private static extern IntPtr PlatformGetProcAddress(IntPtr handle, string symbol);
 
-        [DllImport("kernel32.dll", EntryPoint = "FreeLibrary", CharSet = CharSet.Ansi, SetLastError = true)]
-        private static extern bool PlatformFreeLibrary(IntPtr hModule);
+        [DllImport("libdl.dylib", EntryPoint = "dlclose", SetLastError = true)]
+        private static extern int PlatformFreeLibrary(IntPtr handle);
+
+        [DllImport("libdl.dylib", EntryPoint = "dlerror")]
+        private static extern IntPtr PlatformLibraryError();
 
         public string Name { get; private set; }
-        public string Extension { get; } = "dll";
+        public string Extension { get; } = "dylib";
         public IntPtr NativeHandle { get; private set; }
+
+        private const int RTLD_NOW = 2;
 
         public void Load(string path)
         {
             if (!string.IsNullOrEmpty(path))
             {
                 Name         = Path.GetFileName(path);
-                NativeHandle = PlatformLoadLibrary(path);
-                if (NativeHandle == IntPtr.Zero)
+                NativeHandle = PlatformLoadLibrary(path, RTLD_NOW);
+                IntPtr error = PlatformLibraryError();
+                if (error != IntPtr.Zero)
                 {
-                    throw new Exception($"Failed to load library at path '{path}' (ErrorCode: {Marshal.GetLastWin32Error()})");
+                    throw new Exception($"Failed to load library at path '{path}' (ErrorMessage: {Marshal.PtrToStringAnsi(error)})");
                 }
             }
             else

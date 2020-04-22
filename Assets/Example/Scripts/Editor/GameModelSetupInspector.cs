@@ -92,8 +92,8 @@ namespace SK.Examples.Common
 
         private void ShowSelectCoreWindow()
         {
-            string startingDirectory = GetAbsolutePath(Libretro.Wrapper.CoresDirectory);
-            string filePath = EditorUtility.OpenFilePanel("Select core", startingDirectory, "dll");
+            string startingDirectory = GetAbsolutePath($"{Application.streamingAssetsPath}/libretro~/cores");
+            string filePath = EditorUtility.OpenFilePanelWithFilters("Select core", startingDirectory, new string[] { "Libretro Core", "dll,dylib" });
             if (!string.IsNullOrEmpty(filePath))
             {
                 ModelSetupScript.Game.Core = Path.GetFileNameWithoutExtension(filePath).Replace("_libretro", string.Empty);

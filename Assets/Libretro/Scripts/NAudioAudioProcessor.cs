@@ -20,6 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System;
@@ -88,3 +89,4 @@ namespace SK.Libretro
         }
     }
 }
+#endif

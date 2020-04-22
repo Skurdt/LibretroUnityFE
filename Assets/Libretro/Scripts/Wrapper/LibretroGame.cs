@@ -25,22 +25,20 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using static SK.Libretro.Wrapper;
-using static SK.Libretro.Utilities.StringUtils;
 
 namespace SK.Libretro
 {
     public class LibretroGame
     {
         public string Name { get; private set; }
+        public bool Running { get; private set; }
 
         public retro_system_av_info SystemAVInfo;
         public retro_pixel_format PixelFormat;
 
-        public bool Running { get; private set; }
+        private retro_game_info _gameInfo;
 
         private LibretroCore _core;
-        private IntPtr _internalPathString;
-        private IntPtr _internalData;
 
         private string _extractedPath = null;
 
@@ -71,8 +69,8 @@ namespace SK.Libretro
 
                 if (gamePath != null)
                 {
-                    retro_game_info gameInfo = GetGameInfo(gamePath);
-                    if (_core.retro_load_game(ref gameInfo))
+                    _gameInfo = GetGameInfo(gamePath);
+                    if (_core.retro_load_game(ref _gameInfo))
                     {
                         try
                         {
@@ -95,8 +93,8 @@ namespace SK.Libretro
             }
             else if (core.SupportNoGame)
             {
-                retro_game_info gameInfo = new retro_game_info();
-                if (_core.retro_load_game(ref gameInfo))
+                _gameInfo = new retro_game_info();
+                if (_core.retro_load_game(ref _gameInfo))
                 {
                     try
                     {
@@ -128,14 +126,9 @@ namespace SK.Libretro
                 Running = false;
             }
 
-            if (_internalPathString != IntPtr.Zero)
+            if (_gameInfo.data != IntPtr.Zero)
             {
-                Marshal.FreeHGlobal(_internalPathString);
-            }
-
-            if (_internalData != IntPtr.Zero)
-            {
-                Marshal.FreeHGlobal(_internalData);
+                Marshal.FreeHGlobal(_gameInfo.data);
             }
 
             if (!string.IsNullOrEmpty(_extractedPath) && FileSystem.FileExists(_extractedPath))
@@ -158,19 +151,22 @@ namespace SK.Libretro
             return null;
         }
 
-        private unsafe retro_game_info GetGameInfo(string gamePath)
+        private retro_game_info GetGameInfo(string gamePath)
         {
             using (FileStream stream = new FileStream(gamePath, FileMode.Open))
             {
                 byte[] data = new byte[stream.Length];
-                _ = stream.Read(data, 0, (int)stream.Length);
-                _internalData = Marshal.AllocHGlobal(data.Length * Marshal.SizeOf<byte>());
-                Marshal.Copy(data, 0, _internalData, data.Length);
 
-                retro_game_info result = new retro_game_info();
-                _internalPathString = StringToChars(gamePath, out result.path);
-                result.size = Convert.ToUInt32(data.Length);
-                result.data = _internalData.ToPointer();
+                retro_game_info result = new retro_game_info
+                {
+                    path = gamePath,
+                    size = Convert.ToUInt32(data.Length),
+                    data = Marshal.AllocHGlobal(data.Length * Marshal.SizeOf<byte>())
+                };
+
+                _ = stream.Read(data, 0, (int)stream.Length);
+                Marshal.Copy(data, 0, result.data, data.Length);
+
                 return result;
             }
         }

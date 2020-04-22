@@ -21,17 +21,21 @@
  * SOFTWARE. */
 
 using System;
+using System.Runtime.InteropServices;
 
 namespace SK.Libretro.Utilities
 {
-    public abstract class DllModule
+    public interface IDllModule
     {
-        public string Name { get; protected set; } = string.Empty;
+        string Name { get; }
+        string Extension { get; }
+        IntPtr NativeHandle { get; }
 
-        protected IntPtr _nativeHandle = IntPtr.Zero;
+        void Load(string path);
 
-        public abstract void Load(string path);
-        public abstract T GetFunction<T>(string functionName) where T : Delegate;
-        public abstract void Free();
+        [return: MarshalAs(UnmanagedType.FunctionPtr)]
+        T GetFunction<T>(string functionName) where T : Delegate;
+
+        void Free();
     }
 }

@@ -43,6 +43,8 @@ namespace SK.Libretro
 
         public bool OptionCropOverscan = true;
 
+        public TargetPlatform TargetPlatform { get; }
+
         public IGraphicsProcessor GraphicsProcessor;
         public IAudioProcessor AudioProcessor;
         public IInputProcessor InputProcessor;
@@ -54,8 +56,10 @@ namespace SK.Libretro
 
         private readonly List<IntPtr> _unsafeStrings = new List<IntPtr>();
 
-        public Wrapper(string baseDirectory = null)
+        public Wrapper(TargetPlatform targetPlatform, string baseDirectory = null)
         {
+            TargetPlatform = targetPlatform;
+
             if (WrapperDirectory == null)
             {
                 if (baseDirectory == null)

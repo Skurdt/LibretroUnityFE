@@ -25,8 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using static SK.Libretro.Wrapper;
 using static SK.Libretro.Utilities.StringUtils;
+using static SK.Libretro.Wrapper;
 
 namespace SK.Libretro
 {
@@ -73,7 +73,7 @@ namespace SK.Libretro
         public retro_get_memory_size_t retro_get_memory_size;
         #endregion
 
-        public bool Initialized { get; private set; }
+        public bool Initialized { get; private set; } = false;
 
         public int ApiVersion { get; private set; }
 
@@ -95,7 +95,7 @@ namespace SK.Libretro
 
         public retro_controller_info[] ControllerPorts;
 
-        private readonly DllModule _dll = new DllModuleWindows();
+        private IDllModule _dll;
 
         private retro_environment_t _environmentCallback;
         private retro_video_refresh_t _videoRefreshCallback;
@@ -118,7 +118,25 @@ namespace SK.Libretro
 
             try
             {
-                string corePath = FileSystem.GetAbsolutePath($"{CoresDirectory}/{coreName}_libretro.dll");
+                switch (wrapper.TargetPlatform)
+                {
+                    case TargetPlatform.WindowsEditor:
+                    case TargetPlatform.WindowsPlayer:
+                    {
+                        _dll = new DllModuleWindows();
+                    }
+                    break;
+                    case TargetPlatform.OSXEditor:
+                    case TargetPlatform.OSXPlayer:
+                    {
+                        _dll = new DllModuleOSX();
+                    }
+                    break;
+                    default:
+                        throw new Exception($"Target platform '{wrapper.TargetPlatform}' not supported.");
+                }
+
+                string corePath = FileSystem.GetAbsolutePath($"{CoresDirectory}/{coreName}_libretro.{_dll.Extension}");
                 if (FileSystem.FileExists(corePath))
                 {
                     string tempDirectory = FileSystem.GetAbsolutePath(TempDirectory);
@@ -127,7 +145,7 @@ namespace SK.Libretro
                         _ = Directory.CreateDirectory(tempDirectory);
                     }
 
-                    string instancePath = Path.Combine(tempDirectory, $"{coreName}_{Guid.NewGuid()}.dll");
+                    string instancePath = Path.Combine(tempDirectory, $"{coreName}_{Guid.NewGuid()}.{_dll.Extension}");
                     File.Copy(corePath, instancePath);
 
                     _dll.Load(instancePath);
@@ -142,7 +160,7 @@ namespace SK.Libretro
                     retro_get_system_info(ref systemInfo);
 
                     CoreName           = coreName;
-                    CoreLibraryName    = CharsToString(systemInfo.library_version);
+                    CoreLibraryName    = CharsToString(systemInfo.library_name);
                     CoreLibraryVersion = CharsToString(systemInfo.library_version);
                     if (systemInfo.valid_extensions != null)
                     {
@@ -164,12 +182,14 @@ namespace SK.Libretro
                 }
                 else
                 {
-                    Log.Error($"Core '{coreName}' at path '{corePath}' not found.", "Libretro.LibretroCore.Start");
+                     throw new Exception($"Core '{coreName}' at path '{corePath}' not found.");
                 }
             }
             catch (Exception e )
             {
                 Log.Exception(e, "Libretro.LibretroCore.Start");
+                _dll?.Free();
+                _dll = null;
             }
 
             return result;
@@ -182,15 +202,21 @@ namespace SK.Libretro
                 if (Initialized)
                 {
                     retro_deinit();
+
+                    if (_dll != null)
+                    {
+                        _dll.Free();
+
+                        string dllPath = FileSystem.GetAbsolutePath($"{TempDirectory}/{_dll.Name}");
+                        if (File.Exists(dllPath))
+                        {
+                            File.Delete(dllPath);
+                        }
+
+                        _dll = null;
+                    }
+
                     Initialized = false;
-                }
-
-                _dll.Free();
-
-                string dllPath = FileSystem.GetAbsolutePath($"{TempDirectory}/{_dll.Name}");
-                if (File.Exists(dllPath))
-                {
-                    File.Delete(dllPath);
                 }
             }
             catch (Exception e)
