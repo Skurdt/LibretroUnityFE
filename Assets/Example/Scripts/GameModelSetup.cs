@@ -85,6 +85,7 @@ namespace SK.Examples.Common
 
                 VideoSetFilterMode(_videoFilterMode);
 
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
                 if (Wrapper.AudioProcessor != null && Wrapper.AudioProcessor is Libretro.NAudioAudioProcessor NAudioAudio)
                 {
                     float distance = Vector3.Distance(transform.position, _player.transform.position);
@@ -98,6 +99,7 @@ namespace SK.Examples.Common
                         NAudioAudio.SetVolume(1f);
                     }
                 }
+#endif
             }
         }
 
@@ -172,40 +174,31 @@ namespace SK.Examples.Common
 
         public void ActivateAudio()
         {
-            switch (Application.platform)
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+            Libretro.UnityAudioProcessorComponent unityAudio = GetComponentInChildren<Libretro.UnityAudioProcessorComponent>();
+            if (unityAudio != null)
             {
-                case RuntimePlatform.WindowsEditor:
-                case RuntimePlatform.WindowsPlayer:
-                {
-                    Libretro.UnityAudioProcessorComponent unityAudio = GetComponentInChildren<Libretro.UnityAudioProcessorComponent>();
-                    if (unityAudio != null)
-                    {
-                        Wrapper?.ActivateAudio(unityAudio);
-                    }
-                    else
-                    {
-                        Wrapper?.ActivateAudio(new Libretro.NAudioAudioProcessor());
-                    }
-                }
-                break;
-                case RuntimePlatform.OSXEditor:
-                case RuntimePlatform.OSXPlayer:
-                {
-                    Libretro.UnityAudioProcessorComponent unityAudio = GetComponentInChildren<Libretro.UnityAudioProcessorComponent>(true);
-                    if (unityAudio != null)
-                    {
-                        unityAudio.gameObject.SetActive(true);
-                        Wrapper?.ActivateAudio(unityAudio);
-                    }
-                    else
-                    {
-                        GameObject audioProcessorGameObject = new GameObject("AudioProcessor", typeof(Libretro.UnityAudioProcessorComponent));
-                        audioProcessorGameObject.transform.SetParent(_screenTransform);
-                        Wrapper?.ActivateAudio(audioProcessorGameObject.GetComponent<Libretro.UnityAudioProcessorComponent>());
-                    }
-                }
-                break;
+                Wrapper?.ActivateAudio(unityAudio);
             }
+            else
+            {
+                Wrapper?.ActivateAudio(new Libretro.NAudioAudioProcessor());
+            }
+#else
+            Libretro.UnityAudioProcessorComponent unityAudio = GetComponentInChildren<Libretro.UnityAudioProcessorComponent>(true);
+            if (unityAudio != null)
+            {
+                unityAudio.gameObject.SetActive(true);
+                Wrapper?.ActivateAudio(unityAudio);
+            }
+            else
+            {
+                GameObject audioProcessorGameObject = new GameObject("AudioProcessor");
+                audioProcessorGameObject.transform.SetParent(_screenTransform);
+                Libretro.UnityAudioProcessorComponent audioProcessorComponent = audioProcessorGameObject.AddComponent<Libretro.UnityAudioProcessorComponent>();
+                Wrapper?.ActivateAudio(audioProcessorComponent);
+            }
+#endif
         }
 
         public void DeactivateAudio()
