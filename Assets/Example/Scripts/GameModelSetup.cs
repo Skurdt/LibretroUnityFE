@@ -25,7 +25,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace SK.Examples.Common
+namespace SK.Examples
 {
     [System.Serializable]
     public class Game
@@ -39,11 +39,26 @@ namespace SK.Examples.Common
     public class GameModelSetup : MonoBehaviour
     {
         public Libretro.Wrapper Wrapper { get; private set; }
-        public bool InputEnabled { get; private set; }
+        public bool InputEnabled
+        {
+            get => _inputEnabled;
+            set
+            {
+                if (value)
+                {
+                    ActivateInput();
+                }
+                else
+                {
+                    DeactivateInput();
+                }
+            }
+        }
 
         [HideInInspector] public Game Game;
 
-        [SerializeField] private PlayerControls _player;
+        private Player.Controls _player;
+
         [SerializeField] [Range(0.5f, 2f)] private float _timeScale = 1.0f;
         [SerializeField] private bool _useAudioRateForSync          = false;  // Very dirty workaround... FIX ME!
         [SerializeField] private float _audioMinDistance            = 2f;
@@ -60,6 +75,13 @@ namespace SK.Examples.Common
 
         private float _frameTimer      = 0f;
         private float _audioVolume     = 1f;
+
+        private bool _inputEnabled;
+
+        private void Awake()
+        {
+            _player = FindObjectOfType<Player.Controls>();
+        }
 
         private void OnEnable()
         {
@@ -206,18 +228,6 @@ namespace SK.Examples.Common
             Wrapper?.DeactivateAudio();
         }
 
-        public void ActivateInput()
-        {
-            InputEnabled = true;
-            Wrapper?.ActivateInput(FindObjectOfType<PlayerInputManager>().GetComponent<Libretro.IInputProcessor>());
-        }
-
-        public void DeactivateInput()
-        {
-            InputEnabled = false;
-            Wrapper?.DeactivateInput();
-        }
-
         public void VideoSetFilterMode(FilterMode filterMode)
         {
             if (Wrapper != null && Wrapper.GraphicsProcessor != null && Wrapper.GraphicsProcessor is Libretro.UnityGraphicsProcessor unityGraphics)
@@ -232,6 +242,18 @@ namespace SK.Examples.Common
             {
                 _rendererComponent.material.SetTexture("_EmissionMap", texture);
             }
+        }
+
+        private void ActivateInput()
+        {
+            _inputEnabled = true;
+            Wrapper?.ActivateInput(FindObjectOfType<PlayerInputManager>().GetComponent<Libretro.IInputProcessor>());
+        }
+
+        private void DeactivateInput()
+        {
+            _inputEnabled = false;
+            Wrapper?.DeactivateInput();
         }
     }
 }

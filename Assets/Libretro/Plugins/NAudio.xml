@@ -906,7 +906,7 @@
             <param name="eventContext">A user context value that is passed to the notification callback.</param>
             <returns>An HRESULT code indicating whether the operation succeeded of failed.</returns>
         </member>
-        <member name="M:NAudio.CoreAudioApi.AudioSessionEventsCallback.OnStateChanged(NAudio.CoreAudioApi.Interfaces.AudioSessionState)">
+        <member name="M:NAudio.CoreAudioApi.AudioSessionEventsCallback.OnChanged(NAudio.CoreAudioApi.Interfaces.AudioSessionState)">
             <summary>
             Notifies the client that the stream-activity state of the session has changed.
             </summary>
@@ -1655,7 +1655,7 @@
             <param name="eventContext">A user context value that is passed to the notification callback.</param>
             <returns>An HRESULT code indicating whether the operation succeeded of failed.</returns>
         </member>
-        <member name="M:NAudio.CoreAudioApi.Interfaces.IAudioSessionEvents.OnStateChanged(NAudio.CoreAudioApi.Interfaces.AudioSessionState)">
+        <member name="M:NAudio.CoreAudioApi.Interfaces.IAudioSessionEvents.OnChanged(NAudio.CoreAudioApi.Interfaces.AudioSessionState)">
             <summary>
             Notifies the client that the stream-activity state of the session has changed.
             </summary>
@@ -1707,7 +1707,7 @@
             </summary>
             <param name="groupingId">>The new grouping parameter for the session.</param>
         </member>
-        <member name="M:NAudio.CoreAudioApi.Interfaces.IAudioSessionEventsHandler.OnStateChanged(NAudio.CoreAudioApi.Interfaces.AudioSessionState)">
+        <member name="M:NAudio.CoreAudioApi.Interfaces.IAudioSessionEventsHandler.OnChanged(NAudio.CoreAudioApi.Interfaces.AudioSessionState)">
             <summary>
             notification of the client that the stream-activity state of the session has changed
             </summary>

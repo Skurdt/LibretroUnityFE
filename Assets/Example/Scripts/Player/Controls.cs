@@ -21,13 +21,14 @@
  * SOFTWARE. */
 
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-namespace SK.Examples.Common
+namespace SK.Examples.Player
 {
     [RequireComponent(typeof(CharacterController))]
-    public class PlayerControls : MonoBehaviour
+    public class Controls : MonoBehaviour
     {
-        public bool InputEnabled { get; private set; } = true;
+        public bool InputEnabled;
 
         public float WalkSpeed = 2f;
         public float RunSpeed  = 4f;
@@ -68,10 +69,10 @@ namespace SK.Examples.Common
                     _moveVelocity = new Vector3(_movementInputX, -0.1f, _movementInputY);
                     _moveVelocity.Normalize();
 
-                    float speed = Utils.LShiftKeyDown() ? RunSpeed : WalkSpeed;
+                    float speed = Keyboard.current.leftShiftKey.isPressed ? RunSpeed : WalkSpeed;
                     _moveVelocity = transform.TransformDirection(_moveVelocity) * speed;
 
-                    if (Utils.SpaceKeyPressed())
+                    if (Keyboard.current.spaceKey.wasPressedThisFrame)
                     {
                         _moveVelocity.y = JumpForce;
                     }
@@ -94,16 +95,6 @@ namespace SK.Examples.Common
             _movementInputY = Input.GetAxisRaw("Vertical");
             _lookInputH     = Input.GetAxis("Mouse X");
             _lookInputV     = Input.GetAxis("Mouse Y");
-        }
-
-        public void ActivateInput()
-        {
-            InputEnabled = true;
-        }
-
-        public void DeactivateInput()
-        {
-            InputEnabled = false;
         }
     }
 }

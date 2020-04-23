@@ -20,43 +20,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using UnityEngine;
-
-namespace SK.Examples
+namespace SK.Examples.Player
 {
-    public static class Utils
+    public abstract class State
     {
-        public static void ToggleMouseCursor()
+        protected readonly StateController _stateController;
+        protected readonly Controls _controls;
+        protected readonly Interactions _interactions;
+
+        public State(StateController stateController, Controls controls, Interactions interactions)
         {
-            if (Cursor.lockState == CursorLockMode.Locked)
-            {
-                ShowMouseCursor();
-            }
-            else
-            {
-                HideMouseCursor();
-            }
+            _stateController = stateController;
+            _controls        = controls;
+            _interactions    = interactions;
         }
 
-        public static void ShowMouseCursor()
+        public virtual void OnEnter()
         {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible   = true;
         }
 
-        public static void HideMouseCursor()
+        public virtual void OnUpdate(float dt)
         {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible   = false;
         }
 
-        public static void ExitApp()
+        public virtual void OnFixedUpdate(float dt)
         {
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit(0);
-#endif
+        }
+
+        public virtual void OnExit()
+        {
         }
     }
 }

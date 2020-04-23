@@ -20,43 +20,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using UnityEngine;
+using UnityEngine.InputSystem;
 
-namespace SK.Examples
+namespace SK.Examples.Player
 {
-    public static class Utils
+    public class GameFocusState : State
     {
-        public static void ToggleMouseCursor()
+        public GameFocusState(StateController stateController, Controls controls, Interactions interactions)
+        : base(stateController, controls, interactions)
         {
-            if (Cursor.lockState == CursorLockMode.Locked)
+        }
+
+        public override void OnEnter()
+        {
+            _controls.InputEnabled = false;
+            _interactions.CurrentGame.InputEnabled = true;
+        }
+
+        public override void OnUpdate(float dt)
+        {
+            if (Mouse.current.middleButton.wasPressedThisFrame)
             {
-                ShowMouseCursor();
+                Utils.ToggleMouseCursor();
+                _interactions.CurrentGame.InputEnabled = !_interactions.CurrentGame.InputEnabled;
             }
-            else
+
+            if (Keyboard.current.eKey.wasPressedThisFrame)
             {
-                HideMouseCursor();
+                _stateController.TransitionTo<NormalState>();
             }
         }
 
-        public static void ShowMouseCursor()
+        public override void OnExit()
         {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible   = true;
-        }
-
-        public static void HideMouseCursor()
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible   = false;
-        }
-
-        public static void ExitApp()
-        {
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit(0);
-#endif
+            _interactions.CurrentGame.InputEnabled = false;
+            _controls.InputEnabled = true;
         }
     }
 }

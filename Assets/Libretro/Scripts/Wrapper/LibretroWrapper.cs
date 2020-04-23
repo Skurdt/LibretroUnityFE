@@ -75,12 +75,18 @@ namespace SK.Libretro
                 TempDirectory       = $"{WrapperDirectory}/temp";
                 ExtractDirectory    = $"{TempDirectory}/extracted";
                 CoreOptionsFile     = $"{WrapperDirectory}/core_options.json";
-            }
 
-            string wrapperDirectoryAbs = FileSystem.GetAbsolutePath(WrapperDirectory);
-            if (!Directory.Exists(wrapperDirectoryAbs))
-            {
-                _ = Directory.CreateDirectory(wrapperDirectoryAbs);
+                string wrapperDirectoryAbs = FileSystem.GetAbsolutePath(WrapperDirectory);
+                if (!Directory.Exists(wrapperDirectoryAbs))
+                {
+                    _ = Directory.CreateDirectory(wrapperDirectoryAbs);
+                }
+
+                string tempDirectoryAbs = FileSystem.GetAbsolutePath(TempDirectory);
+                if (Directory.Exists(tempDirectoryAbs))
+                {
+                    Directory.Delete(tempDirectoryAbs, true);
+                }
             }
         }
 
