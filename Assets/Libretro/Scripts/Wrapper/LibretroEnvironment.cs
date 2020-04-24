@@ -24,6 +24,7 @@ using SK.Libretro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static SK.Libretro.Utilities.StringUtils;
 
@@ -96,7 +97,8 @@ namespace SK.Libretro
                 case retro_environment.RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE:
                 {
                     bool* outVariableUpdate = (bool*)data;
-                    *outVariableUpdate = false;
+                    *outVariableUpdate = _dirtyVariables;
+                    _dirtyVariables = false;
                 }
                 break;
                 case retro_environment.RETRO_ENVIRONMENT_GET_LIBRETRO_PATH:

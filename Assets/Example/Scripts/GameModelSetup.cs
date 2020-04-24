@@ -64,7 +64,8 @@ namespace SK.Examples
         [SerializeField] private float _audioMinDistance            = 2f;
         [SerializeField] private float _audioMaxDistance            = 10f;
         [SerializeField] private FilterMode _videoFilterMode        = FilterMode.Point;
-        [SerializeField] private bool _cropOverscan                 = true;
+
+        public bool CropOverscan = true;
 
         private Transform _screenTransform   = null;
         private Renderer _rendererComponent = null;
@@ -139,7 +140,7 @@ namespace SK.Examples
                         {
                             Wrapper = new Libretro.Wrapper((Libretro.TargetPlatform)Application.platform)
                             {
-                                OptionCropOverscan = _cropOverscan
+                                OptionCropOverscan = CropOverscan
                             };
 
                             if (Wrapper.StartGame(Game.Core, Game.Directory, Game.Name))

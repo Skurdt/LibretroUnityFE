@@ -41,7 +41,15 @@ namespace SK.Libretro
         public static string ExtractDirectory    = null;
         public static string CoreOptionsFile     = null;
 
-        public bool OptionCropOverscan = true;
+        public bool OptionCropOverscan
+        {
+            get => _optionCropOverscan;
+            set
+            {
+                _optionCropOverscan = value;
+                _dirtyVariables = true;
+            }
+        }
 
         public TargetPlatform TargetPlatform { get; }
 
@@ -53,6 +61,10 @@ namespace SK.Libretro
         public LibretroGame Game { get; private set; } = new LibretroGame();
 
         private CoreOptionsList _coreOptionsList;
+
+        private bool _optionCropOverscan = true;
+
+        private bool _dirtyVariables     = false;
 
         private readonly List<IntPtr> _unsafeStrings = new List<IntPtr>();
 
