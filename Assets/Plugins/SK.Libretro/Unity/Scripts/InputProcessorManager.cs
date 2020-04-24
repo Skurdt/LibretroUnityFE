@@ -25,18 +25,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace SK.Libretro
+namespace SK.Libretro.Unity
 {
     [RequireComponent(typeof(PlayerInputManager))]
-    public class UnityInputProcessorManager : MonoBehaviour, IInputProcessor
+    public class InputProcessorManager : MonoBehaviour, IInputProcessor
     {
-        private readonly Dictionary<int, UnityInputProcessorComponent> _controls = new Dictionary<int, UnityInputProcessorComponent>();
+        private readonly Dictionary<int, InputProcessor> _controls = new Dictionary<int, InputProcessor>();
 
 #pragma warning disable IDE0051 // Remove unused private members, Callbacks for the PlayerInputManager component
         private void OnPlayerJoined(PlayerInput player)
         {
             Log.Info($"Player #{player.playerIndex} joined ({player.currentControlScheme}).");
-            _controls.Add(player.playerIndex, player.gameObject.GetComponent<UnityInputProcessorComponent>());
+            _controls.Add(player.playerIndex, player.gameObject.GetComponent<InputProcessor>());
         }
 
         private void OnPlayerLeft(PlayerInput player)

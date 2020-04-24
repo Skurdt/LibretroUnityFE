@@ -27,9 +27,9 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using UnityEngine;
 
-namespace SK.Libretro
+namespace SK.Libretro.Unity
 {
-    public class UnityGraphicsProcessor : IGraphicsProcessor
+    public class GraphicsProcessor : IGraphicsProcessor
     {
         public Action<Texture2D> OnTextureRecreated;
 

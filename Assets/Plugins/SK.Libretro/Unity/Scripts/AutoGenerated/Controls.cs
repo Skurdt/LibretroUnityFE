@@ -1,4 +1,4 @@
-// GENERATED AUTOMATICALLY FROM 'Assets/Libretro/LibretroControls.inputactions'
+// GENERATED AUTOMATICALLY FROM 'Assets/Plugins/SK.Libretro/Unity/Controls.inputactions'
 
 using System;
 using System.Collections;
@@ -6,15 +6,15 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-namespace SK.Libretro
+namespace SK.Libretro.Unity
 {
-    public class @LibretroControls : IInputActionCollection, IDisposable
+    public class @Controls : IInputActionCollection, IDisposable
     {
         public InputActionAsset asset { get; }
-        public @LibretroControls()
+        public @Controls()
         {
             asset = InputActionAsset.FromJson(@"{
-    ""name"": ""LibretroControls"",
+    ""name"": ""Controls"",
     ""maps"": [
         {
             ""name"": ""All"",
@@ -726,8 +726,8 @@ namespace SK.Libretro
         private readonly InputAction m_All_MouseBackButton;
         public struct AllActions
         {
-            private @LibretroControls m_Wrapper;
-            public AllActions(@LibretroControls wrapper) { m_Wrapper = wrapper; }
+            private @Controls m_Wrapper;
+            public AllActions(@Controls wrapper) { m_Wrapper = wrapper; }
             public InputAction @JoypadDirections => m_Wrapper.m_All_JoypadDirections;
             public InputAction @JoypadStartButton => m_Wrapper.m_All_JoypadStartButton;
             public InputAction @JoypadSelectButton => m_Wrapper.m_All_JoypadSelectButton;

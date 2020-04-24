@@ -20,12 +20,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace SK.Examples.Player
 {
     public class GameFocusState : State
     {
+        private GameModelSetup _currentGame;
+
         public GameFocusState(StateController stateController, Controls controls, Interactions interactions)
         : base(stateController, controls, interactions)
         {
@@ -33,8 +36,10 @@ namespace SK.Examples.Player
 
         public override void OnEnter()
         {
-            _controls.InputEnabled = false;
-            _interactions.CurrentGame.InputEnabled = true;
+            _controls.InputEnabled                       = false;
+            _currentGame                                 = _interactions.GetCurrentGame();
+            _currentGame.InputEnabled                    = true;
+            _currentGame.AudioVolumeControlledByDistance = false;
         }
 
         public override void OnUpdate(float dt)
@@ -42,10 +47,10 @@ namespace SK.Examples.Player
             if (Mouse.current.middleButton.wasPressedThisFrame)
             {
                 Utils.ToggleMouseCursor();
-                _interactions.CurrentGame.InputEnabled = !_interactions.CurrentGame.InputEnabled;
+                _currentGame.InputEnabled = !_currentGame.InputEnabled;
             }
 
-            if (Keyboard.current.eKey.wasPressedThisFrame)
+            if (!Cursor.visible && Keyboard.current.eKey.wasPressedThisFrame)
             {
                 _stateController.TransitionTo<NormalState>();
             }
@@ -53,8 +58,10 @@ namespace SK.Examples.Player
 
         public override void OnExit()
         {
-            _interactions.CurrentGame.InputEnabled = false;
-            _controls.InputEnabled = true;
+            _currentGame.AudioVolumeControlledByDistance = true;
+            _currentGame.InputEnabled                    = false;
+            _currentGame                                 = null;
+            _controls.InputEnabled                       = true;
         }
     }
 }

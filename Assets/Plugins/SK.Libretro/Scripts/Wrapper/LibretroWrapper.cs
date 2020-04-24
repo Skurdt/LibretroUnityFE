@@ -46,8 +46,11 @@ namespace SK.Libretro
             get => _optionCropOverscan;
             set
             {
-                _optionCropOverscan = value;
-                _dirtyVariables = true;
+                if (_optionCropOverscan != value)
+                {
+                    _optionCropOverscan = value;
+                    _dirtyVariables = true;
+                }
             }
         }
 
@@ -64,7 +67,7 @@ namespace SK.Libretro
 
         private bool _optionCropOverscan = true;
 
-        private bool _dirtyVariables     = false;
+        private bool _dirtyVariables = true;
 
         private readonly List<IntPtr> _unsafeStrings = new List<IntPtr>();
 

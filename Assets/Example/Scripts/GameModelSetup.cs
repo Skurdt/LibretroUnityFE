@@ -20,7 +20,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-// using System.Diagnostics.CodeAnalysis;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -39,6 +38,36 @@ namespace SK.Examples
     public class GameModelSetup : MonoBehaviour
     {
         public Libretro.Wrapper Wrapper { get; private set; }
+        public bool VideoEnabled
+        {
+            get => _graphicsEnabled;
+            set
+            {
+                if (value)
+                {
+                    ActivateGraphics();
+                }
+                else
+                {
+                    DeactivateGraphics();
+                }
+            }
+        }
+        public bool AudioEnabled
+        {
+            get => _audioEnabled;
+            set
+            {
+                if (value)
+                {
+                    ActivateAudio();
+                }
+                else
+                {
+                    DeactivateAudio();
+                }
+            }
+        }
         public bool InputEnabled
         {
             get => _inputEnabled;
@@ -54,18 +83,27 @@ namespace SK.Examples
                 }
             }
         }
+        public bool AudioVolumeControlledByDistance { get; set; } = true;
+        public float AudioMaxVolume
+        {
+            get => _audioMaxVolume;
+            set
+            {
+                _audioMaxVolume = value;
+                AudioSetVolume(value);
+            }
+        }
 
         [HideInInspector] public Game Game;
 
+        [SerializeField] [Range(0.5f, 2f)] private float _timeScale    = 1.0f;
+        [SerializeField] private bool _useAudioRateForSync             = false; // Very dirty workaround... FIX ME!
+        [SerializeField] [Range(0f, 1f)] private float _audioMaxVolume = 1f;
+        [SerializeField] private float _audioMinDistance               = 2f;
+        [SerializeField] private float _audioMaxDistance               = 10f;
+        [SerializeField] private FilterMode _videoFilterMode           = FilterMode.Point;
+
         private Player.Controls _player;
-
-        [SerializeField] [Range(0.5f, 2f)] private float _timeScale = 1.0f;
-        [SerializeField] private bool _useAudioRateForSync          = false;  // Very dirty workaround... FIX ME!
-        [SerializeField] private float _audioMinDistance            = 2f;
-        [SerializeField] private float _audioMaxDistance            = 10f;
-        [SerializeField] private FilterMode _videoFilterMode        = FilterMode.Point;
-
-        public bool CropOverscan = true;
 
         private Transform _screenTransform   = null;
         private Renderer _rendererComponent = null;
@@ -75,8 +113,9 @@ namespace SK.Examples
         private float _gameSampleRate  = 0f;
 
         private float _frameTimer      = 0f;
-        private float _audioVolume     = 1f;
 
+        private bool _graphicsEnabled;
+        private bool _audioEnabled;
         private bool _inputEnabled;
 
         private void Awake()
@@ -106,20 +145,16 @@ namespace SK.Examples
                     _frameTimer -= targetFrameTime;
                 }
 
-                VideoSetFilterMode(_videoFilterMode);
+                GraphicsSetFilterMode(_videoFilterMode);
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-                if (Wrapper.AudioProcessor != null && Wrapper.AudioProcessor is Libretro.NAudioAudioProcessor NAudioAudio)
+                if (AudioVolumeControlledByDistance && Wrapper.AudioProcessor != null && Wrapper.AudioProcessor is Libretro.NAudio.AudioProcessor NAudioAudio)
                 {
                     float distance = Vector3.Distance(transform.position, _player.transform.position);
                     if (distance > 0f)
                     {
-                        _audioVolume = math.clamp(math.pow((distance - _audioMaxDistance) / (_audioMinDistance - _audioMaxDistance), 2f), 0f, 1f);
-                        NAudioAudio.SetVolume(_audioVolume);
-                    }
-                    else
-                    {
-                        NAudioAudio.SetVolume(1f);
+                        float volume = math.clamp(math.pow((distance - _audioMaxDistance) / (_audioMinDistance - _audioMaxDistance), 2f), 0f, _audioMaxVolume);
+                        NAudioAudio.SetVolume(volume);
                     }
                 }
 #endif
@@ -138,14 +173,11 @@ namespace SK.Examples
                         _screenTransform = modelTransform.GetChild(1);
                         if (_screenTransform.TryGetComponent(out _rendererComponent))
                         {
-                            Wrapper = new Libretro.Wrapper((Libretro.TargetPlatform)Application.platform)
-                            {
-                                OptionCropOverscan = CropOverscan
-                            };
+                            Wrapper = new Libretro.Wrapper((Libretro.TargetPlatform)Application.platform);
 
                             if (Wrapper.StartGame(Game.Core, Game.Directory, Game.Name))
                             {
-                                _gameFps = (float)Wrapper.Game.SystemAVInfo.timing.fps;
+                                _gameFps        = (float)Wrapper.Game.SystemAVInfo.timing.fps;
                                 _gameSampleRate = (float)Wrapper.Game.SystemAVInfo.timing.sample_rate;
 
                                 ActivateGraphics();
@@ -180,32 +212,42 @@ namespace SK.Examples
             Wrapper = null;
         }
 
-        public void ActivateGraphics()
+        public void GraphicsSetFilterMode(FilterMode filterMode)
         {
-            Libretro.UnityGraphicsProcessor unityGraphics = new Libretro.UnityGraphicsProcessor
+            if (Wrapper != null && Wrapper.GraphicsProcessor != null && Wrapper.GraphicsProcessor is Libretro.Unity.GraphicsProcessor unityGraphics)
             {
-                OnTextureRecreated = VideoSetTextureCallback,
-                VideoFilterMode    = _videoFilterMode
+                unityGraphics.VideoFilterMode = filterMode;
+            }
+        }
+
+        private void ActivateGraphics()
+        {
+            Libretro.Unity.GraphicsProcessor unityGraphics = new Libretro.Unity.GraphicsProcessor
+            {
+                OnTextureRecreated = GraphicsSetTextureCallback,
+                VideoFilterMode = _videoFilterMode
             };
             Wrapper?.ActivateGraphics(unityGraphics);
+            _graphicsEnabled = true;
         }
 
-        public void DeactivateGraphics()
+        private void DeactivateGraphics()
         {
             Wrapper?.DeactivateGraphics();
+            _graphicsEnabled = false;
         }
 
-        public void ActivateAudio()
+        private void ActivateAudio()
         {
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            Libretro.UnityAudioProcessorComponent unityAudio = GetComponentInChildren<Libretro.UnityAudioProcessorComponent>();
+            Libretro.Unity.AudioProcessor unityAudio = GetComponentInChildren<Libretro.Unity.AudioProcessor>();
             if (unityAudio != null)
             {
                 Wrapper?.ActivateAudio(unityAudio);
             }
             else
             {
-                Wrapper?.ActivateAudio(new Libretro.NAudioAudioProcessor());
+                Wrapper?.ActivateAudio(new Libretro.NAudio.AudioProcessor());
             }
 #else
             Libretro.UnityAudioProcessorComponent unityAudio = GetComponentInChildren<Libretro.UnityAudioProcessorComponent>(true);
@@ -222,22 +264,28 @@ namespace SK.Examples
                 Wrapper?.ActivateAudio(audioProcessorComponent);
             }
 #endif
+            _audioEnabled = true;
         }
 
-        public void DeactivateAudio()
+        private void DeactivateAudio()
         {
             Wrapper?.DeactivateAudio();
+            _audioEnabled = false;
         }
 
-        public void VideoSetFilterMode(FilterMode filterMode)
+        private void ActivateInput()
         {
-            if (Wrapper != null && Wrapper.GraphicsProcessor != null && Wrapper.GraphicsProcessor is Libretro.UnityGraphicsProcessor unityGraphics)
-            {
-                unityGraphics.VideoFilterMode = filterMode;
-            }
+            Wrapper?.ActivateInput(FindObjectOfType<PlayerInputManager>().GetComponent<Libretro.IInputProcessor>());
+            _inputEnabled = true;
         }
 
-        private void VideoSetTextureCallback(Texture2D texture)
+        private void DeactivateInput()
+        {
+            Wrapper?.DeactivateInput();
+            _inputEnabled = false;
+        }
+
+        private void GraphicsSetTextureCallback(Texture2D texture)
         {
             if (_rendererComponent != null)
             {
@@ -245,16 +293,14 @@ namespace SK.Examples
             }
         }
 
-        private void ActivateInput()
+        private void AudioSetVolume(float volume)
         {
-            _inputEnabled = true;
-            Wrapper?.ActivateInput(FindObjectOfType<PlayerInputManager>().GetComponent<Libretro.IInputProcessor>());
-        }
-
-        private void DeactivateInput()
-        {
-            _inputEnabled = false;
-            Wrapper?.DeactivateInput();
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+            if (Wrapper.AudioProcessor != null && Wrapper.AudioProcessor is Libretro.NAudio.AudioProcessor NAudioAudio)
+            {
+                NAudioAudio.SetVolume(math.clamp(volume, 0f, _audioMaxVolume));
+            }
+#endif
         }
     }
 }

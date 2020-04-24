@@ -44,16 +44,11 @@ namespace SK.Examples.Player
                 _controls.InputEnabled = !_controls.InputEnabled;
             }
 
-            if (_interactions.CurrentGame != null)
+            if (_interactions.GetCurrentGame() != null)
             {
                 if (Keyboard.current.eKey.wasPressedThisFrame)
                 {
                     _stateController.TransitionTo<GameFocusState>();
-                }
-
-                if (_interactions.CurrentGame.Wrapper.OptionCropOverscan != _interactions.CurrentGame.CropOverscan)
-                {
-                    _interactions.CurrentGame.Wrapper.OptionCropOverscan = _interactions.CurrentGame.CropOverscan;
                 }
             }
         }

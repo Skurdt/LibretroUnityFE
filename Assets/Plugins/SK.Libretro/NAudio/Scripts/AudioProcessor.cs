@@ -26,9 +26,9 @@ using NAudio.Wave.SampleProviders;
 using System;
 using Unity.Mathematics;
 
-namespace SK.Libretro
+namespace SK.Libretro.NAudio
 {
-    public class NAudioAudioProcessor : IAudioProcessor
+    public class AudioProcessor : IAudioProcessor
     {
         private const int AUDIO_BUFFER_SIZE = 65536;
 

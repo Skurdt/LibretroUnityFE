@@ -20,6 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -28,15 +29,6 @@ namespace SK.Examples.Player
     [RequireComponent(typeof(Controls))]
     public class Interactions : MonoBehaviour
     {
-        public GameModelSetup CurrentGame
-        {
-            get
-            {
-                GetCurrentGame();
-                return _currentGame;
-            }
-        }
-
         [SerializeField] private float _raycastMaxDistance = 1.2f;
 #pragma warning disable 0649
         [SerializeField] private LayerMask _raycastLayerMask;
@@ -63,8 +55,6 @@ namespace SK.Examples.Player
 
         private void Update()
         {
-            GetCurrentGame();
-
             _stateController.Update(Time.deltaTime);
 
             if (Keyboard.current.escapeKey.wasPressedThisFrame)
@@ -73,7 +63,35 @@ namespace SK.Examples.Player
             }
         }
 
-        private void GetCurrentGame()
+        private void OnGUI()
+        {
+            //if (Cursor.visible
+            //    && _stateController.CurrentState != null
+            //    && _stateController.CurrentState is GameFocusState _)
+            if (_stateController.CurrentState != null && _stateController.CurrentState is GameFocusState _)
+            {
+                float labelWidth = 100f;
+                float fieldWidth = 100f;
+                float height = 20f;
+
+                // Show options
+                GUILayout.BeginHorizontal();
+                {
+                    GUILayout.Label("Crop Overscan:", GUILayout.Width(labelWidth), GUILayout.Height(height));
+                    _currentGame.Wrapper.OptionCropOverscan = GUILayout.Toggle(_currentGame.Wrapper.OptionCropOverscan, string.Empty, GUILayout.Width(fieldWidth), GUILayout.Height(height));
+                }
+                GUILayout.EndHorizontal();
+
+                GUILayout.BeginHorizontal();
+                {
+                    GUILayout.Label("Volume:", GUILayout.Width(labelWidth), GUILayout.Height(height));
+                    _currentGame.AudioMaxVolume = GUILayout.HorizontalSlider(_currentGame.AudioMaxVolume, 0f, 1f, GUILayout.Width(fieldWidth), GUILayout.Height(height));
+                }
+                GUILayout.EndHorizontal();
+            }
+        }
+
+        public GameModelSetup GetCurrentGame()
         {
             Ray ray = _camera.ScreenPointToRay(new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0f));
             if (Physics.Raycast(ray, out RaycastHit hitInfo, _raycastMaxDistance, _raycastLayerMask))
@@ -88,6 +106,8 @@ namespace SK.Examples.Player
             {
                 _currentGame = null;
             }
+
+            return _currentGame;
         }
     }
 }

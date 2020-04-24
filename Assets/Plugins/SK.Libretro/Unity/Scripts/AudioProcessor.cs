@@ -23,10 +23,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SK.Libretro
+namespace SK.Libretro.Unity
 {
     [RequireComponent(typeof(AudioSource))]
-    public class UnityAudioProcessorComponent : MonoBehaviour, IAudioProcessor
+    public class AudioProcessor : MonoBehaviour, IAudioProcessor
     {
         private const int AUDIO_BUFFER_SIZE = 65536;
 
