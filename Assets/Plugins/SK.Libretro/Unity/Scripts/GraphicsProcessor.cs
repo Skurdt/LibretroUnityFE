@@ -118,7 +118,7 @@ namespace SK.Libretro.Unity
             public void Execute()
             {
                 ushort* line = SourceData;
-                for (int y = 0; y < Height; ++y)
+                for (int y = Height - 1; y >= 0; --y)
                 {
                     for (int x = 0; x < Width; ++x)
                     {
@@ -141,7 +141,7 @@ namespace SK.Libretro.Unity
             public void Execute()
             {
                 uint* line = SourceData;
-                for (int y = 0; y < Height; ++y)
+                for (int y = Height - 1; y >= 0; --y)
                 {
                     for (int x = 0; x < Width; ++x)
                     {
@@ -164,7 +164,7 @@ namespace SK.Libretro.Unity
             public void Execute()
             {
                 ushort* line = SourceData;
-                for (int y = 0; y < Height; ++y)
+                for (int y = Height - 1; y >= 0; --y)
                 {
                     for (int x = 0; x < Width; ++x)
                     {

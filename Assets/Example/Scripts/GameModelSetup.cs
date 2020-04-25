@@ -184,11 +184,9 @@ namespace SK.Examples
                                 ActivateAudio();
 
                                 _originalMaterial = _rendererComponent.sharedMaterial;
-                                _rendererComponent.material.mainTextureScale = new Vector2(1f, -1f);
                                 _rendererComponent.material.color = Color.black;
                                 _rendererComponent.material.EnableKeyword("_EMISSION");
-                                _rendererComponent.material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.BakedEmissive;
-                                _rendererComponent.material.SetColor("_EmissionColor", Color.white);
+                                _rendererComponent.material.SetColor("_EmissionColor", Color.white * 1.2f);
                             }
                             else
                             {
