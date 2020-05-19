@@ -1,2 +1,1 @@
--unsafe
 -r:System.IO.Compression.FileSystem.dll
