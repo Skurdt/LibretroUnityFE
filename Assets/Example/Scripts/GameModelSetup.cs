@@ -20,6 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+using System.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -97,7 +98,6 @@ namespace SK.Examples
         [HideInInspector] public Game Game;
 
         [SerializeField] [Range(0.5f, 2f)] private float _timeScale    = 1.0f;
-        [SerializeField] private bool _useAudioRateForSync             = false; // Very dirty workaround... FIX ME!
         [SerializeField] [Range(0f, 1f)] private float _audioMaxVolume = 1f;
         [SerializeField] private float _audioMinDistance               = 2f;
         [SerializeField] private float _audioMaxDistance               = 10f;
@@ -117,6 +117,7 @@ namespace SK.Examples
         private bool _graphicsEnabled;
         private bool _audioEnabled;
         private bool _inputEnabled;
+        private object _co;
 
         private void Awake()
         {
@@ -135,30 +136,44 @@ namespace SK.Examples
 
         private void Update()
         {
-            if (Wrapper != null && _gameFps > 0f && _gameSampleRate > 0f)
+            if (Wrapper == null || _gameFps < 1f || _gameSampleRate < 1f)
             {
-                _frameTimer += Time.deltaTime;
-                float targetFrameTime = 1f / (_useAudioRateForSync ?_gameSampleRate / 1000f : _gameFps) / _timeScale;
-                while (_frameTimer >= targetFrameTime)
-                {
-                    Wrapper.Update();
-                    _frameTimer -= targetFrameTime;
-                }
+                return;
+            }
 
-                GraphicsSetFilterMode(_videoFilterMode);
+            _frameTimer += Time.deltaTime;
+
+            if (_co == null)
+            {
+                _co = StartCoroutine(CoUpdate());
+            }
+
+            GraphicsSetFilterMode(_videoFilterMode);
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-                if (AudioVolumeControlledByDistance && Wrapper.AudioProcessor != null && Wrapper.AudioProcessor is Libretro.NAudio.AudioProcessor NAudioAudio)
+            if (AudioVolumeControlledByDistance && Wrapper.AudioProcessor != null && Wrapper.AudioProcessor is Libretro.NAudio.AudioProcessor NAudioAudio)
+            {
+                float distance = Vector3.Distance(transform.position, _player.transform.position);
+                if (distance > 0f)
                 {
-                    float distance = Vector3.Distance(transform.position, _player.transform.position);
-                    if (distance > 0f)
-                    {
-                        float volume = math.clamp(math.pow((distance - _audioMaxDistance) / (_audioMinDistance - _audioMaxDistance), 2f), 0f, _audioMaxVolume);
-                        NAudioAudio.SetVolume(volume);
-                    }
+                    float volume = math.clamp(math.pow((distance - _audioMaxDistance) / (_audioMinDistance - _audioMaxDistance), 2f), 0f, _audioMaxVolume);
+                    NAudioAudio.SetVolume(volume);
                 }
 #endif
             }
+        }
+
+        private IEnumerator CoUpdate()
+        {
+            float targetFrameTime = 1f / _gameFps / _timeScale;
+            while (_frameTimer >= targetFrameTime)
+            {
+                Wrapper.Update();
+                _frameTimer -= targetFrameTime;
+                yield return null;
+            }
+
+            _co = null;
         }
 
         public void StartGame()

@@ -145,7 +145,7 @@ namespace SK.Libretro
                     break;
                     case retro_device.RETRO_DEVICE_KEYBOARD:
                     {
-                        result = BoolToShort(id < (int)retro_key.RETROK_OEM_102 ? Input.GetKey((KeyCode)id) : false);
+                        result = BoolToShort(id < (int)retro_key.RETROK_OEM_102 && Input.GetKey((KeyCode)id));
                     }
                     break;
                     case retro_device.RETRO_DEVICE_LIGHTGUN:
@@ -162,10 +162,7 @@ namespace SK.Libretro
             return result;
         }
 
-        private short ProcessJoypadDeviceState(int port, int button)
-        {
-            return BoolToShort(InputProcessor.JoypadButton(port, button));
-        }
+        private short ProcessJoypadDeviceState(int port, int button) => BoolToShort(InputProcessor.JoypadButton(port, button));
 
         private short ProcessMouseDeviceState(int port, retro_device_id_mouse command)
         {
@@ -227,14 +224,8 @@ namespace SK.Libretro
             return result;
         }
 
-        private static short BoolToShort(bool boolValue)
-        {
-            return (short)(boolValue ? 1 : 0);
-        }
+        private static short BoolToShort(bool boolValue) => (short)(boolValue ? 1 : 0);
 
-        private static short FloatToShort(float floatValue)
-        {
-            return (short)Mathf.Clamp(Mathf.Round(floatValue), short.MinValue, short.MaxValue);
-        }
+        private static short FloatToShort(float floatValue) => (short)Mathf.Clamp(Mathf.Round(floatValue), short.MinValue, short.MaxValue);
     }
 }
