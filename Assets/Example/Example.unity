@@ -501,7 +501,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 439357801}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.5, y: 4, z: -2.5}
+  m_LocalPosition: {x: -2.5, y: 3.4, z: -2.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 171190564}
@@ -672,7 +672,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 456629328}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.5, y: 4, z: -2.5}
+  m_LocalPosition: {x: 2.5, y: 3.08, z: -2.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 171190564}
@@ -813,7 +813,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 586006818}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.5, y: 4, z: 2.5}
+  m_LocalPosition: {x: -2.5, y: 2.95, z: 2.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 171190564}
@@ -968,7 +968,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 997358299}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.5, y: 4, z: 2.5}
+  m_LocalPosition: {x: 2.5, y: 2.67, z: 2.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 171190564}
@@ -1255,10 +1255,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Game:
     Core: mame2003_plus
-    Directory: D:\__Roms\mame2003-plus
-    Name: mslug
+    Directory: D:/mame2003-plus/roms
+    Name: pacman
   _timeScale: 1
-  _useAudioRateForSync: 0
   _audioMaxVolume: 1
   _audioMinDistance: 2
   _audioMaxDistance: 10

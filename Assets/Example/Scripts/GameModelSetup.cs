@@ -21,6 +21,7 @@
  * SOFTWARE. */
 
 using System.Collections;
+using System.IO;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -33,6 +34,13 @@ namespace SK.Examples
         public string Core      = "mame2003_plus";
         public string Directory = "D:/mame2003-plus/roms";
         public string Name      = "pacman";
+    }
+
+    [System.Serializable]
+    public class GameConfigFile
+    {
+        public bool UseConfig;
+        public Game Game;
     }
 
     [SelectionBase]
@@ -97,42 +105,50 @@ namespace SK.Examples
 
         [HideInInspector] public Game Game;
 
-        [SerializeField] [Range(0.5f, 2f)] private float _timeScale    = 1.0f;
-        [SerializeField] [Range(0f, 1f)] private float _audioMaxVolume = 1f;
-        [SerializeField] private float _audioMinDistance               = 2f;
-        [SerializeField] private float _audioMaxDistance               = 10f;
-        [SerializeField] private FilterMode _videoFilterMode           = FilterMode.Point;
+        [SerializeField, Range(0.5f, 2f)] private float _timeScale    = 1.0f;
+        [SerializeField, Range(0f, 1f)] private float _audioMaxVolume = 1f;
+        [SerializeField] private float _audioMinDistance              = 2f;
+        [SerializeField] private float _audioMaxDistance              = 10f;
+        [SerializeField] private FilterMode _videoFilterMode          = FilterMode.Point;
 
         private Player.Controls _player;
 
         private Transform _screenTransform   = null;
-        private Renderer _rendererComponent = null;
-        private Material _originalMaterial  = null;
+        private Renderer _rendererComponent  = null;
+        private MaterialPropertyBlock _block = null;
 
-        private float _gameFps         = 0f;
-        private float _gameSampleRate  = 0f;
-
-        private float _frameTimer      = 0f;
+        private float _gameFps        = 0f;
+        private float _gameSampleRate = 0f;
 
         private bool _graphicsEnabled;
         private bool _audioEnabled;
         private bool _inputEnabled;
-        private object _co;
 
-        private void Awake()
+        private Coroutine _co;
+        private float _frameTimer = 0f;
+
+        [ContextMenu("Save configuration")]
+        public void EditorSaveConfig()
         {
-            _player = FindObjectOfType<Player.Controls>();
+            string json = JsonUtility.ToJson(new GameConfigFile { UseConfig = true, Game = Game }, true);
+            File.WriteAllText(Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "game.json")), json);
         }
+
+        private void Awake() => _player = FindObjectOfType<Player.Controls>();
 
         private void OnEnable()
         {
+            string text = File.ReadAllText(Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "game.json")));
+            GameConfigFile cfg = JsonUtility.FromJson<GameConfigFile>(text);
+            if (cfg != null && cfg.UseConfig)
+            {
+                Game = cfg.Game;
+            }
+
             StartGame();
         }
 
-        private void OnDisable()
-        {
-            StopGame();
-        }
+        private void OnDisable() => StopGame();
 
         private void Update()
         {
@@ -178,59 +194,63 @@ namespace SK.Examples
 
         public void StartGame()
         {
-            if (Game != null && !string.IsNullOrEmpty(Game.Core))
+            if (Game == null || string.IsNullOrEmpty(Game.Core))
             {
-                if (transform.childCount > 0)
-                {
-                    Transform modelTransform = transform.GetChild(0);
-                    if (modelTransform != null && modelTransform.childCount > 1)
-                    {
-                        _screenTransform = modelTransform.GetChild(1);
-                        if (_screenTransform.TryGetComponent(out _rendererComponent))
-                        {
-                            Wrapper = new Libretro.Wrapper((Libretro.TargetPlatform)Application.platform);
-
-                            if (Wrapper.StartGame(Game.Core, Game.Directory, Game.Name))
-                            {
-                                _gameFps        = (float)Wrapper.Game.SystemAVInfo.timing.fps;
-                                _gameSampleRate = (float)Wrapper.Game.SystemAVInfo.timing.sample_rate;
-
-                                ActivateGraphics();
-                                ActivateAudio();
-
-                                _originalMaterial = _rendererComponent.sharedMaterial;
-                                _rendererComponent.material.color = Color.black;
-                                _rendererComponent.material.EnableKeyword("_EMISSION");
-                                _rendererComponent.material.SetColor("_EmissionColor", Color.white * 1.2f);
-                            }
-                            else
-                            {
-                                Wrapper.StopGame();
-                                Wrapper = null;
-                            }
-                        }
-                    }
-                }
+                return;
             }
+
+            if (transform.childCount == 0)
+            {
+                return;
+            }
+
+            Transform modelTransform = transform.GetChild(0);
+            if (modelTransform == null || modelTransform.childCount == 1)
+            {
+                return;
+            }
+
+            _screenTransform = modelTransform.GetChild(1);
+            if (!_screenTransform.TryGetComponent(out _rendererComponent))
+            {
+                return;
+            }
+
+            Wrapper = new Libretro.Wrapper((Libretro.TargetPlatform)Application.platform);
+
+            if (!Wrapper.StartGame(Game.Core, Game.Directory, Game.Name))
+            {
+                StopGame();
+            }
+
+            _gameFps = (float)Wrapper.Game.SystemAVInfo.timing.fps;
+            _gameSampleRate = (float)Wrapper.Game.SystemAVInfo.timing.sample_rate;
+
+            ActivateGraphics();
+            ActivateAudio();
+
+            _block = new MaterialPropertyBlock();
+            _rendererComponent.GetPropertyBlock(_block);
+            _block.SetColor("_EmissionColor", Color.white * 1.2f);
+            _rendererComponent.SetPropertyBlock(_block);
         }
 
         public void StopGame()
         {
-            if (_rendererComponent != null && _rendererComponent.material != null && _originalMaterial != null)
-            {
-                _rendererComponent.material = _originalMaterial;
-            }
-
             Wrapper?.StopGame();
             Wrapper = null;
+
+            _block = null;
         }
 
         public void GraphicsSetFilterMode(FilterMode filterMode)
         {
-            if (Wrapper != null && Wrapper.GraphicsProcessor != null && Wrapper.GraphicsProcessor is Libretro.Unity.GraphicsProcessor unityGraphics)
+            if (Wrapper == null || Wrapper.GraphicsProcessor == null || !(Wrapper.GraphicsProcessor is Libretro.Unity.GraphicsProcessor unityGraphics) || unityGraphics.Texture == null)
             {
-                unityGraphics.VideoFilterMode = filterMode;
+                return;
             }
+
+            unityGraphics.VideoFilterMode = filterMode;
         }
 
         private void ActivateGraphics()
@@ -300,9 +320,10 @@ namespace SK.Examples
 
         private void GraphicsSetTextureCallback(Texture2D texture)
         {
-            if (_rendererComponent != null)
+            if (_block != null && _rendererComponent != null && texture != null)
             {
-                _rendererComponent.material.SetTexture("_EmissionMap", texture);
+                _block.SetTexture("_EmissionMap", texture);
+                _rendererComponent.SetPropertyBlock(_block);
             }
         }
 
