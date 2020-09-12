@@ -26,6 +26,7 @@
                 "mame2003-plus_sample_rate;48000;48000|8000|11025|22050|30000|44100|;",
                 "mame2003-plus_skip_disclaimer;enabled;disabled|enabled;",
                 "mame2003-plus_skip_warnings;disabled;disabled|enabled;",
+                "mame2003-plus_stv_bios;default;default|japan|japana|us|japan_b|taiwan|europe;",
                 "mame2003-plus_tate_mode;disabled;disabled|enabled;",
                 "mame2003-plus_vector_antialias;enabled;enabled|disabled;",
                 "mame2003-plus_vector_beam_width;2;2|1|1.2|1.4|1.6|1.8|2.5|3|4|5|6|7|8|9|10|11|12;",
@@ -33,6 +34,26 @@
                 "mame2003-plus_vector_intensity;1.5;1.5|0.5|1|2|2.5|3;",
                 "mame2003-plus_vector_resolution;1024x768;1024x768|640x480|1280x960|1440x1080|1600x1200|original;",
                 "mame2003-plus_vector_translucency;enabled;enabled|disabled;"
+            ]
+        },
+        {
+            "CoreName": "mame2016",
+            "Options": [
+                "mame2016_alternate_renderer;disabled;disabled|enabled;",
+                "mame2016_auto_save;disabled;disabled|enabled;",
+                "mame2016_boot_from_cli;disabled;disabled|enabled;",
+                "mame2016_boot_to_bios;disabled;disabled|enabled;",
+                "mame2016_boot_to_osd;disabled;disabled|enabled;",
+                "mame2016_cheats_enable;disabled;disabled|enabled;",
+                "mame2016_cpu_overclock;default;default|30|31|32|33|34|35|36|37|38|39|40|41|42|43|44|45|46|47|48|49|50|51|52|53|54|55|60|65|70|75|80|85|90|95|100|105|110|115|120|125|130|135|140|145|150;",
+                "mame2016_media_type;rom;rom|cart|flop|cdrm|cass|hard|serl|prin;",
+                "mame2016_mouse_enable;disabled;disabled|enabled;",
+                "mame2016_read_config;disabled;disabled|enabled;",
+                "mame2016_saves;game;game|system;",
+                "mame2016_softlists_auto_media;enabled;enabled|disabled;",
+                "mame2016_softlists_enable;enabled;enabled|disabled;",
+                "mame2016_throttle;disabled;disabled|enabled;",
+                "mame2016_write_config;disabled;disabled|enabled;"
             ]
         }
     ]

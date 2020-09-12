@@ -127,6 +127,17 @@ namespace SK.Examples
         private Coroutine _co;
         private float _frameTimer = 0f;
 
+        [ContextMenu("Load configuration")]
+        public void EditorLoadConfig()
+        {
+            string text = File.ReadAllText(Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "game.json")));
+            GameConfigFile cfg = JsonUtility.FromJson<GameConfigFile>(text);
+            if (cfg != null)
+            {
+                Game = cfg.Game;
+            }
+        }
+
         [ContextMenu("Save configuration")]
         public void EditorSaveConfig()
         {
@@ -216,14 +227,15 @@ namespace SK.Examples
                 return;
             }
 
-            Wrapper = new Libretro.Wrapper((Libretro.TargetPlatform)Application.platform);
+            Wrapper = new Libretro.Wrapper((Libretro.TargetPlatform)Application.platform, $"{Application.streamingAssetsPath}/libretro~");
 
             if (!Wrapper.StartGame(Game.Core, Game.Directory, Game.Name))
             {
                 StopGame();
+                return;
             }
 
-            _gameFps = (float)Wrapper.Game.SystemAVInfo.timing.fps;
+            _gameFps        = (float)Wrapper.Game.SystemAVInfo.timing.fps;
             _gameSampleRate = (float)Wrapper.Game.SystemAVInfo.timing.sample_rate;
 
             ActivateGraphics();
@@ -231,16 +243,17 @@ namespace SK.Examples
 
             _block = new MaterialPropertyBlock();
             _rendererComponent.GetPropertyBlock(_block);
-            _block.SetColor("_EmissionColor", Color.white * 1.2f);
+            _block.SetFloat("_Intensity", 1.1f);
+            _block.SetInt("_Rotation", Wrapper.Core.Rotation);
             _rendererComponent.SetPropertyBlock(_block);
         }
 
         public void StopGame()
         {
             Wrapper?.StopGame();
-            Wrapper = null;
 
-            _block = null;
+            Wrapper = null;
+            _block  = null;
         }
 
         public void GraphicsSetFilterMode(FilterMode filterMode)
@@ -322,7 +335,7 @@ namespace SK.Examples
         {
             if (_block != null && _rendererComponent != null && texture != null)
             {
-                _block.SetTexture("_EmissionMap", texture);
+                _block.SetTexture("_Texture", texture);
                 _rendererComponent.SetPropertyBlock(_block);
             }
         }

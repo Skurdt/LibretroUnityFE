@@ -46,10 +46,12 @@ namespace SK.Libretro.Unity
         }
 #pragma warning restore IDE0051 // Remove unused private members
 
-        public bool JoypadButton(int port, int button) => _controls.ContainsKey(port) ? _controls[port].JoypadButtons[button] : false;
+        public bool JoypadButton(int port, int button) => _controls.ContainsKey(port) && _controls[port].JoypadButtons[button];
 
         public float MouseDelta(int port, int axis)      => _controls.ContainsKey(port) ? (axis == 0 ? _controls[port].MousePositionDelta.x : -_controls[port].MousePositionDelta.y) : 0f;
         public float MouseWheelDelta(int port, int axis) => _controls.ContainsKey(port) ? (axis == 0 ? _controls[port].MouseWheelDelta.y : _controls[port].MouseWheelDelta.x) : 0f;
-        public bool MouseButton(int port, int button)    => _controls.ContainsKey(port) ? _controls[port].MouseButtons[button] : false;
+        public bool MouseButton(int port, int button)    => _controls.ContainsKey(port) && _controls[port].MouseButtons[button];
+
+        public bool KeyboardKey(int port, int key) => _controls.ContainsKey(port) && Input.GetKey((KeyCode)key);
     }
 }

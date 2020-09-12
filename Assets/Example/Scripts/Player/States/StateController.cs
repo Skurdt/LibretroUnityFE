@@ -39,15 +39,9 @@ namespace SK.Examples.Player
             _interactions = interactions;
         }
 
-        public void Update(float dt)
-        {
-            CurrentState?.OnUpdate(dt);
-        }
+        public void Update(float dt) => CurrentState?.OnUpdate(dt);
 
-        public void FixedUpdate(float dt)
-        {
-            CurrentState?.OnFixedUpdate(dt);
-        }
+        public void FixedUpdate(float dt) => CurrentState?.OnFixedUpdate(dt);
 
         public void TransitionTo<T>() where T : State
         {

@@ -31,10 +31,7 @@ namespace SK.Examples.Player
         {
         }
 
-        public override void OnEnter()
-        {
-            _controls.InputEnabled = true;
-        }
+        public override void OnEnter() => _controls.InputEnabled = true;
 
         public override void OnUpdate(float dt)
         {
@@ -53,9 +50,6 @@ namespace SK.Examples.Player
             }
         }
 
-        public override void OnExit()
-        {
-            _controls.InputEnabled = false;
-        }
+        public override void OnExit() => _controls.InputEnabled = false;
     }
 }

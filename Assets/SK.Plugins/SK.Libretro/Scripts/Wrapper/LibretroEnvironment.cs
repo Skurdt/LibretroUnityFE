@@ -24,7 +24,6 @@ using SK.Libretro.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static SK.Libretro.Utilities.StringUtils;
 
@@ -244,21 +243,24 @@ namespace SK.Libretro
                     Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_DISK_CONTROL_INTERFACE_VERSION");
                     return false;
                 }
+                case retro_environment.RETRO_ENVIRONMENT_GET_MESSAGE_INTERFACE_VERSION:
+                {
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_MESSAGE_INTERFACE_VERSION");
+                    return false;
+                }
 
                 /************************************************************************************************
                 / Data passed from the core to the frontend
                 /***********************************************************************************************/
                 case retro_environment.RETRO_ENVIRONMENT_SET_ROTATION:
                 {
-                    // TODO: Rotate screen (counter-clockwise)
                     // Values: 0,  1,   2,   3
                     // Result: 0, 90, 180, 270 degrees
                     uint* inRotation = (uint*)data;
-                    Core.Rotation = (int)*inRotation;
-                    Log.Warning($"<- Rotation: {*inRotation}", "RETRO_ENVIRONMENT_SET_ROTATION");
-                    return false;
+                    Core.Rotation = (int)*inRotation * 90;
+                    Log.Info($"<- Rotation: {Core.Rotation}", "RETRO_ENVIRONMENT_SET_ROTATION");
                 }
-                //break;
+                break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_MESSAGE:
                 {
                     // TODO: Do I need something from this?
@@ -454,99 +456,100 @@ namespace SK.Libretro
                     Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_SET_PROC_ADDRESS_CALLBACK");
                     return false;
                 }
-                //case retro_environment.RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO:
-                //{
-                //    //RetroSubsystemInfo* subsytemInfo = (RetroSubsystemInfo*)data;
-                //    ////Debug.Log("<color=yellow>Subsystem Info:</color>");
-                //    ////Debug.Log($"<color=yellow>Description:</color> {Marshal.PtrToStringAnsisubsytemInfo->desc)}");
-                //    ////Debug.Log($"<color=yellow>Ident:</color> {Marshal.PtrToStringAnsisubsytemInfo->ident)}");
-                //    //_game_type = subsytemInfo->id;
-                //    //_num_info = subsytemInfo->num_roms;
-                //    //while (subsytemInfo->roms != null)
-                //    //{
-                //    //    RetroSubsystemRomInfo* romInfo = subsytemInfo->roms;
-                //    //    //Debug.Log("<color=orange>Rom Info:</color>");
-                //    //    //Debug.Log($"<color=orange>Description:</color> {Marshal.PtrToStringAnsiromInfo->desc)}");
-                //    //    //Debug.Log($"<color=orange>Extensions:</color> {Marshal.PtrToStringAnsiromInfo->valid_extensions)}");
-                //    //    subsytemInfo++;
-                //    //}
+                case retro_environment.RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO:
+                {
+                    //    //RetroSubsystemInfo* subsytemInfo = (RetroSubsystemInfo*)data;
+                    //    ////Debug.Log("<color=yellow>Subsystem Info:</color>");
+                    //    ////Debug.Log($"<color=yellow>Description:</color> {Marshal.PtrToStringAnsisubsytemInfo->desc)}");
+                    //    ////Debug.Log($"<color=yellow>Ident:</color> {Marshal.PtrToStringAnsisubsytemInfo->ident)}");
+                    //    //_game_type = subsytemInfo->id;
+                    //    //_num_info = subsytemInfo->num_roms;
+                    //    //while (subsytemInfo->roms != null)
+                    //    //{
+                    //    //    RetroSubsystemRomInfo* romInfo = subsytemInfo->roms;
+                    //    //    //Debug.Log("<color=orange>Rom Info:</color>");
+                    //    //    //Debug.Log($"<color=orange>Description:</color> {Marshal.PtrToStringAnsiromInfo->desc)}");
+                    //    //    //Debug.Log($"<color=orange>Extensions:</color> {Marshal.PtrToStringAnsiromInfo->valid_extensions)}");
+                    //    //    subsytemInfo++;
+                    //    //}
 
-                //    RetroSubsystemInfo* inSubsytemInfo = (RetroSubsystemInfo*)data;
-                //    // settings_t* settings = configuration_settings;
-                //    // unsigned log_level = settings->uints.frontend_log_level;
+                    //    RetroSubsystemInfo* inSubsytemInfo = (RetroSubsystemInfo*)data;
+                    //    // settings_t* settings = configuration_settings;
+                    //    // unsigned log_level = settings->uints.frontend_log_level;
 
-                //    subsystem_current_count = 0;
+                    //    subsystem_current_count = 0;
 
-                //    uint size = 0;
-                //    Log.Info("SET_SUBSYSTEM_INFO", "Environment");
-                //    {
-                //        uint i = 0;
-                //        while (inSubsytemInfo[i].ident != null)
-                //        {
-                //            string subsystemDesc = Marshal.PtrToStringAnsiinSubsytemInfo[i].desc);
-                //            string subsystemIdent = Marshal.PtrToStringAnsiinSubsytemInfo[i].ident);
-                //            uint subsystemId = inSubsytemInfo[i].id;
+                    //    uint size = 0;
+                    //    Log.Info("SET_SUBSYSTEM_INFO", "Environment");
+                    //    {
+                    //        uint i = 0;
+                    //        while (inSubsytemInfo[i].ident != null)
+                    //        {
+                    //            string subsystemDesc = Marshal.PtrToStringAnsiinSubsytemInfo[i].desc);
+                    //            string subsystemIdent = Marshal.PtrToStringAnsiinSubsytemInfo[i].ident);
+                    //            uint subsystemId = inSubsytemInfo[i].id;
 
-                //            Log.Info($"Subsystem ID: {i}");
-                //            Log.Info($"Special game type: {subsystemDesc}\n  Ident: {subsystemIdent}\n  ID: {subsystemId}\n  Content:");
-                //            for (uint j = 0; j < inSubsytemInfo[i].num_roms; j++)
-                //            {
-                //                string romDesc = Marshal.PtrToStringAnsiinSubsytemInfo[i].roms[j].desc);
-                //                string required = inSubsytemInfo[i].roms[j].required ? "required" : "optional";
-                //                Log.Info($"    {romDesc} ({required})");
-                //            }
-                //            i++;
-                //        }
+                    //            Log.Info($"Subsystem ID: {i}");
+                    //            Log.Info($"Special game type: {subsystemDesc}\n  Ident: {subsystemIdent}\n  ID: {subsystemId}\n  Content:");
+                    //            for (uint j = 0; j < inSubsytemInfo[i].num_roms; j++)
+                    //            {
+                    //                string romDesc = Marshal.PtrToStringAnsiinSubsytemInfo[i].roms[j].desc);
+                    //                string required = inSubsytemInfo[i].roms[j].required ? "required" : "optional";
+                    //                Log.Info($"    {romDesc} ({required})");
+                    //            }
+                    //            i++;
+                    //        }
 
-                //        //if (log_level == RETRO_LOG_DEBUG)
-                //        Log.Info($"Subsystems: {i}");
-                //        size = i;
-                //    }
-                //    //if (log_level == RETRO_LOG_DEBUG)
-                //    if (size > SUBSYSTEM_MAX_SUBSYSTEMS)
-                //    {
-                //        Log.Warning($"Subsystems exceed subsystem max, clamping to {SUBSYSTEM_MAX_SUBSYSTEMS}");
-                //    }
+                    //        //if (log_level == RETRO_LOG_DEBUG)
+                    //        Log.Info($"Subsystems: {i}");
+                    //        size = i;
+                    //    }
+                    //    //if (log_level == RETRO_LOG_DEBUG)
+                    //    if (size > SUBSYSTEM_MAX_SUBSYSTEMS)
+                    //    {
+                    //        Log.Warning($"Subsystems exceed subsystem max, clamping to {SUBSYSTEM_MAX_SUBSYSTEMS}");
+                    //    }
 
-                //    if (Core != null)
-                //    {
-                //        for (uint i = 0; i < size && i < SUBSYSTEM_MAX_SUBSYSTEMS; i++)
-                //        {
-                //            ref RetroSubsystemInfo subdata = ref subsystem_data[i];
+                    //    if (Core != null)
+                    //    {
+                    //        for (uint i = 0; i < size && i < SUBSYSTEM_MAX_SUBSYSTEMS; i++)
+                    //        {
+                    //            ref RetroSubsystemInfo subdata = ref subsystem_data[i];
 
-                //            subdata.desc = inSubsytemInfo[i].desc;
-                //            subdata.ident = inSubsytemInfo[i].ident;
-                //            subdata.id = inSubsytemInfo[i].id;
-                //            subdata.num_roms = inSubsytemInfo[i].num_roms;
+                    //            subdata.desc = inSubsytemInfo[i].desc;
+                    //            subdata.ident = inSubsytemInfo[i].ident;
+                    //            subdata.id = inSubsytemInfo[i].id;
+                    //            subdata.num_roms = inSubsytemInfo[i].num_roms;
 
-                //            //if (log_level == RETRO_LOG_DEBUG)
-                //            if (subdata.num_roms > SUBSYSTEM_MAX_SUBSYSTEM_ROMS)
-                //            {
-                //                Log.Warning($"Subsystems exceed subsystem max roms, clamping to {SUBSYSTEM_MAX_SUBSYSTEM_ROMS}");
-                //            }
+                    //            //if (log_level == RETRO_LOG_DEBUG)
+                    //            if (subdata.num_roms > SUBSYSTEM_MAX_SUBSYSTEM_ROMS)
+                    //            {
+                    //                Log.Warning($"Subsystems exceed subsystem max roms, clamping to {SUBSYSTEM_MAX_SUBSYSTEM_ROMS}");
+                    //            }
 
-                //            for (uint j = 0; j < subdata.num_roms && j < SUBSYSTEM_MAX_SUBSYSTEM_ROMS; j++)
-                //            {
-                //                while (subdata.roms != null)
-                //                {
-                //                    RetroSubsystemRomInfo* romInfo = subdata.roms;
-                //                    romInfo->desc = inSubsytemInfo[i].roms[j].desc;
-                //                    romInfo->valid_extensions = inSubsytemInfo[i].roms[j].valid_extensions;
-                //                    romInfo->required = inSubsytemInfo[i].roms[j].required;
-                //                    romInfo->block_extract = inSubsytemInfo[i].roms[j].block_extract;
-                //                    romInfo->need_fullpath = inSubsytemInfo[i].roms[j].need_fullpath;
-                //                    subdata.roms++;
-                //                }
-                //            }
+                    //            for (uint j = 0; j < subdata.num_roms && j < SUBSYSTEM_MAX_SUBSYSTEM_ROMS; j++)
+                    //            {
+                    //                while (subdata.roms != null)
+                    //                {
+                    //                    RetroSubsystemRomInfo* romInfo = subdata.roms;
+                    //                    romInfo->desc = inSubsytemInfo[i].roms[j].desc;
+                    //                    romInfo->valid_extensions = inSubsytemInfo[i].roms[j].valid_extensions;
+                    //                    romInfo->required = inSubsytemInfo[i].roms[j].required;
+                    //                    romInfo->block_extract = inSubsytemInfo[i].roms[j].block_extract;
+                    //                    romInfo->need_fullpath = inSubsytemInfo[i].roms[j].need_fullpath;
+                    //                    subdata.roms++;
+                    //                }
+                    //            }
 
-                //            subdata.roms = subsystem_data_roms[i];
-                //        }
+                    //            subdata.roms = subsystem_data_roms[i];
+                    //        }
 
-                //        subsystem_current_count = (size <= SUBSYSTEM_MAX_SUBSYSTEMS) ? size : SUBSYSTEM_MAX_SUBSYSTEMS;
-                //    }
-                //    return false; //TODO: Remove when implemented!
-                //}
-                //break;
+                    //        subsystem_current_count = (size <= SUBSYSTEM_MAX_SUBSYSTEMS) ? size : SUBSYSTEM_MAX_SUBSYSTEMS;
+                    //    }
+                    //    return false; //TODO: Remove when implemented!
+                    Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO");
+                    return false;
+                }
                 case retro_environment.RETRO_ENVIRONMENT_SET_CONTROLLER_INFO:
                 {
                     retro_controller_info* inControllerInfo = (retro_controller_info*)data;

@@ -62,9 +62,6 @@ namespace SK.Libretro.Unity
             }
         }
 
-        public void ProcessSamples(float[] samples)
-        {
-            _audioBuffer.AddRange(samples);
-        }
+        public void ProcessSamples(float[] samples) => _audioBuffer.AddRange(samples);
     }
 }

@@ -32,10 +32,7 @@ namespace SK.Examples.Common
     {
         public GameModelSetup ModelSetupScript { get; private set; }
 
-        private void OnEnable()
-        {
-            ModelSetupScript = target as GameModelSetup;
-        }
+        private void OnEnable() => ModelSetupScript = target as GameModelSetup;
 
         public override void OnInspectorGUI()
         {

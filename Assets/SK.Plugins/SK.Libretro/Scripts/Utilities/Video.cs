@@ -20,35 +20,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-namespace SK.Libretro
+namespace SK.Libretro.Utilities
 {
-    public partial class Wrapper
+    public static class Video
     {
-        public unsafe void RetroVideoRefreshCallback(void* data, uint width, uint height, uint pitch)
+        public static uint ARGB1555toBGRA32(ushort packed)
         {
-            if (data == null || GraphicsProcessor == null)
-            {
-                return;
-            }
+            uint a   = (uint)packed & 0x8000;
+            uint r   = (uint)packed & 0x7C00;
+            uint g   = (uint)packed & 0x03E0;
+            uint b   = (uint)packed & 0x1F;
+            uint rgb = (r << 9) | (g << 6) | (b << 3);
+            return (a * 0x1FE00) | rgb | ((rgb >> 5) & 0x070707);
+        }
 
-            switch (Game.PixelFormat)
-            {
-                case retro_pixel_format.RETRO_PIXEL_FORMAT_0RGB1555:
-                {
-                    GraphicsProcessor.ProcessFrame0RGB1555((ushort*)data, (int)width, (int)height, (int)pitch);
-                }
-                break;
-                case retro_pixel_format.RETRO_PIXEL_FORMAT_XRGB8888:
-                {
-                    GraphicsProcessor.ProcessFrameXRGB8888((uint*)data, (int)width, (int)height, (int)pitch);
-                }
-                break;
-                case retro_pixel_format.RETRO_PIXEL_FORMAT_RGB565:
-                {
-                    GraphicsProcessor.ProcessFrameRGB565((ushort*)data, (int)width, (int)height, (int)pitch);
-                }
-                break;
-            }
+        public static uint RGB565toBGRA32(ushort packed)
+        {
+            uint r = ((uint)packed >> 11) & 0x1f;
+            uint g = ((uint)packed >> 5) & 0x3f;
+            uint b = ((uint)packed >> 0) & 0x1f;
+            r      = (r << 3) | (r >> 2);
+            g      = (g << 2) | (g >> 4);
+            b      = (b << 3) | (b >> 2);
+            return (0xffu << 24) | (r << 16) | (g << 8) | (b << 0);
         }
     }
 }

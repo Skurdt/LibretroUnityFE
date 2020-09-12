@@ -24,6 +24,7 @@ namespace SK.Libretro
 {
     public partial class Wrapper
     {
+#pragma warning disable IDE1006 // Naming Styles
         private enum retro_language
         {
             RETRO_LANGUAGE_ENGLISH             = 0,
@@ -45,6 +46,10 @@ namespace SK.Libretro
             RETRO_LANGUAGE_ARABIC              = 16,
             RETRO_LANGUAGE_GREEK               = 17,
             RETRO_LANGUAGE_TURKISH             = 18,
+            RETRO_LANGUAGE_SLOVAK              = 19,
+            RETRO_LANGUAGE_PERSIAN             = 20,
+            RETRO_LANGUAGE_HEBREW              = 21,
+            RETRO_LANGUAGE_ASTURIAN            = 22,
             RETRO_LANGUAGE_LAST
         };
 
@@ -278,5 +283,21 @@ namespace SK.Libretro
             RETRO_PIXEL_FORMAT_XRGB8888 = 1,
             RETRO_PIXEL_FORMAT_RGB565   = 2
         }
+
+        public enum retro_message_target
+        {
+            RETRO_MESSAGE_TARGET_ALL = 0,
+            RETRO_MESSAGE_TARGET_OSD,
+            RETRO_MESSAGE_TARGET_LOG
+        }
+
+        public enum retro_message_type
+        {
+            RETRO_MESSAGE_TYPE_NOTIFICATION = 0,
+            RETRO_MESSAGE_TYPE_NOTIFICATION_ALT,
+            RETRO_MESSAGE_TYPE_STATUS,
+            RETRO_MESSAGE_TYPE_PROGRESS
+        }
+#pragma warning restore IDE1006 // Naming Styles
     }
 }

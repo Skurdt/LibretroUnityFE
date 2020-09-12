@@ -40,20 +40,11 @@ namespace SK.Libretro.Unity
         public bool[] MouseButtons        { get; private set; } = new bool[NUM_MOUSE_BUTTONS];
 
 #pragma warning disable IDE0051 // Remove unused private members, Callbacks for the PlayerInput component
-        private void OnDeviceLost(PlayerInput player)
-        {
-            Log.Info($"Player #{player.playerIndex} device lost ({player.devices.Count}).");
-        }
+        private void OnDeviceLost(PlayerInput player) => Log.Info($"Player #{player.playerIndex} device lost ({player.devices.Count}).");
 
-        private void OnDeviceRegained(PlayerInput player)
-        {
-            Log.Info($"Player #{player.playerIndex} device regained ({player.devices.Count}).");
-        }
+        private void OnDeviceRegained(PlayerInput player) => Log.Info($"Player #{player.playerIndex} device regained ({player.devices.Count}).");
 
-        private void OnControlsChanged(PlayerInput player)
-        {
-            Log.Info($"Player #{player.playerIndex} controls changed ({player.devices.Count}).");
-        }
+        private void OnControlsChanged(PlayerInput player) => Log.Info($"Player #{player.playerIndex} controls changed ({player.devices.Count}).");
 
         private void OnJoypadDirections(InputValue value)
         {
@@ -86,8 +77,8 @@ namespace SK.Libretro.Unity
         private void OnMouseBackButton(InputValue value)    => SetMouseButtonState(4, value);
 #pragma warning restore IDE0051 // Remove unused private members
 
-        private void SetJoypadDirection(retro_device_id_joypad direction, bool value) => JoypadButtons[(int)direction] = value;
-        private void SetJoypadButtonState(retro_device_id_joypad button, InputValue value) => JoypadButtons[(int)button] = value.isPressed;
+        private void SetJoypadDirection(retro_device_id_joypad direction, bool value)      => JoypadButtons[(int)direction] = value;
+        private void SetJoypadButtonState(retro_device_id_joypad button, InputValue value) => JoypadButtons[(int)button]    = value.isPressed;
 
         private void SetMousePositionDelta(InputValue value)           => MousePositionDelta   = value.Get<Vector2>();
         private void SetMouseWheelDelta(InputValue value)              => MouseWheelDelta      = value.Get<Vector2>();

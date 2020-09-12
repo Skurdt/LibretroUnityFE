@@ -34,9 +34,6 @@ namespace SK.Libretro.Utilities
             return srcPtr;
         }
 
-        public unsafe static string CharsToString(char* str)
-        {
-            return Marshal.PtrToStringAnsi((IntPtr)str);
-        }
+        public unsafe static string CharsToString(char* str) => Marshal.PtrToStringAnsi((IntPtr)str);
     }
 }

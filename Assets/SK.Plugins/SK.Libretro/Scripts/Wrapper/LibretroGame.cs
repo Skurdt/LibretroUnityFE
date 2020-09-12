@@ -21,7 +21,6 @@
  * SOFTWARE. */
 
 using SK.Libretro.Utilities;
-using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using static SK.Libretro.Wrapper;
@@ -44,10 +43,8 @@ namespace SK.Libretro
 
         public bool Start(LibretroCore core, string gameDirectory, string gameName)
         {
-            bool result = false;
-
             _core = core;
-            Name = gameName;
+            Name  = gameName;
 
             if (!string.IsNullOrEmpty(gameName))
             {
@@ -60,62 +57,34 @@ namespace SK.Libretro
                     string archivePath = FileSystem.GetAbsolutePath($"{directory}/{gameName}.zip");
                     if (File.Exists(archivePath))
                     {
-                        Guid gameGuid = Guid.NewGuid();
-                        System.IO.Compression.ZipFile.ExtractToDirectory(archivePath, $"{ExtractDirectory}/{gameName}_{gameGuid}");
-                        gamePath = GetGamePath($"{ExtractDirectory}/{gameName}_{gameGuid}", gameName);
+                        string extractDirectory = FileSystem.GetAbsolutePath($"{TempDirectory}/extracted/{gameName}_{System.Guid.NewGuid()}");
+                        System.IO.Compression.ZipFile.ExtractToDirectory(archivePath, extractDirectory);
+
+                        gamePath       = GetGamePath(extractDirectory, gameName);
                         _extractedPath = gamePath;
                     }
                 }
 
-                if (gamePath != null)
-                {
-                    _gameInfo = GetGameInfo(gamePath);
-                    if (_core.retro_load_game(ref _gameInfo))
-                    {
-                        try
-                        {
-                            SystemAVInfo = new retro_system_av_info();
-                            _core.retro_get_system_av_info(ref SystemAVInfo);
-
-                            Running = true;
-                            result = true;
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Exception(e, "Libretro.LibretroGame.Start");
-                        }
-                    }
-                }
-                else
+                if (gamePath == null)
                 {
                     Log.Error($"Game '{gameName}' not found in directory '{gameDirectory}'.", "Libretro.LibretroGame.Start");
+                    return false;
                 }
+
+                _gameInfo = GetGameInfo(gamePath);
             }
             else if (core.SupportNoGame)
             {
                 _gameInfo = new retro_game_info();
-                if (_core.retro_load_game(ref _gameInfo))
-                {
-                    try
-                    {
-                        SystemAVInfo = new retro_system_av_info();
-                        _core.retro_get_system_av_info(ref SystemAVInfo);
-
-                        Running = true;
-                        result = true;
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Exception(e, "Libretro.LibretroGame.Start");
-                    }
-                }
             }
             else
             {
                 Log.Warning($"Game not set, running '{core.CoreName}' core only.", "Libretro.LibretroGame.Start");
+                return false;
             }
 
-            return result;
+            Running = LoadGame(ref _gameInfo);
+            return Running;
         }
 
         public void Stop()
@@ -126,7 +95,7 @@ namespace SK.Libretro
                 Running = false;
             }
 
-            if (_gameInfo.data != IntPtr.Zero)
+            if (_gameInfo.data != System.IntPtr.Zero)
             {
                 Marshal.FreeHGlobal(_gameInfo.data);
             }
@@ -160,7 +129,7 @@ namespace SK.Libretro
                 retro_game_info result = new retro_game_info
                 {
                     path = gamePath,
-                    size = Convert.ToUInt32(data.Length),
+                    size = System.Convert.ToUInt32(data.Length),
                     data = Marshal.AllocHGlobal(data.Length * Marshal.SizeOf<byte>())
                 };
 
@@ -169,6 +138,27 @@ namespace SK.Libretro
 
                 return result;
             }
+        }
+
+        private bool LoadGame(ref retro_game_info _gameInfo)
+        {
+            try
+            {
+                if (!_core.retro_load_game(ref _gameInfo))
+                {
+                    return false;
+                }
+
+                SystemAVInfo = new retro_system_av_info();
+                _core.retro_get_system_av_info(ref SystemAVInfo);
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Log.Exception(e, "Libretro.LibretroGame.LoadGame");
+            }
+
+            return false;
         }
     }
 }

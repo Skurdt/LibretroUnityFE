@@ -27,6 +27,7 @@ namespace SK.Libretro
 {
     public partial class Wrapper
     {
+#pragma warning disable IDE1006 // Naming Styles
         private struct retro_vfs_file_handle { }
         private struct retro_vfs_dir_handle { }
 
@@ -312,6 +313,18 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        private unsafe struct retro_message_ext
+        {
+            public char* msg;
+            public uint duration;
+            public uint priority;
+            public retro_log_level level;
+            public retro_message_target target;
+            public retro_message_type type;
+            public byte progress;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         private unsafe struct retro_input_descriptor
         {
             public uint port;
@@ -421,5 +434,6 @@ namespace SK.Libretro
             public uint access_flags;
             public uint memory_flags;
         }
+#pragma warning restore IDE1006 // Naming Styles
     }
 }

@@ -44,24 +44,12 @@ namespace SK.Libretro
             return 0;
         }
 
-        public void RetroPerfLog()
-        {
-            Log.Warning("RetroPerfLog");
-        }
+        public void RetroPerfLog() => Log.Warning("RetroPerfLog");
 
-        public void RetroPerfRegister(ref retro_perf_counter counter)
-        {
-            Log.Warning("RetroPerfRegister");
-        }
+        public void RetroPerfRegister(ref retro_perf_counter _/*counter*/) => Log.Warning("RetroPerfRegister");
 
-        public void RetroPerfStart(ref retro_perf_counter counter)
-        {
-            Log.Warning("RetroPerfStart");
-        }
+        public void RetroPerfStart(ref retro_perf_counter _/*counter*/) => Log.Warning("RetroPerfStart");
 
-        public void RetroPerfStop(ref retro_perf_counter counter)
-        {
-            Log.Warning("RetroPerfStop");
-        }
+        public void RetroPerfStop(ref retro_perf_counter _/*counter*/) => Log.Warning("RetroPerfStop");
     }
 }

@@ -25,22 +25,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
-using UnityEngine;
+using System.Security;
 
 namespace SK.Libretro
 {
     public partial class Wrapper
     {
-        public static string WrapperDirectory    = null;
-        public static string CoresDirectory      = null;
-        public static string SystemDirectory     = null;
-        public static string CoreAssetsDirectory = null;
-        public static string SavesDirectory      = null;
-        public static string TempDirectory       = null;
-        public static string ExtractDirectory    = null;
-        public static string CoreOptionsFile     = null;
-
         public bool OptionCropOverscan
         {
             get => _optionCropOverscan;
@@ -49,16 +41,24 @@ namespace SK.Libretro
                 if (_optionCropOverscan != value)
                 {
                     _optionCropOverscan = value;
-                    _dirtyVariables = true;
+                    _dirtyVariables     = true;
                 }
             }
         }
 
-        public TargetPlatform TargetPlatform { get; }
+        public IGraphicsProcessor GraphicsProcessor { get; private set; }
+        public IAudioProcessor AudioProcessor { get; private set; }
+        public IInputProcessor InputProcessor { get; private set; }
 
-        public IGraphicsProcessor GraphicsProcessor;
-        public IAudioProcessor AudioProcessor;
-        public IInputProcessor InputProcessor;
+        public readonly TargetPlatform TargetPlatform;
+
+        public static string WrapperDirectory;
+        public static string CoresDirectory;
+        public static string SystemDirectory;
+        public static string CoreAssetsDirectory;
+        public static string SavesDirectory;
+        public static string TempDirectory;
+        public static string CoreOptionsFile;
 
         public LibretroCore Core { get; private set; } = new LibretroCore();
         public LibretroGame Game { get; private set; } = new LibretroGame();
@@ -77,49 +77,43 @@ namespace SK.Libretro
 
             if (WrapperDirectory == null)
             {
-                if (baseDirectory == null)
-                {
-                    baseDirectory = $"{Application.streamingAssetsPath}/libretro~";
-                }
-
-                WrapperDirectory    = baseDirectory;
+                WrapperDirectory    = !string.IsNullOrEmpty(baseDirectory) ? baseDirectory : "libretro~";
                 CoresDirectory      = $"{WrapperDirectory}/cores";
                 SystemDirectory     = $"{WrapperDirectory}/system";
                 CoreAssetsDirectory = $"{WrapperDirectory}/core_assets";
                 SavesDirectory      = $"{WrapperDirectory}/saves";
                 TempDirectory       = $"{WrapperDirectory}/temp";
-                ExtractDirectory    = $"{TempDirectory}/extracted";
                 CoreOptionsFile     = $"{WrapperDirectory}/core_options.json";
+            }
 
-                string wrapperDirectoryAbs = FileSystem.GetAbsolutePath(WrapperDirectory);
-                if (!Directory.Exists(wrapperDirectoryAbs))
-                {
-                    _ = Directory.CreateDirectory(wrapperDirectoryAbs);
-                }
+            string wrapperDirectory = FileSystem.GetAbsolutePath(WrapperDirectory);
+            if (!Directory.Exists(wrapperDirectory))
+            {
+                _ = Directory.CreateDirectory(wrapperDirectory);
+            }
 
-                string tempDirectoryAbs = FileSystem.GetAbsolutePath(TempDirectory);
-                if (Directory.Exists(tempDirectoryAbs))
-                {
-                    Directory.Delete(tempDirectoryAbs, true);
-                }
+            string tempDirectory = FileSystem.GetAbsolutePath(TempDirectory);
+            if (Directory.Exists(tempDirectory))
+            {
+                Directory.Delete(tempDirectory, true);
             }
         }
 
         public bool StartGame(string coreName, string gameDirectory, string gameName)
         {
-            bool result = false;
-
             LoadCoreOptionsFile();
 
-            if (Core.Start(this, coreName))
+            if (!Core.Start(this, coreName))
             {
-                if (Game.Start(Core, gameDirectory, gameName))
-                {
-                    result = true;
-                }
+                return false;
             }
 
-            return result;
+            if (!Game.Start(Core, gameDirectory, gameName))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public void StopGame()
@@ -135,6 +129,7 @@ namespace SK.Libretro
             }
         }
 
+        [HandleProcessCorruptedStateExceptions, SecurityCritical]
         public void Update()
         {
             if (!Game.Running || !Core.Initialized)
@@ -142,18 +137,23 @@ namespace SK.Libretro
                 return;
             }
 
-            Core.retro_run();
+            // FIXME(Tom):
+            // An AccessViolationException get thrown by the core when files (roms, bios, etc...) are missing.
+            // In a normal C# project, this get captured here (when using the attributes) and errors can be displayed properly.
+            // Unity simply crashes here...
+            try
+            {
+                Core.retro_run();
+            }
+            catch (AccessViolationException e)
+            {
+                Log.Exception(e);
+            }
         }
 
-        public void ActivateGraphics(IGraphicsProcessor graphicsProcessor)
-        {
-            GraphicsProcessor = graphicsProcessor;
-        }
+        public void ActivateGraphics(IGraphicsProcessor graphicsProcessor) => GraphicsProcessor = graphicsProcessor;
 
-        public void DeactivateGraphics()
-        {
-            GraphicsProcessor = null;
-        }
+        public void DeactivateGraphics() => GraphicsProcessor = null;
 
         public void ActivateAudio(IAudioProcessor audioProcessor)
         {
@@ -167,15 +167,9 @@ namespace SK.Libretro
             AudioProcessor = null;
         }
 
-        public void ActivateInput(IInputProcessor inputProcessor)
-        {
-            InputProcessor = inputProcessor;
-        }
+        public void ActivateInput(IInputProcessor inputProcessor) => InputProcessor = inputProcessor;
 
-        public void DeactivateInput()
-        {
-            InputProcessor = null;
-        }
+        public void DeactivateInput() => InputProcessor = null;
 
         private void LoadCoreOptionsFile()
         {
@@ -188,15 +182,17 @@ namespace SK.Libretro
 
         private void SaveCoreOptionsFile()
         {
-            if (_coreOptionsList != null)
+            if (_coreOptionsList == null)
             {
-                _coreOptionsList.Cores = _coreOptionsList.Cores.OrderBy(x => x.CoreName).ToList();
-                for (int i = 0; i < _coreOptionsList.Cores.Count; ++i)
-                {
-                    _coreOptionsList.Cores[i].Options.Sort();
-                }
-                _ = FileSystem.SerializeToJson(_coreOptionsList, CoreOptionsFile);
+                return;
             }
+
+            _coreOptionsList.Cores = _coreOptionsList.Cores.OrderBy(x => x.CoreName).ToList();
+            for (int i = 0; i < _coreOptionsList.Cores.Count; ++i)
+            {
+                _coreOptionsList.Cores[i].Options.Sort();
+            }
+            _ = FileSystem.SerializeToJson(_coreOptionsList, CoreOptionsFile);
         }
     }
 }

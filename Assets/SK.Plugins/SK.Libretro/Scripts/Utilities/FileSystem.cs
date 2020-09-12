@@ -27,10 +27,7 @@ namespace SK.Libretro.Utilities
 {
     public static class FileSystem
     {
-        public static bool FileExists(string path)
-        {
-            return File.Exists(path);
-        }
+        public static bool FileExists(string path) => File.Exists(path);
 
         public static bool CreateFile(string path)
         {

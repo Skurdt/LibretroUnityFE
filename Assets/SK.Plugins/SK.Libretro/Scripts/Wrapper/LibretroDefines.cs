@@ -24,14 +24,12 @@ namespace SK.Libretro
 {
     public partial class Wrapper
     {
+#pragma warning disable IDE1006 // Naming Styles
         private const int RETRO_API_VERSION = 1;
 
         private const int RETRO_DEVICE_TYPE_SHIFT = 8;
         private const int RETRO_DEVICE_MASK       = (1 << RETRO_DEVICE_TYPE_SHIFT) - 1;
-        private static int RETRO_DEVICE_SUBCLASS(int base_, int id)
-        {
-            return ((id + 1) << RETRO_DEVICE_TYPE_SHIFT) | base_;
-        }
+        private static int RETRO_DEVICE_SUBCLASS(int base_, int id) => ((id + 1) << RETRO_DEVICE_TYPE_SHIFT) | base_;
 
         // NOTE(Tom): Original defines converted to enum
         public enum retro_device
@@ -154,7 +152,7 @@ namespace SK.Libretro
         }
 
         private const int RETRO_ENVIRONMENT_EXPERIMENTAL = 0x10000;
-        private const int RETRO_ENVIRONMENT_PRIVATE = 0x20000;
+        private const int RETRO_ENVIRONMENT_PRIVATE      = 0x20000;
 
         // NOTE(Tom): Original defines as an enum
         public enum retro_environment
@@ -215,7 +213,10 @@ namespace SK.Libretro
             RETRO_ENVIRONMENT_SET_CORE_OPTIONS_DISPLAY                    = 55,
             RETRO_ENVIRONMENT_GET_PREFERRED_HW_RENDER                     = 56,
             RETRO_ENVIRONMENT_GET_DISK_CONTROL_INTERFACE_VERSION          = 57,
-            RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT_INTERFACE              = 58
+            RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT_INTERFACE              = 58,
+            RETRO_ENVIRONMENT_GET_MESSAGE_INTERFACE_VERSION               = 59,
+            RETRO_ENVIRONMENT_SET_MESSAGE_EXT                             = 60,
+            RETRO_ENVIRONMENT_GET_INPUT_MAX_USERS                         = 61
         }
 
         private const int RETRO_VFS_FILE_ACCESS_READ            = 1 << 0;
@@ -292,5 +293,6 @@ namespace SK.Libretro
         private const int RETRO_MEMORY_ACCESS_WRITE = 1 << 0;
         private const int RETRO_MEMORY_ACCESS_READ  = 1 << 1;
         private const int RETRO_MEMORY_TYPE_CACHED  = 1 << 0;
+#pragma warning restore IDE1006 // Naming Styles
     }
 }

@@ -2,7 +2,7 @@
     "UseConfig": true,
     "Game": {
         "Core": "mame2003_plus",
-        "Directory": "D:\\__Roms\\mame2003-plus",
-        "Name": "mk3"
+        "Directory": "D:/__Roms/mame2003-plus",
+        "Name": "ssf2"
     }
 }

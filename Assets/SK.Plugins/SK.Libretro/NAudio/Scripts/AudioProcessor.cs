@@ -23,6 +23,7 @@
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using SK.Libretro.Utilities;
 using System;
 using Unity.Mathematics;
 
@@ -58,12 +59,13 @@ namespace SK.Libretro.NAudio
                 {
                     DesiredLatency = 140
                 };
+
                 _audioDevice.Init(_volumeProvider);
                 _audioDevice.Play();
             }
             catch (Exception e)
             {
-                Utilities.Log.Exception(e);
+                Log.Exception(e);
             }
         }
 
@@ -83,10 +85,7 @@ namespace SK.Libretro.NAudio
             }
         }
 
-        public void SetVolume(float volume)
-        {
-            _volumeProvider.Volume = math.clamp(volume, 0f, 1f);
-        }
+        public void SetVolume(float volume) => _volumeProvider.Volume = math.clamp(volume, 0f, 1f);
     }
 }
 #endif
