@@ -21,6 +21,7 @@
  * SOFTWARE. */
 
 using SK.Libretro.Utilities;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using static SK.Libretro.Wrapper;
@@ -122,6 +123,16 @@ namespace SK.Libretro
 
         private retro_game_info GetGameInfo(string gamePath)
         {
+            if (_core.NeedFullPath)
+            {
+                return new retro_game_info
+                {
+                    path = gamePath,
+                    size = 0,
+                    data = IntPtr.Zero
+                };
+            }
+
             using (FileStream stream = new FileStream(gamePath, FileMode.Open))
             {
                 byte[] data = new byte[stream.Length];
