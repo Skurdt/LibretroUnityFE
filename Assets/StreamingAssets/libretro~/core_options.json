@@ -1,6 +1,15 @@
 {
     "Cores": [
         {
+            "CoreName": "ffmpeg",
+            "Options": [
+                "ffmpeg_color_space;auto;auto|BT.709|BT.601|FCC|SMPTE240M;",
+                "ffmpeg_fft_multisample;1x;1x|2x|4x;",
+                "ffmpeg_fft_resolution;1280x720;1280x720|1920x1080|2560x1440|3840x2160|640x360|320x180;",
+                "ffmpeg_temporal_interp;disabled;disabled|enabled;"
+            ]
+        },
+        {
             "CoreName": "mame2003_plus",
             "Options": [
                 "mame2003-plus_analog;digital;analog|digital;",

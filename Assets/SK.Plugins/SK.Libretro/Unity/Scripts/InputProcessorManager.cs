@@ -27,10 +27,37 @@ using UnityEngine.InputSystem;
 
 namespace SK.Libretro.Unity
 {
+    public enum ManagerControlScheme
+    {
+        KeyboardAndMouse,
+        Gamepad
+    }
+
     [RequireComponent(typeof(PlayerInputManager))]
     public class InputProcessorManager : MonoBehaviour, IInputProcessor
     {
+        [SerializeField] private bool _joinAtStartup                 = default;
+        [SerializeField] private ManagerControlScheme _controlScheme = default;
+
         private readonly Dictionary<int, InputProcessor> _controls = new Dictionary<int, InputProcessor>();
+
+        private void Start()
+        {
+            if (_joinAtStartup)
+            {
+                PlayerInputManager playerInputManager = GetComponent<PlayerInputManager>();
+
+                switch (_controlScheme)
+                {
+                    case ManagerControlScheme.KeyboardAndMouse:
+                        _ = playerInputManager.JoinPlayer(0, 0, "Keyboard & Mouse");
+                        break;
+                    case ManagerControlScheme.Gamepad:
+                        _ = playerInputManager.JoinPlayer(0, 0, "Gamepad");
+                        break;
+                }
+            }
+        }
 
 #pragma warning disable IDE0051 // Remove unused private members, Callbacks for the PlayerInputManager component
         private void OnPlayerJoined(PlayerInput player)

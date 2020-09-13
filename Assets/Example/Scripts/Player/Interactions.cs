@@ -64,30 +64,32 @@ namespace SK.Examples.Player
 
         private void OnGUI()
         {
-            //if (Cursor.visible
-            //    && _stateController.CurrentState != null
-            //    && _stateController.CurrentState is GameFocusState _)
-            if (_stateController.CurrentState != null && _stateController.CurrentState is GameFocusState _)
+            if (_currentGame == null
+             || _currentGame.Wrapper == null
+             || _stateController.CurrentState == null
+             || _stateController.CurrentState as GameFocusState == null)
             {
-                float labelWidth = 100f;
-                float fieldWidth = 100f;
-                float height = 20f;
-
-                // Show options
-                GUILayout.BeginHorizontal();
-                {
-                    GUILayout.Label("Crop Overscan:", GUILayout.Width(labelWidth), GUILayout.Height(height));
-                    _currentGame.Wrapper.OptionCropOverscan = GUILayout.Toggle(_currentGame.Wrapper.OptionCropOverscan, string.Empty, GUILayout.Width(fieldWidth), GUILayout.Height(height));
-                }
-                GUILayout.EndHorizontal();
-
-                GUILayout.BeginHorizontal();
-                {
-                    GUILayout.Label("Volume:", GUILayout.Width(labelWidth), GUILayout.Height(height));
-                    _currentGame.AudioMaxVolume = GUILayout.HorizontalSlider(_currentGame.AudioMaxVolume, 0f, 1f, GUILayout.Width(fieldWidth), GUILayout.Height(height));
-                }
-                GUILayout.EndHorizontal();
+                return;
             }
+
+            float labelWidth = 100f;
+            float fieldWidth = 100f;
+            float height = 20f;
+
+            // Show options
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("Crop Overscan:", GUILayout.Width(labelWidth), GUILayout.Height(height));
+                _currentGame.Wrapper.OptionCropOverscan = GUILayout.Toggle(_currentGame.Wrapper.OptionCropOverscan, string.Empty, GUILayout.Width(fieldWidth), GUILayout.Height(height));
+            }
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label("Volume:", GUILayout.Width(labelWidth), GUILayout.Height(height));
+                _currentGame.AudioMaxVolume = GUILayout.HorizontalSlider(_currentGame.AudioMaxVolume, 0f, 1f, GUILayout.Width(fieldWidth), GUILayout.Height(height));
+            }
+            GUILayout.EndHorizontal();
         }
 
         public GameModelSetup GetCurrentGame()
