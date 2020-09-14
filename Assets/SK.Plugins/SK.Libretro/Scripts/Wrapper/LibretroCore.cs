@@ -130,6 +130,12 @@ namespace SK.Libretro
                         _dll = new DllModuleOSX();
                     }
                     break;
+                    case TargetPlatform.LinuxEditor:
+                    case TargetPlatform.LinuxPlayer:
+                    {
+                        _dll = new DllModuleLinux();
+                    }
+                    break;
                     default:
                         Log.Error($"Target platform '{wrapper.TargetPlatform}' not supported.");
                         return false;

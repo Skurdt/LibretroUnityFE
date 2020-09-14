@@ -133,3 +133,6 @@ Temporary Items
 # Libretro
 /[Aa]ssets/StreamingAssets/libretro~/**
 !/[Aa]ssets/StreamingAssets/libretro~/core_options.json
+
+#idea
+.idea

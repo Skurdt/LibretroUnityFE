@@ -186,8 +186,8 @@ namespace SK.Examples
                     float volume = math.clamp(math.pow((distance - _audioMaxDistance) / (_audioMinDistance - _audioMaxDistance), 2f), 0f, _audioMaxVolume);
                     NAudioAudio.SetVolume(volume);
                 }
-#endif
             }
+#endif
         }
 
         private IEnumerator CoUpdate()
