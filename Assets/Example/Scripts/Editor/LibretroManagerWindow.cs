@@ -53,8 +53,18 @@ namespace SK.Libretro.EditorUtils
 
             public void Add(Core core) => Cores.Add(core);
         }
+        static string CurrentPlatform()
+        {
+            switch (Application.platform)
+            {
+                case RuntimePlatform.LinuxEditor:
+                    return "linux";
+                default:               
+                    return "windows";
+            }
+        }
 
-        private const string BUILDBOT_URL                 = "https://buildbot.libretro.com/nightly/windows/x86_64/latest/";
+        private static string BUILDBOT_URL                 = $"https://buildbot.libretro.com/nightly/{CurrentPlatform()}/x86_64/latest/";
         private static readonly string _libretroDirectory = Path.Combine(Application.streamingAssetsPath, "libretro~");
         private static readonly string _coresDirectory    = Path.Combine(_libretroDirectory, "cores");
         private static readonly string _coresStatusFile   = Path.Combine(_libretroDirectory, "cores.json");
@@ -128,7 +138,9 @@ namespace SK.Libretro.EditorUtils
                         {
                             if (!core.Available || !core.Latest)
                             {
-                                string zipPath = DownloadFile($"{BUILDBOT_URL}{core.FullName}");
+                                string url = $"{BUILDBOT_URL}{core.FullName}";
+                                Debug.Log(url);
+                                string zipPath = DownloadFile(url);
                                 ExtractFile(zipPath);
                                 CheckForUpdates();
                             }
@@ -170,10 +182,11 @@ namespace SK.Libretro.EditorUtils
                     }
                     else
                     {
+
                         _coreList.Add(new Core
                         {
                             FullName = fileName,
-                            DisplayName = fileName.Replace("_libretro.dll.zip", string.Empty),
+                            DisplayName = fileName.Substring(0,fileName.IndexOf('.')),
                             LastModified = lastModified,
                             Available = available,
                             Latest = true
