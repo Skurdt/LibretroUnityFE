@@ -168,25 +168,16 @@ namespace SK.Examples
                 return;
             }
 
+            if (Wrapper.ForceQuit)
+            {
+                StopGame();
+            }
+
             _frameTimer += Time.deltaTime;
 
             if (_co == null)
             {
                 _co = StartCoroutine(CoUpdate());
-            }
-
-            GraphicsSetFilterMode(_videoFilterMode);
-
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            if (AudioVolumeControlledByDistance && Wrapper.AudioProcessor != null && Wrapper.AudioProcessor is Libretro.NAudio.AudioProcessor NAudioAudio)
-            {
-                float distance = Vector3.Distance(transform.position, _player.transform.position);
-                if (distance > 0f)
-                {
-                    float volume = math.clamp(math.pow((distance - _audioMaxDistance) / (_audioMinDistance - _audioMaxDistance), 2f), 0f, _audioMaxVolume);
-                    NAudioAudio.SetVolume(volume);
-                }
-#endif
             }
         }
 
@@ -195,11 +186,24 @@ namespace SK.Examples
             float targetFrameTime = 1f / _gameFps / _timeScale;
             while (_frameTimer >= targetFrameTime)
             {
-                Wrapper.Update();
+                Wrapper?.Update();
                 _frameTimer -= targetFrameTime;
                 yield return null;
             }
 
+            GraphicsSetFilterMode(_videoFilterMode);
+
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+            if (AudioVolumeControlledByDistance && Wrapper?.AudioProcessor is Libretro.NAudio.AudioProcessor NAudioAudio)
+            {
+                float distance = Vector3.Distance(transform.position, _player.transform.position);
+                if (distance > 0f)
+                {
+                    float volume = math.clamp(math.pow((distance - _audioMaxDistance) / (_audioMinDistance - _audioMaxDistance), 2f), 0f, _audioMaxVolume);
+                    NAudioAudio.SetVolume(volume);
+                }
+            }
+#endif
             _co = null;
         }
 
@@ -258,12 +262,10 @@ namespace SK.Examples
 
         public void GraphicsSetFilterMode(FilterMode filterMode)
         {
-            if (Wrapper == null || Wrapper.GraphicsProcessor == null || !(Wrapper.GraphicsProcessor is Libretro.Unity.GraphicsProcessor unityGraphics) || unityGraphics.Texture == null)
+            if (Wrapper?.GraphicsProcessor is Libretro.Unity.GraphicsProcessor unityGraphics && unityGraphics.Texture != null)
             {
-                return;
+                unityGraphics.VideoFilterMode = filterMode;
             }
-
-            unityGraphics.VideoFilterMode = filterMode;
         }
 
         private void ActivateGraphics()

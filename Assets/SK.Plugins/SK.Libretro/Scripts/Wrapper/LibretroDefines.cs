@@ -154,6 +154,9 @@ namespace SK.Libretro
         private const int RETRO_ENVIRONMENT_EXPERIMENTAL = 0x10000;
         private const int RETRO_ENVIRONMENT_PRIVATE      = 0x20000;
 
+        // RetroArch Extensions
+        private const int RETRO_ENVIRONMENT_RETROARCH_START_BLOCK = 0x800000;
+
         // NOTE(Tom): Original defines as an enum
         public enum retro_environment
         {
@@ -216,7 +219,12 @@ namespace SK.Libretro
             RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT_INTERFACE              = 58,
             RETRO_ENVIRONMENT_GET_MESSAGE_INTERFACE_VERSION               = 59,
             RETRO_ENVIRONMENT_SET_MESSAGE_EXT                             = 60,
-            RETRO_ENVIRONMENT_GET_INPUT_MAX_USERS                         = 61
+            RETRO_ENVIRONMENT_GET_INPUT_MAX_USERS                         = 61,
+
+            // RetroArch Extensions
+            RETRO_ENVIRONMENT_SET_SAVE_STATE_IN_BACKGROUND                = (2 | RETRO_ENVIRONMENT_RETROARCH_START_BLOCK),
+            RETRO_ENVIRONMENT_GET_CLEAR_ALL_THREAD_WAITS_CB               = (3 | RETRO_ENVIRONMENT_RETROARCH_START_BLOCK),
+            RETRO_ENVIRONMENT_POLL_TYPE_OVERRIDE                          = (4 | RETRO_ENVIRONMENT_RETROARCH_START_BLOCK)
         }
 
         private const int RETRO_VFS_FILE_ACCESS_READ            = 1 << 0;

@@ -31,13 +31,11 @@ namespace SK.Libretro.Utilities
 
         public static bool CreateFile(string path)
         {
-            bool result = false;
-
             try
             {
                 using (_ = File.Create(GetAbsolutePath(path)))
                 {
-                    result = true;
+                    return true;
                 }
             }
             catch (Exception e)
@@ -45,55 +43,57 @@ namespace SK.Libretro.Utilities
                 Log.Exception(e, "FileSystem.CreateFile");
             }
 
-            return result;
+            return false;
         }
 
         public static bool DeleteFile(string path)
         {
-            bool result = false;
-
             try
             {
                 File.Delete(GetAbsolutePath(path));
 #if UNITY_EDITOR
                 File.Delete(GetAbsolutePath($"{path}.meta"));
 #endif
-                result = true;
+                return true;
             }
             catch (Exception e)
             {
                 Log.Exception(e, "FileSystem.DeleteFile");
             }
 
-            return result;
+            return false;
         }
 
         public static string GetAbsolutePath(string path)
         {
-            string result = null;
+            if (string.IsNullOrEmpty(path))
+            {
+                return path;
+            }
 
             try
             {
                 if (path.StartsWith("@", StringComparison.OrdinalIgnoreCase))
                 {
-                    result = Path.GetFullPath(Path.Combine(UnityEngine.Application.streamingAssetsPath, path.Remove(0, 1)));
+                    return Path.GetFullPath(Path.Combine(UnityEngine.Application.streamingAssetsPath, path.Remove(0, 1)));
                 }
-                else
-                {
-                    result = Path.GetFullPath(path);
-                }
+
+                return Path.GetFullPath(path);
             }
             catch (Exception e)
             {
                 Log.Exception(e, "FileSystem.GetAbsolutePath");
             }
 
-            return result;
+            return path;
         }
 
         public static string GetRelativePath(string path)
         {
-            string result = path;
+            if (string.IsNullOrEmpty(path))
+            {
+                return path;
+            }
 
             try
             {
@@ -101,7 +101,7 @@ namespace SK.Libretro.Utilities
                 string formattedStreamingAssetsPath = UnityEngine.Application.streamingAssetsPath.Replace('/', Path.DirectorySeparatorChar);
                 if (fullPath.Contains(formattedStreamingAssetsPath))
                 {
-                    result = $"@{fullPath.Replace($"{formattedStreamingAssetsPath}", string.Empty).Remove(0, 1)}";
+                    return $"@{fullPath.Replace($"{formattedStreamingAssetsPath}", string.Empty).Remove(0, 1)}";
                 }
             }
             catch (Exception e)
@@ -109,58 +109,52 @@ namespace SK.Libretro.Utilities
                 Log.Exception(e, "FileSystem.GetRelativePath");
             }
 
-            return result;
+            return path;
         }
 
         public static string[] GetFilesInDirectory(string path, string searchPattern, bool includeSubFolders = false)
         {
-            string[] result = null;
-
             try
             {
-                result = Directory.GetFiles(GetAbsolutePath(path), searchPattern, includeSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+                return Directory.GetFiles(GetAbsolutePath(path), searchPattern, includeSubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
             }
             catch (Exception e)
             {
                 Log.Exception(e, "FileSystem.GetFilesInDirectory");
             }
 
-            return result;
+            return null;
         }
 
         public static bool SerializeToJson<T>(T sourceObject, string targetPath)
         {
-            bool result = false;
-
             try
             {
                 string jsonString = UnityEngine.JsonUtility.ToJson(sourceObject, true);
                 File.WriteAllText(GetAbsolutePath(targetPath), jsonString);
-                result = true;
+                return true;
             }
             catch (Exception e)
             {
-                Log.Exception(e, $"FileSystem.SerializeToJson<{typeof(T)}>");
+                Log.Exception(e, $"FileSystem.SerializeToJson<{typeof(T).Name}>");
             }
 
-            return result;
+            return false;
         }
 
         public static T DeserializeFromJson<T>(string sourcePath) where T : class
         {
-            T result = null;
-
             try
             {
                 string jsonString = File.ReadAllText(GetAbsolutePath(sourcePath));
-                result = UnityEngine.JsonUtility.FromJson<T>(jsonString);
+                return UnityEngine.JsonUtility.FromJson<T>(jsonString);
             }
             catch (Exception e)
             {
-                Log.Exception(e, $"FileSystem.DeserializeFromJson<{typeof(T)}>");
+                Log.Exception(e, $"FileSystem.DeserializeFromJson<{typeof(T).Name}>");
             }
 
-            return result;
+            return null;
         }
     }
 }
