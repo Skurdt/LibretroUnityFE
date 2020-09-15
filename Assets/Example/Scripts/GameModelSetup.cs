@@ -288,7 +288,7 @@ namespace SK.Examples
         private void ActivateAudio()
         {
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            Libretro.Unity.AudioProcessor unityAudio = GetComponentInChildren<Libretro.Unity.AudioProcessor>();
+            var unityAudio = GetComponentInChildren<Libretro.Unity.AudioProcessor>();
             if (unityAudio != null)
             {
                 Wrapper?.ActivateAudio(unityAudio);
@@ -298,7 +298,7 @@ namespace SK.Examples
                 Wrapper?.ActivateAudio(new Libretro.NAudio.AudioProcessor());
             }
 #else
-            Libretro.UnityAudioProcessorComponent unityAudio = GetComponentInChildren<Libretro.UnityAudioProcessorComponent>(true);
+            var unityAudio = GetComponentInChildren<Libretro.Unity.AudioProcessor>(true);
             if (unityAudio != null)
             {
                 unityAudio.gameObject.SetActive(true);
@@ -306,9 +306,9 @@ namespace SK.Examples
             }
             else
             {
-                GameObject audioProcessorGameObject = new GameObject("AudioProcessor");
+                var audioProcessorGameObject = new GameObject("AudioProcessor");
                 audioProcessorGameObject.transform.SetParent(_screenTransform);
-                Libretro.UnityAudioProcessorComponent audioProcessorComponent = audioProcessorGameObject.AddComponent<Libretro.UnityAudioProcessorComponent>();
+                var audioProcessorComponent = audioProcessorGameObject.AddComponent<Libretro.Unity.AudioProcessor>();
                 Wrapper?.ActivateAudio(audioProcessorComponent);
             }
 #endif
