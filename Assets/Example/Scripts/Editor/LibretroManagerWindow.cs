@@ -64,7 +64,7 @@ namespace SK.Libretro.EditorUtils
             }
         }
 
-        private static string BUILDBOT_URL                 = $"https://buildbot.libretro.com/nightly/{CurrentPlatform()}/x86_64/latest/";
+        private static string _buildBotUrl                = $"https://buildbot.libretro.com/nightly/{CurrentPlatform()}/x86_64/latest/";
         private static readonly string _libretroDirectory = Path.Combine(Application.streamingAssetsPath, "libretro~");
         private static readonly string _coresDirectory    = Path.Combine(_libretroDirectory, "cores");
         private static readonly string _coresStatusFile   = Path.Combine(_libretroDirectory, "cores.json");
@@ -138,8 +138,7 @@ namespace SK.Libretro.EditorUtils
                         {
                             if (!core.Available || !core.Latest)
                             {
-                                string url = $"{BUILDBOT_URL}{core.FullName}";
-                                Debug.Log(url);
+                                string url = $"{_buildBotUrl}{core.FullName}";
                                 string zipPath = DownloadFile(url);
                                 ExtractFile(zipPath);
                                 CheckForUpdates();
@@ -157,7 +156,7 @@ namespace SK.Libretro.EditorUtils
         private static void CheckForUpdates()
         {
             HtmlWeb hw                 = new HtmlWeb();
-            HtmlDocument doc           = hw.Load(new Uri(BUILDBOT_URL));
+            HtmlDocument doc           = hw.Load(new Uri(_buildBotUrl));
             HtmlNodeCollection trNodes = doc.DocumentNode.SelectNodes("//body/div/table/tr");
 
             foreach (HtmlNode trNode in trNodes)
