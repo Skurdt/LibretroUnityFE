@@ -406,9 +406,7 @@ namespace SK.Libretro
         [StructLayout(LayoutKind.Sequential)]
         private unsafe struct retro_core_options_intl
         {
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct)]
             public IntPtr us;    // retro_core_option_definition*
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct)]
             public IntPtr local; // retro_core_option_definition*
         }
 
@@ -418,7 +416,7 @@ namespace SK.Libretro
             [MarshalAs(UnmanagedType.LPStr)]
             public string path; // const char*
             public IntPtr data; // const void*
-            public uint size; // size_t
+            public uint size;   // size_t
             [MarshalAs(UnmanagedType.LPStr)]
             public string meta; // const char*
         }

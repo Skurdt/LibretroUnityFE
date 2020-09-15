@@ -46,6 +46,8 @@ namespace SK.Libretro
             }
         }
 
+        public bool ForceQuit { get; private set; } = false;
+
         public IGraphicsProcessor GraphicsProcessor { get; private set; }
         public IAudioProcessor AudioProcessor { get; private set; }
         public IInputProcessor InputProcessor { get; private set; }
@@ -63,13 +65,11 @@ namespace SK.Libretro
         public LibretroCore Core { get; private set; } = new LibretroCore();
         public LibretroGame Game { get; private set; } = new LibretroGame();
 
-        private CoreOptionsList _coreOptionsList;
-
-        private bool _optionCropOverscan = true;
-
-        private bool _dirtyVariables = true;
-
         private readonly List<IntPtr> _unsafeStrings = new List<IntPtr>();
+
+        private CoreOptionsList _coreOptionsList;
+        private bool _optionCropOverscan = true;
+        private bool _dirtyVariables     = true;
 
         public Wrapper(TargetPlatform targetPlatform, string baseDirectory = null)
         {
@@ -132,20 +132,24 @@ namespace SK.Libretro
         [HandleProcessCorruptedStateExceptions, SecurityCritical]
         public void Update()
         {
-            if (!Game.Running || !Core.Initialized)
+            if (ForceQuit || !Game.Running || !Core.Initialized)
             {
                 return;
             }
 
             // FIXME(Tom):
-            // An AccessViolationException get thrown by the core when files (roms, bios, etc...) are missing.
+            // An AccessViolationException get thrown by the core when files (roms, bios, etc...) are missing and probably for other various reasons...
             // In a normal C# project, this get captured here (when using the attributes) and errors can be displayed properly.
-            // Unity simply crashes here...
+            // Unity simply crashes here but we only know about the missing things after a call to retro_run...
             try
             {
                 Core.retro_run();
             }
             catch (AccessViolationException e)
+            {
+                Log.Exception(e);
+            }
+            catch (Exception e)
             {
                 Log.Exception(e);
             }
@@ -182,7 +186,7 @@ namespace SK.Libretro
 
         private void SaveCoreOptionsFile()
         {
-            if (_coreOptionsList == null)
+            if (_coreOptionsList == null || _coreOptionsList.Cores.Count == 0)
             {
                 return;
             }

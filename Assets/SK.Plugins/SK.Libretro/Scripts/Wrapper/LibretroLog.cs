@@ -27,11 +27,28 @@ namespace SK.Libretro
 {
     public partial class Wrapper
     {
-        public void RetroLogPrintf(retro_log_level log_level, string format, IntPtr _/*args*/)
+        private const string LOG_PRINTF_CALLER = "Libretro.Wrapper.RetroLogPrintf";
+
+        public unsafe void RetroLogPrintf(retro_log_level log_level, string format, IntPtr _/*args*/)
         {
-            if (log_level > retro_log_level.RETRO_LOG_INFO)
+            if (log_level <= retro_log_level.RETRO_LOG_INFO)
             {
-                Log.Info($"{log_level}: {format}", "Libretro.Wrapper.RetroLogPrintf");
+                return;
+            }
+
+            switch (log_level)
+            {
+                case retro_log_level.RETRO_LOG_WARN:
+                    Log.Warning(format, LOG_PRINTF_CALLER);
+                    break;
+                case retro_log_level.RETRO_LOG_ERROR:
+                    Log.Error(format, LOG_PRINTF_CALLER);
+                    break;
+                case retro_log_level.RETRO_LOG_DEBUG:
+                case retro_log_level.RETRO_LOG_INFO:
+                default:
+                    Log.Info(format, LOG_PRINTF_CALLER);
+                    break;
             }
         }
     }

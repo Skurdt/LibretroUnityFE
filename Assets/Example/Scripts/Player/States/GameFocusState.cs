@@ -50,7 +50,7 @@ namespace SK.Examples.Player
                 _currentGame.InputEnabled = !_currentGame.InputEnabled;
             }
 
-            if (!Cursor.visible && (Keyboard.current.eKey.wasPressedThisFrame || Gamepad.current.rightStickButton.wasPressedThisFrame))
+            if (!Cursor.visible && ((Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame) || (Gamepad.current != null && Gamepad.current.rightStickButton.wasPressedThisFrame)))
             {
                 _stateController.TransitionTo<NormalState>();
             }

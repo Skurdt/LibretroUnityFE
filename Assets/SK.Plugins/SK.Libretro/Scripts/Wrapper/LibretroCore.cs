@@ -202,10 +202,10 @@ namespace SK.Libretro
         {
             try
             {
-                if (Initialized)
-                {
-                    retro_deinit();
-                }
+                //if (Initialized)
+                //{
+                //    retro_deinit();
+                //}
 
                 if (_dll != null)
                 {
