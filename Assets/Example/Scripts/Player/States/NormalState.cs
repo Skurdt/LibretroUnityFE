@@ -43,7 +43,7 @@ namespace SK.Examples.Player
 
             if (_interactions.GetCurrentGame() != null)
             {
-                if ((Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame) || (Gamepad.current != null && Gamepad.current.rightStickButton.wasPressedThisFrame))
+                if (Keyboard.current.eKey.wasPressedThisFrame || (Gamepad.current!=null && Gamepad.current.rightStickButton.wasPressedThisFrame))
                 {
                     _stateController.TransitionTo<GameFocusState>();
                 }

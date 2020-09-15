@@ -69,10 +69,10 @@ namespace SK.Examples.Player
                     _moveVelocity = new Vector3(_movementInputX, -0.1f, _movementInputY);
                     _moveVelocity.Normalize();
 
-                    float speed = (Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed) || (Gamepad.current != null && Gamepad.current.xButton.isPressed) ? RunSpeed : WalkSpeed;
+                    float speed = (Keyboard.current.leftShiftKey.isPressed) || (Gamepad.current!=null && Gamepad.current.xButton.isPressed) ? RunSpeed : WalkSpeed;
                     _moveVelocity = transform.TransformDirection(_moveVelocity) * speed;
 
-                    if ((Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame) || (Gamepad.current != null && Gamepad.current.aButton.wasPressedThisFrame))
+                    if (Keyboard.current.spaceKey.wasPressedThisFrame || (Gamepad.current != null && Gamepad.current.aButton.wasPressedThisFrame))
                     {
                         _moveVelocity.y = JumpForce;
                     }
