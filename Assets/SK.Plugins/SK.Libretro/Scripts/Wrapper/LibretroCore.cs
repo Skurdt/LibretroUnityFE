@@ -95,7 +95,7 @@ namespace SK.Libretro
 
         public retro_controller_info[] ControllerPorts;
 
-        private IDllModule _dll;
+        private DllModule _dll;
 
         private retro_environment_t _environmentCallback;
         private retro_video_refresh_t _videoRefreshCallback;

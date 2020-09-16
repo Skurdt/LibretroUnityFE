@@ -21,68 +21,51 @@
  * SOFTWARE. */
 
 using System;
-using System.IO;
 using System.Runtime.InteropServices;
 
 namespace SK.Libretro.Utilities
 {
-    public sealed class DllModuleWindows : IDllModule
+    public sealed class DllModuleWindows : DllModule
     {
-        [DllImport("kernel32.dll", EntryPoint = "LoadLibraryA", CharSet = CharSet.Ansi, SetLastError = true)]
+        [DllImport("kernel32", EntryPoint = "LoadLibraryA", CharSet = CharSet.Ansi, SetLastError = true)]
         private static extern IntPtr PlatformLoadLibrary([MarshalAs(UnmanagedType.LPStr)] string lpLibFileName);
 
-        [DllImport("kernel32.dll", EntryPoint = "GetProcAddress", CharSet = CharSet.Ansi, SetLastError = true)]
+        [DllImport("kernel32", EntryPoint = "GetProcAddress", CharSet = CharSet.Ansi, SetLastError = true)]
         private static extern IntPtr PlatformGetProcAddress(IntPtr hModule, [MarshalAs(UnmanagedType.LPStr)] string lpProcName);
 
-        [DllImport("kernel32.dll", EntryPoint = "FreeLibrary", CharSet = CharSet.Ansi, SetLastError = true)]
+        [DllImport("kernel32", EntryPoint = "FreeLibrary", CharSet = CharSet.Ansi, SetLastError = true)]
         private static extern bool PlatformFreeLibrary(IntPtr hModule);
 
-        public string Name { get; private set; }
-        public string Extension { get; } = "dll";
-        public IntPtr NativeHandle { get; private set; }
-
-        public void Load(string path)
+        public DllModuleWindows()
+        : base("dll")
         {
-            if (!string.IsNullOrEmpty(path))
+        }
+
+        protected override void LoadLibrary()
+        {
+            _nativeHandle = PlatformLoadLibrary(Path);
+            if (_nativeHandle == null)
             {
-                Name         = Path.GetFileName(path);
-                NativeHandle = PlatformLoadLibrary(path);
-                if (NativeHandle == IntPtr.Zero)
-                {
-                    throw new Exception($"Failed to load library at path '{path}' (ErrorCode: {Marshal.GetLastWin32Error()})");
-                }
-            }
-            else
-            {
-                throw new Exception("Library path is null or empty.");
+                throw new Exception($"Failed to load library '{Name}' at path '{Path}' (ErrorCode: {Marshal.GetLastWin32Error()})");
             }
         }
 
-        public T GetFunction<T>(string functionName) where T : Delegate
+        protected override IntPtr GetProcAddress(string functionName)
         {
-            if (NativeHandle != IntPtr.Zero)
+            IntPtr procAddress = PlatformGetProcAddress(_nativeHandle, functionName);
+            if (procAddress == null)
             {
-                IntPtr procAddress = PlatformGetProcAddress(NativeHandle, functionName);
-                if (procAddress != IntPtr.Zero)
-                {
-                    return Marshal.GetDelegateForFunctionPointer<T>(procAddress);
-                }
-                else
-                {
-                    throw new Exception($"Function '{functionName}' not found in library '{Name}'.");
-                }
+                throw new Exception($"Failed to get function '{functionName}' in library '{Name}' at path '{Path}' (ErrorCode: {Marshal.GetLastWin32Error()})");
             }
-            else
-            {
-                throw new Exception($"Library not loaded, cannot get function '{functionName}'");
-            }
+
+            return procAddress;
         }
 
-        public void Free()
+        protected override void FreeLibrary()
         {
-            if (NativeHandle != IntPtr.Zero)
+            if (!PlatformFreeLibrary(_nativeHandle))
             {
-                _ = PlatformFreeLibrary(NativeHandle);
+                throw new Exception($"Failed to free library '{Name}' at path '{Path}' (ErrorCode: {Marshal.GetLastWin32Error()})");
             }
         }
     }

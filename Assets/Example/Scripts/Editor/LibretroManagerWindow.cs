@@ -39,11 +39,13 @@ namespace SK.Libretro.EditorUtils
         [Serializable]
         public sealed class Core
         {
-            public string FullName;
-            public string DisplayName;
-            public string LastModified;
-            public bool Available;
-            public bool Latest;
+            public string FullName    = string.Empty;
+            public string DisplayName = string.Empty;
+            public string CurrentDate = string.Empty;
+            public string LatestDate  = string.Empty;
+            public bool Available     = false;
+
+            public bool Latest => CurrentDate.Equals(LatestDate, StringComparison.OrdinalIgnoreCase);
         }
 
         [Serializable]
@@ -53,26 +55,17 @@ namespace SK.Libretro.EditorUtils
 
             public void Add(Core core) => Cores.Add(core);
         }
-        static string CurrentPlatform()
-        {
-            switch (Application.platform)
-            {
-                case RuntimePlatform.LinuxEditor:
-                    return "linux";
-                default:               
-                    return "windows";
-            }
-        }
 
-        private static string _buildBotUrl                = $"https://buildbot.libretro.com/nightly/{CurrentPlatform()}/x86_64/latest/";
+        private static readonly string _buildbotUrl       = $"https://buildbot.libretro.com/nightly/{CurrentPlatform()}/x86_64/latest/";
         private static readonly string _libretroDirectory = Path.Combine(Application.streamingAssetsPath, "libretro~");
         private static readonly string _coresDirectory    = Path.Combine(_libretroDirectory, "cores");
         private static readonly string _coresStatusFile   = Path.Combine(_libretroDirectory, "cores.json");
-        private static readonly Color _orangeColor = new Color(0.6f, 0.6f, 0f, 1f);
+        private static readonly Color _greenColor         = Color.green;
+        private static readonly Color _orangeColor        = new Color(1.0f, 0.5f, 0f, 1f);
+        private static readonly Color _redColor           = Color.red;
 
         private static CoreList _coreList;
-        private static Color _defaultBgColor;
-        private Vector2 _scrollPos;
+        private static Vector2 _scrollPos;
 
         [MenuItem("Libretro/Manage Cores"), SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Unity Editor")]
         private static void ShowWindow()
@@ -87,13 +80,17 @@ namespace SK.Libretro.EditorUtils
                 _ = Directory.CreateDirectory(_coresDirectory);
             }
 
-            _defaultBgColor = GUI.backgroundColor;
+            if (File.Exists(_coresStatusFile))
+            {
+                _coreList = FileSystem.DeserializeFromJson<CoreList>(_coresStatusFile);
+            }
 
-            _coreList = FileSystem.DeserializeFromJson<CoreList>(_coresStatusFile);
             if (_coreList == null)
             {
                 _coreList = new CoreList();
             }
+
+            Refresh();
 
             GetWindow<LibretroManagerWindow>("Core Manager").minSize = new Vector2(286f, 120f);
         }
@@ -101,14 +98,12 @@ namespace SK.Libretro.EditorUtils
         private void OnGUI()
         {
             GUILayout.Space(16f);
-
-            if (GUILayout.Button("Check for updates", GUILayout.Height(EditorGUIUtility.singleLineHeight * 2f)))
+            if (GUILayout.Button("Refresh", GUILayout.Height(EditorGUIUtility.singleLineHeight * 2f)))
             {
-                CheckForUpdates();
+                Refresh();
             }
 
-            GUILayout.Space(16f);
-
+            GUILayout.Space(8f);
             _scrollPos = GUILayout.BeginScrollView(_scrollPos);
             {
                 foreach (Core core in _coreList.Cores)
@@ -120,32 +115,39 @@ namespace SK.Libretro.EditorUtils
                         string buttonText;
                         if (core.Available && core.Latest)
                         {
-                            GUI.backgroundColor = Color.green;
-                            buttonText = "OK";
+                            GUI.backgroundColor = _greenColor;
+                            buttonText          = "OK";
                         }
                         else if (core.Available && !core.Latest)
                         {
                             GUI.backgroundColor = _orangeColor;
-                            buttonText = "Update";
+                            buttonText          = "Update";
                         }
                         else
                         {
-                            GUI.backgroundColor = Color.red;
-                            buttonText = "Download";
+                            GUI.backgroundColor = _redColor;
+                            buttonText          = "Download";
                         }
 
-                        if (GUILayout.Button(new GUIContent(buttonText, null, core.DisplayName), GUILayout.Width(80f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
+                        if (GUILayout.Button(new GUIContent(buttonText, null, core.DisplayName), GUILayout.Width(80f), GUILayout.Height(EditorGUIUtility.singleLineHeight)) && !core.Latest)
                         {
-                            if (!core.Available || !core.Latest)
+                            try
                             {
-                                string url = $"{_buildBotUrl}{core.FullName}";
-                                string zipPath = DownloadFile(url);
+                                string zipPath = DownloadFile($"{_buildbotUrl}{core.FullName}");
                                 ExtractFile(zipPath);
-                                CheckForUpdates();
-                            }
-                        }
 
-                        GUI.backgroundColor = _defaultBgColor;
+                                core.CurrentDate = core.LatestDate;
+                                core.Available   = true;
+
+                                _coreList.Cores = _coreList.Cores.OrderBy(x => x.DisplayName).ToList();
+                                _ = FileSystem.SerializeToJson(_coreList, _coresStatusFile);
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.LogException(e);
+                            }
+
+                        }
                     }
                     GUILayout.EndHorizontal();
                 }
@@ -153,49 +155,73 @@ namespace SK.Libretro.EditorUtils
             GUILayout.EndScrollView();
         }
 
-        private static void CheckForUpdates()
+        private static string CurrentPlatform()
         {
+            switch (Application.platform)
+            {
+                case RuntimePlatform.LinuxEditor:
+                {
+                    return "linux";
+                }
+                default:
+                {
+                    return "windows";
+                }
+            }
+        }
+
+        private static void Refresh()
+        {
+            foreach (Core core in _coreList.Cores)
+            {
+                bool fileExists = File.Exists(Path.GetFullPath(Path.Combine(_coresDirectory, core.FullName.Replace(".zip", string.Empty))));
+                if (!fileExists)
+                {
+                    core.CurrentDate = string.Empty;
+                    core.LatestDate  = string.Empty;
+                    core.Available   = false;
+                }
+            }
+
             HtmlWeb hw                 = new HtmlWeb();
-            HtmlDocument doc           = hw.Load(new Uri(_buildBotUrl));
+            HtmlDocument doc           = hw.Load(new Uri(_buildbotUrl));
             HtmlNodeCollection trNodes = doc.DocumentNode.SelectNodes("//body/div/table/tr");
 
             foreach (HtmlNode trNode in trNodes)
             {
                 HtmlNodeCollection tdNodes = trNode.ChildNodes;
-                foreach (HtmlNode node in tdNodes)
+                if (tdNodes.Count < 3)
                 {
-                    string fileName = tdNodes[1].InnerText;
-                    if (!fileName.Contains("_libretro"))
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    string lastModified = tdNodes[2].InnerText;
-                    bool available = File.Exists(Path.GetFullPath(Path.Combine(_coresDirectory, fileName.Replace(".zip", string.Empty))));
-                    Core found = _coreList.Cores.Find(x => x.FullName.Equals(fileName, StringComparison.OrdinalIgnoreCase));
-                    if (found != null)
-                    {
-                        found.LastModified = lastModified;
-                        found.Available = available;
-                        found.Latest = found.LastModified.Equals(lastModified, StringComparison.OrdinalIgnoreCase);
-                    }
-                    else
-                    {
+                string fileName = tdNodes[1].InnerText;
+                if (!fileName.Contains("_libretro"))
+                {
+                    continue;
+                }
 
-                        _coreList.Add(new Core
-                        {
-                            FullName = fileName,
-                            DisplayName = fileName.Substring(0,fileName.IndexOf('.')),
-                            LastModified = lastModified,
-                            Available = available,
-                            Latest = true
-                        });
-                    }
+                string lastModified = tdNodes[2].InnerText;
+                bool available      = File.Exists(Path.GetFullPath(Path.Combine(_coresDirectory, fileName.Replace(".zip", string.Empty))));
+                Core found          = _coreList.Cores.Find(x => x.FullName.Equals(fileName, StringComparison.OrdinalIgnoreCase));
+                if (found != null)
+                {
+                    found.LatestDate = lastModified;
+                    found.Available = available;
+                }
+                else
+                {
+                    _coreList.Add(new Core
+                    {
+                        FullName    = fileName,
+                        DisplayName = fileName.Substring(0, fileName.IndexOf('.')),
+                        LatestDate  = lastModified,
+                        Available   = available
+                    });
                 }
             }
 
-            _coreList.Cores = _coreList.Cores.OrderBy(x => x.DisplayName).ToList();
-            _ = FileSystem.SerializeToJson(_coreList, _coresStatusFile);
+            _coreList.Cores = _coreList.Cores.OrderBy(x => x.Available).ThenBy(x => x.Latest).ThenBy(x => x.DisplayName).ToList();
         }
 
         private static string DownloadFile(string url)

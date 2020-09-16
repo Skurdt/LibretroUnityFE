@@ -20,76 +20,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using System;
-using System.IO;
-using System.Runtime.InteropServices;
-
 namespace SK.Libretro.Utilities
 {
-    public sealed class DllModuleOSX : IDllModule
+    public sealed class DllModuleOSX : DllModuleUNIX
     {
-        [DllImport("libdl.dylib", EntryPoint = "dlopen", SetLastError = true)]
-        private static extern IntPtr PlatformLoadLibrary(string fileName, int flags);
-
-        [DllImport("libdl.dylib", EntryPoint = "dlsym", SetLastError = true)]
-        private static extern IntPtr PlatformGetProcAddress(IntPtr handle, string symbol);
-
-        [DllImport("libdl.dylib", EntryPoint = "dlclose", SetLastError = true)]
-        private static extern int PlatformFreeLibrary(IntPtr handle);
-
-        [DllImport("libdl.dylib", EntryPoint = "dlerror")]
-        private static extern IntPtr PlatformLibraryError();
-
-        public string Name { get; private set; }
-        public string Extension { get; } = "dylib";
-        public IntPtr NativeHandle { get; private set; }
-
-        private const int RTLD_NOW = 2;
-
-        public void Load(string path)
+        public DllModuleOSX()
+        : base("dylib")
         {
-            if (!string.IsNullOrEmpty(path))
-            {
-                Name         = Path.GetFileName(path);
-                NativeHandle = PlatformLoadLibrary(path, RTLD_NOW);
-                IntPtr error = PlatformLibraryError();
-                if (error != IntPtr.Zero)
-                {
-                    throw new Exception($"Failed to load library at path '{path}' (ErrorMessage: {Marshal.PtrToStringAnsi(error)})");
-                }
-            }
-            else
-            {
-                throw new Exception("Library path is null or empty.");
-            }
-        }
-
-        public T GetFunction<T>(string functionName) where T : Delegate
-        {
-            if (NativeHandle != IntPtr.Zero)
-            {
-                IntPtr procAddress = PlatformGetProcAddress(NativeHandle, functionName);
-                if (procAddress != IntPtr.Zero)
-                {
-                    return Marshal.GetDelegateForFunctionPointer<T>(procAddress);
-                }
-                else
-                {
-                    throw new Exception($"Function '{functionName}' not found in library '{Name}'.");
-                }
-            }
-            else
-            {
-                throw new Exception($"Library not loaded, cannot get function '{functionName}'");
-            }
-        }
-
-        public void Free()
-        {
-            if (NativeHandle != IntPtr.Zero)
-            {
-                _ = PlatformFreeLibrary(NativeHandle);
-            }
         }
     }
 }
