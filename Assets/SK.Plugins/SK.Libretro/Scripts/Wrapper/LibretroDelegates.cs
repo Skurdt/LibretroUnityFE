@@ -305,9 +305,9 @@ namespace SK.Libretro
         // typedef void (RETRO_CALLCONV* retro_hw_context_reset_t) (void);
         private delegate void retro_hw_context_reset_t();
         // typedef uintptr_t(RETRO_CALLCONV* retro_hw_get_current_framebuffer_t)(void);
-        private delegate UIntPtr retro_hw_get_current_framebuffer_t();
+        private delegate uint retro_hw_get_current_framebuffer_t();
         // typedef retro_proc_address_t(RETRO_CALLCONV* retro_hw_get_proc_address_t)(const char* sym);
-        private delegate retro_proc_address_t retro_hw_get_proc_address_t([MarshalAs(UnmanagedType.LPStr)] string sym);
+        private delegate IntPtr retro_hw_get_proc_address_t([MarshalAs(UnmanagedType.LPStr)] string sym);
 
         // typedef void (RETRO_CALLCONV* retro_keyboard_event_t) (bool down, unsigned keycode, uint32_t character, uint16_t key_modifiers);
         private delegate void retro_keyboard_event_t([MarshalAs(UnmanagedType.U1)] bool down, uint keycode, uint character, ushort key_modifiers);

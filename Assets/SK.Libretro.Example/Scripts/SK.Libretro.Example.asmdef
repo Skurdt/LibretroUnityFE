@@ -1,15 +1,13 @@
 {
-    "name": "SK.Libretro",
+    "name": "SK.Libretro.Example",
     "references": [
         "GUID:d8b63aba1907145bea998dd612889d6b",
-        "GUID:2665a8d13d1b3f18800f46e256720795",
         "GUID:75469ad4d38634e559750d17036d5f7c",
-        "GUID:d6b18c983f9214d18a9d4e199d9c0fd7",
-        "GUID:b2b8b21845d8355448c429ddc59070aa"
+        "GUID:fc3ade9bc3ff120479c546ff8570333a"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": true,
+    "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

@@ -1,8 +1,8 @@
 {
     "UseConfig": true,
     "Game": {
-        "Core": "2048",
-        "Directory": "",
-        "Name": ""
+        "Core": "mupen64plus_next",
+        "Directory": "D:/__Roms",
+        "Name": "Legend of Zelda, The - Ocarina of Time (USA) (Rev 2)"
     }
 }

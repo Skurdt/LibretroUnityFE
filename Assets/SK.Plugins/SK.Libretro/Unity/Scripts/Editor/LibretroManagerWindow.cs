@@ -32,7 +32,7 @@ using System.Net;
 using UnityEditor;
 using UnityEngine;
 
-namespace SK.Libretro.EditorUtils
+namespace SK.LibretroEditor
 {
     public sealed class LibretroManagerWindow : EditorWindow
     {
@@ -139,7 +139,7 @@ namespace SK.Libretro.EditorUtils
                                 core.CurrentDate = core.LatestDate;
                                 core.Available   = true;
 
-                                _coreList.Cores = _coreList.Cores.OrderBy(x => x.DisplayName).ToList();
+                                _coreList.Cores = _coreList.Cores.OrderBy(x => x.Available).ThenBy(x => x.Latest).ThenBy(x => x.DisplayName).ToList();
                                 _ = FileSystem.SerializeToJson(_coreList, _coresStatusFile);
                             }
                             catch (Exception e)

@@ -32,13 +32,6 @@ namespace SK.Libretro
 {
     public partial class Wrapper
     {
-        //private const uint SUBSYSTEM_MAX_SUBSYSTEMS = 20;
-        //private const uint SUBSYSTEM_MAX_SUBSYSTEM_ROMS = 10;
-
-        //private readonly RetroSubsystemInfo[] subsystem_data = new RetroSubsystemInfo[SUBSYSTEM_MAX_SUBSYSTEMS];
-        //private readonly unsafe RetroSubsystemRomInfo*[] subsystem_data_roms = new RetroSubsystemRomInfo*[SUBSYSTEM_MAX_SUBSYSTEMS];
-        //private uint subsystem_current_count;
-
         [return: MarshalAs(UnmanagedType.U1)]
         public unsafe bool RetroEnvironmentCallback(retro_environment cmd, void* data)
         {
@@ -65,7 +58,7 @@ namespace SK.Libretro
                 case retro_environment.RETRO_ENVIRONMENT_GET_USERNAME:                                return GetUsername(data);
                 case retro_environment.RETRO_ENVIRONMENT_GET_LANGUAGE:                                return GetLanguage(data);
                 case retro_environment.RETRO_ENVIRONMENT_GET_CURRENT_SOFTWARE_FRAMEBUFFER:            return ENVIRONMENT_NOT_IMPLEMENTED(cmd);
-                case retro_environment.RETRO_ENVIRONMENT_GET_HW_RENDER_INTERFACE:                     return ENVIRONMENT_NOT_IMPLEMENTED(cmd);
+                case retro_environment.RETRO_ENVIRONMENT_GET_HW_RENDER_INTERFACE:                     return GetHwRenderInterface(data);
                 case retro_environment.RETRO_ENVIRONMENT_GET_VFS_INTERFACE:                           return ENVIRONMENT_NOT_IMPLEMENTED(cmd);
                 case retro_environment.RETRO_ENVIRONMENT_GET_LED_INTERFACE:                           return ENVIRONMENT_NOT_IMPLEMENTED(cmd);
                 case retro_environment.RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE:                      return GetAudioVideoEnable(data);
@@ -198,7 +191,7 @@ namespace SK.Libretro
 
         private unsafe bool GetInputDeviceCapabilities(void* data)
         {
-            // IMPROVEME(Tom)
+            // TODO(Tom): Move queries to Unity layer
             ulong mask = 0;
 
             if (Keyboard.current != null)
@@ -257,16 +250,21 @@ namespace SK.Libretro
 
         private unsafe bool GetUsername(void* data)
         {
-            // IMPROVEME(Tom)
+            // TODO(Tom): Expose this
             _unsafeStrings.Add(StringToChars("default_user", out *(char**)data));
             return true;
         }
 
         private unsafe bool GetLanguage(void* data)
         {
-            // IMPROVEME(Tom)
+            // TODO(Tom): Expose this
             *(uint*)data = (uint)retro_language.RETRO_LANGUAGE_ENGLISH;
             return true;
+        }
+
+        private unsafe bool GetHwRenderInterface(void* _/*data*/)
+        {
+            return false;
         }
 
         private static unsafe bool GetAudioVideoEnable(void* data)
@@ -293,9 +291,14 @@ namespace SK.Libretro
 
         private unsafe bool GetPreferredHwRender(void* data)
         {
-            // FIXME(Tom)
-            *(uint*)data = (uint)retro_hw_context_type.RETRO_HW_CONTEXT_DIRECT3D;
-            return true;
+            if (_glSupport)
+            {
+                *(uint*)data = (uint)retro_hw_context_type.RETRO_HW_CONTEXT_OPENGL;
+                return true;
+            }
+
+            *(uint*)data = (uint)retro_hw_context_type.RETRO_HW_CONTEXT_NONE;
+            return false;
         }
         #endregion
 
@@ -426,49 +429,21 @@ namespace SK.Libretro
             return true;
         }
 
-        // FIXME(Tom): Is it even possible without going native? (and even then?)
+        // FIXME(Tom): not working
         private unsafe bool SetHwRender(void* data)
         {
             retro_hw_render_callback* inHwRenderCallback = (retro_hw_render_callback*)data;
-            Log.Error($"Rendering context dependent cores are not supported: {inHwRenderCallback->context_type}", "RETRO_ENVIRONMENT_SET_HW_RENDER");
-            ForceQuit = true;
-            return false;
+            if (inHwRenderCallback->context_type != retro_hw_context_type.RETRO_HW_CONTEXT_OPENGL || !_glSupport)
+            {
+                ForceQuit = true;
+                return false;
+            }
 
-            //Log.Info($"context_type: {inHwRenderCallback->context_type}", "RETRO_ENVIRONMENT_SET_HW_RENDER");
-            //Log.Info($"context_reset: {inHwRenderCallback->context_reset}", "RETRO_ENVIRONMENT_SET_HW_RENDER");
-            //Log.Info($"get_current_framebuffer: {inHwRenderCallback->get_current_framebuffer}", "RETRO_ENVIRONMENT_SET_HW_RENDER");
-            //Log.Info($"get_proc_address: {inHwRenderCallback->get_proc_address}", "RETRO_ENVIRONMENT_SET_HW_RENDER");
-            //Log.Info($"depth: {inHwRenderCallback->depth}", "RETRO_ENVIRONMENT_SET_HW_RENDER");
-            //Log.Info($"stencil: {inHwRenderCallback->stencil}", "RETRO_ENVIRONMENT_SET_HW_RENDER");
-            //Log.Info($"bottom_left_origin: {inHwRenderCallback->bottom_left_origin}", "RETRO_ENVIRONMENT_SET_HW_RENDER");
-            //Log.Info($"version_major: {inHwRenderCallback->version_major}", "RETRO_ENVIRONMENT_SET_HW_RENDER");
-            //Log.Info($"version_minor: {inHwRenderCallback->version_minor}", "RETRO_ENVIRONMENT_SET_HW_RENDER");
-            //Log.Info($"cache_context: {inHwRenderCallback->cache_context}", "RETRO_ENVIRONMENT_SET_HW_RENDER");
-            //Log.Info($"context_destroy: {inHwRenderCallback->context_destroy}", "RETRO_ENVIRONMENT_SET_HW_RENDER");
-            //Log.Info($"debug_context: {inHwRenderCallback->debug_context}", "RETRO_ENVIRONMENT_SET_HW_RENDER");
+            inHwRenderCallback->get_current_framebuffer = Marshal.GetFunctionPointerForDelegate(_videoDriverGetCurrentFrameBufferCallback);
+            inHwRenderCallback->get_proc_address        = Marshal.GetFunctionPointerForDelegate(_videoDriverGetProcAddressCallback);
+            _hwRenderCallback = *inHwRenderCallback;
 
-            //inHwRenderCallback->context_reset           = IntPtr.Zero;
-            //inHwRenderCallback->context_destroy         = IntPtr.Zero;
-            //inHwRenderCallback->get_current_framebuffer = IntPtr.Zero;
-            //inHwRenderCallback->get_proc_address        = IntPtr.Zero;
-
-            //switch (inHwRenderCallback->context_type)
-            //{
-            //    case retro_hw_context_type.RETRO_HW_CONTEXT_NONE:
-            //    case retro_hw_context_type.RETRO_HW_CONTEXT_OPENGL:
-            //    case retro_hw_context_type.RETRO_HW_CONTEXT_OPENGLES2:
-            //    case retro_hw_context_type.RETRO_HW_CONTEXT_OPENGL_CORE:
-            //    case retro_hw_context_type.RETRO_HW_CONTEXT_OPENGLES3:
-            //    case retro_hw_context_type.RETRO_HW_CONTEXT_OPENGLES_VERSION:
-            //    case retro_hw_context_type.RETRO_HW_CONTEXT_VULKAN:
-            //    case retro_hw_context_type.RETRO_HW_CONTEXT_DIRECT3D:
-            //    default:
-            //    {
-            //        Log.Error($"Rendering context not supported: {inHwRenderCallback->context_type}", "RETRO_ENVIRONMENT_SET_HW_RENDER");
-            //        ForceQuit = true;
-            //        return false;
-            //    }
-            //}
+            return true;
         }
 
         private unsafe bool SetVariables(void* data)
@@ -486,16 +461,16 @@ namespace SK.Libretro
 
                 while (inVariable->key != null)
                 {
-                    string key = CharsToString(inVariable->key);
+                    string key        = CharsToString(inVariable->key);
                     string coreOption = Core.CoreOptions.Options.Find(x => x.StartsWith(key, StringComparison.OrdinalIgnoreCase));
                     if (coreOption == null)
                     {
-                        string inValue = CharsToString(inVariable->value);
+                        string inValue                = CharsToString(inVariable->value);
                         string[] descriptionAndValues = inValue.Split(';');
-                        string[] possibleValues = descriptionAndValues[1].Trim().Split('|');
-                        string defaultValue = possibleValues[0];
-                        string value = defaultValue;
-                        coreOption = $"{key};{value};{string.Join("|", possibleValues)};";
+                        string[] possibleValues       = descriptionAndValues[1].Trim().Split('|');
+                        string defaultValue           = possibleValues[0];
+                        string value                  = defaultValue;
+                        coreOption                    = $"{key};{value};{string.Join("|", possibleValues)};";
                         Core.CoreOptions.Options.Add(coreOption);
                     }
                     ++inVariable;
@@ -530,98 +505,6 @@ namespace SK.Libretro
             return true;
         }
 
-        //private static unsafe bool SetSubsystemInfo(retro_environment cmd)
-        //{
-            //    //RetroSubsystemInfo* subsytemInfo = (RetroSubsystemInfo*)data;
-            //    ////Debug.Log("<color=yellow>Subsystem Info:</color>");
-            //    ////Debug.Log($"<color=yellow>Description:</color> {Marshal.PtrToStringAnsisubsytemInfo->desc)}");
-            //    ////Debug.Log($"<color=yellow>Ident:</color> {Marshal.PtrToStringAnsisubsytemInfo->ident)}");
-            //    //_game_type = subsytemInfo->id;
-            //    //_num_info = subsytemInfo->num_roms;
-            //    //while (subsytemInfo->roms != null)
-            //    //{
-            //    //    RetroSubsystemRomInfo* romInfo = subsytemInfo->roms;
-            //    //    //Debug.Log("<color=orange>Rom Info:</color>");
-            //    //    //Debug.Log($"<color=orange>Description:</color> {Marshal.PtrToStringAnsiromInfo->desc)}");
-            //    //    //Debug.Log($"<color=orange>Extensions:</color> {Marshal.PtrToStringAnsiromInfo->valid_extensions)}");
-            //    //    subsytemInfo++;
-            //    //}
-
-            //    RetroSubsystemInfo* inSubsytemInfo = (RetroSubsystemInfo*)data;
-            //    // settings_t* settings = configuration_settings;
-            //    // unsigned log_level = settings->uints.frontend_log_level;
-
-            //    subsystem_current_count = 0;
-
-            //    uint size = 0;
-            //    Log.Info("SET_SUBSYSTEM_INFO", "Environment");
-            //    {
-            //        uint i = 0;
-            //        while (inSubsytemInfo[i].ident != null)
-            //        {
-            //            string subsystemDesc = Marshal.PtrToStringAnsiinSubsytemInfo[i].desc);
-            //            string subsystemIdent = Marshal.PtrToStringAnsiinSubsytemInfo[i].ident);
-            //            uint subsystemId = inSubsytemInfo[i].id;
-
-            //            Log.Info($"Subsystem ID: {i}");
-            //            Log.Info($"Special game type: {subsystemDesc}\n  Ident: {subsystemIdent}\n  ID: {subsystemId}\n  Content:");
-            //            for (uint j = 0; j < inSubsytemInfo[i].num_roms; j++)
-            //            {
-            //                string romDesc = Marshal.PtrToStringAnsiinSubsytemInfo[i].roms[j].desc);
-            //                string required = inSubsytemInfo[i].roms[j].required ? "required" : "optional";
-            //                Log.Info($"    {romDesc} ({required})");
-            //            }
-            //            i++;
-            //        }
-
-            //        //if (log_level == RETRO_LOG_DEBUG)
-            //        Log.Info($"Subsystems: {i}");
-            //        size = i;
-            //    }
-            //    //if (log_level == RETRO_LOG_DEBUG)
-            //    if (size > SUBSYSTEM_MAX_SUBSYSTEMS)
-            //    {
-            //        Log.Warning($"Subsystems exceed subsystem max, clamping to {SUBSYSTEM_MAX_SUBSYSTEMS}");
-            //    }
-
-            //    if (Core != null)
-            //    {
-            //        for (uint i = 0; i < size && i < SUBSYSTEM_MAX_SUBSYSTEMS; i++)
-            //        {
-            //            ref RetroSubsystemInfo subdata = ref subsystem_data[i];
-
-            //            subdata.desc = inSubsytemInfo[i].desc;
-            //            subdata.ident = inSubsytemInfo[i].ident;
-            //            subdata.id = inSubsytemInfo[i].id;
-            //            subdata.num_roms = inSubsytemInfo[i].num_roms;
-
-            //            //if (log_level == RETRO_LOG_DEBUG)
-            //            if (subdata.num_roms > SUBSYSTEM_MAX_SUBSYSTEM_ROMS)
-            //            {
-            //                Log.Warning($"Subsystems exceed subsystem max roms, clamping to {SUBSYSTEM_MAX_SUBSYSTEM_ROMS}");
-            //            }
-
-            //            for (uint j = 0; j < subdata.num_roms && j < SUBSYSTEM_MAX_SUBSYSTEM_ROMS; j++)
-            //            {
-            //                while (subdata.roms != null)
-            //                {
-            //                    RetroSubsystemRomInfo* romInfo = subdata.roms;
-            //                    romInfo->desc = inSubsytemInfo[i].roms[j].desc;
-            //                    romInfo->valid_extensions = inSubsytemInfo[i].roms[j].valid_extensions;
-            //                    romInfo->required = inSubsytemInfo[i].roms[j].required;
-            //                    romInfo->block_extract = inSubsytemInfo[i].roms[j].block_extract;
-            //                    romInfo->need_fullpath = inSubsytemInfo[i].roms[j].need_fullpath;
-            //                    subdata.roms++;
-            //                }
-            //            }
-
-            //            subdata.roms = subsystem_data_roms[i];
-            //        }
-
-            //        subsystem_current_count = (size <= SUBSYSTEM_MAX_SUBSYSTEMS) ? size : SUBSYSTEM_MAX_SUBSYSTEMS;
-            //    }
-        //}
-
         private unsafe bool SetControllerInfo(void* data)
         {
             retro_controller_info* inControllerInfo = (retro_controller_info*)data;
@@ -633,7 +516,7 @@ namespace SK.Libretro
                 for (int j = 0; j < inControllerInfo[numPorts].num_types; ++j)
                 {
                     string desc = CharsToString(inControllerInfo[numPorts].types[j].desc);
-                    uint id = inControllerInfo[numPorts].types[j].id;
+                    uint id     = inControllerInfo[numPorts].types[j].id;
                     Log.Info($"    {desc} (ID: {id})", "RETRO_ENVIRONMENT_SET_CONTROLLER_INFO");
                 }
             }

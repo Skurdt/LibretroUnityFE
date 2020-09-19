@@ -288,7 +288,7 @@ namespace SK.Examples
         private void ActivateAudio()
         {
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            var unityAudio = GetComponentInChildren<Libretro.Unity.AudioProcessor>();
+            Libretro.Unity.AudioProcessor unityAudio = GetComponentInChildren<Libretro.Unity.AudioProcessor>();
             if (unityAudio != null)
             {
                 Wrapper?.ActivateAudio(unityAudio);
