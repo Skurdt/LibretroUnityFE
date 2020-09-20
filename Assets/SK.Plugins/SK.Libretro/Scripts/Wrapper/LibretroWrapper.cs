@@ -33,6 +33,8 @@ namespace SK.Libretro
 {
     public partial class Wrapper
     {
+        public retro_log_level LogLevel = retro_log_level.RETRO_LOG_INFO;
+
         public bool OptionCropOverscan
         {
             get => _optionCropOverscan;
@@ -41,7 +43,7 @@ namespace SK.Libretro
                 if (_optionCropOverscan != value)
                 {
                     _optionCropOverscan = value;
-                    _dirtyVariables = true;
+                    _dirtyVariables     = true;
                 }
             }
         }

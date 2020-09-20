@@ -243,7 +243,7 @@ namespace SK.Libretro
         private delegate retro_proc_address_t retro_get_proc_address_t([MarshalAs(UnmanagedType.LPStr)] string sym);
 
         // typedef void (RETRO_CALLCONV *retro_log_printf_t)(enum retro_log_level level, const char* fmt, ...);
-        public delegate void retro_log_printf_t(retro_log_level level, [In, MarshalAs(UnmanagedType.LPStr)] string format, IntPtr args);
+        public delegate void retro_log_printf_t(retro_log_level level, [In, MarshalAs(UnmanagedType.LPStr)] string format, IntPtr arg1, IntPtr arg2, IntPtr arg3, IntPtr arg4, IntPtr arg5, IntPtr arg6, IntPtr arg7, IntPtr arg8, IntPtr arg9, IntPtr arg10, IntPtr arg11, IntPtr arg12);
 
         // typedef retro_time_t(RETRO_CALLCONV* retro_perf_get_time_usec_t)(void);
         public delegate long retro_perf_get_time_usec_t();
