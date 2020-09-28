@@ -33,7 +33,7 @@ namespace SK.Libretro
     [Serializable]
     public class CoreOptions
     {
-        public string CoreName = string.Empty;
+        public string CoreName      = string.Empty;
         public List<string> Options = new List<string>();
     }
 
@@ -202,6 +202,7 @@ namespace SK.Libretro
         {
             try
             {
+                //FIXME(Tom): This sometimes crash (mostly on cores using lico)
                 //if (Initialized)
                 //{
                 //    retro_deinit();
@@ -278,12 +279,12 @@ namespace SK.Libretro
         public IntPtr GetLogCallback() => Marshal.GetFunctionPointerForDelegate(_logPrintfCallback);
 
         public IntPtr GetPerfGetTimeUsecCallback() => Marshal.GetFunctionPointerForDelegate(_perfGetTimeUsecCallback);
-        public IntPtr GetPerfGetCounterCallback()  => Marshal.GetFunctionPointerForDelegate(_perfGetCounterCallback);
-        public IntPtr GetGetCPUFeaturesCallback()  => Marshal.GetFunctionPointerForDelegate(_getCPUFeaturesCallback);
-        public IntPtr GetPerfLogCallback()         => Marshal.GetFunctionPointerForDelegate(_perfLogCallback);
-        public IntPtr GetPerfRegisterCallback()    => Marshal.GetFunctionPointerForDelegate(_perfRegisterCallback);
-        public IntPtr GetPerfStartCallback()       => Marshal.GetFunctionPointerForDelegate(_perfStartCallback);
-        public IntPtr GetPerfStopCallback()        => Marshal.GetFunctionPointerForDelegate(_perfStopCallback);
+        public IntPtr GetPerfGetCounterCallback() => Marshal.GetFunctionPointerForDelegate(_perfGetCounterCallback);
+        public IntPtr GetGetCPUFeaturesCallback() => Marshal.GetFunctionPointerForDelegate(_getCPUFeaturesCallback);
+        public IntPtr GetPerfLogCallback() => Marshal.GetFunctionPointerForDelegate(_perfLogCallback);
+        public IntPtr GetPerfRegisterCallback() => Marshal.GetFunctionPointerForDelegate(_perfRegisterCallback);
+        public IntPtr GetPerfStartCallback() => Marshal.GetFunctionPointerForDelegate(_perfStartCallback);
+        public IntPtr GetPerfStopCallback() => Marshal.GetFunctionPointerForDelegate(_perfStopCallback);
 
         public void SetFrameTimeCallback(IntPtr callback, long reference)
         {

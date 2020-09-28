@@ -67,7 +67,7 @@ namespace SK.Libretro
                 case retro_environment.RETRO_ENVIRONMENT_GET_TARGET_REFRESH_RATE:                     return ENVIRONMENT_NOT_IMPLEMENTED(cmd);
                 case retro_environment.RETRO_ENVIRONMENT_GET_INPUT_BITMASKS:                          return false;
                 case retro_environment.RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:                    return GetCoreOptionsVersion(data);
-                case retro_environment.RETRO_ENVIRONMENT_GET_PREFERRED_HW_RENDER:                     return GetPreferredHwRender(data);
+                case retro_environment.RETRO_ENVIRONMENT_GET_PREFERRED_HW_RENDER:                     return ENVIRONMENT_NOT_IMPLEMENTED(cmd);
                 case retro_environment.RETRO_ENVIRONMENT_GET_DISK_CONTROL_INTERFACE_VERSION:          return ENVIRONMENT_NOT_IMPLEMENTED(cmd);
                 case retro_environment.RETRO_ENVIRONMENT_GET_MESSAGE_INTERFACE_VERSION:               return ENVIRONMENT_NOT_IMPLEMENTED(cmd);
                 case retro_environment.RETRO_ENVIRONMENT_GET_INPUT_MAX_USERS:                         return ENVIRONMENT_NOT_IMPLEMENTED(cmd);
@@ -82,7 +82,7 @@ namespace SK.Libretro
                 case retro_environment.RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:                       return SetInputDescriptors(data);
                 case retro_environment.RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK:                       return ENVIRONMENT_NOT_IMPLEMENTED(cmd);
                 case retro_environment.RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:                  return ENVIRONMENT_NOT_IMPLEMENTED(cmd);
-                case retro_environment.RETRO_ENVIRONMENT_SET_HW_RENDER:                               return SetHwRender(data);
+                case retro_environment.RETRO_ENVIRONMENT_SET_HW_RENDER:                               return ENVIRONMENT_NOT_IMPLEMENTED(cmd);
                 case retro_environment.RETRO_ENVIRONMENT_SET_VARIABLES:                               return SetVariables(data);
                 case retro_environment.RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:                         return SetSupportNoGame(data);
                 case retro_environment.RETRO_ENVIRONMENT_SET_FRAME_TIME_CALLBACK:                     return SetFrameTimeCallback(data);
@@ -288,18 +288,6 @@ namespace SK.Libretro
             *(uint*)data = RETRO_API_VERSION;
             return true;
         }
-
-        private unsafe bool GetPreferredHwRender(void* data)
-        {
-            if (_glSupport)
-            {
-                *(uint*)data = (uint)retro_hw_context_type.RETRO_HW_CONTEXT_OPENGL;
-                return true;
-            }
-
-            *(uint*)data = (uint)retro_hw_context_type.RETRO_HW_CONTEXT_NONE;
-            return false;
-        }
         #endregion
 
         /************************************************************************************************
@@ -425,23 +413,6 @@ namespace SK.Libretro
             }
 
             Core.HasInputDescriptors = true;
-
-            return true;
-        }
-
-        // FIXME(Tom): not working
-        private unsafe bool SetHwRender(void* data)
-        {
-            retro_hw_render_callback* inHwRenderCallback = (retro_hw_render_callback*)data;
-            if (inHwRenderCallback->context_type != retro_hw_context_type.RETRO_HW_CONTEXT_OPENGL || !_glSupport)
-            {
-                ForceQuit = true;
-                return false;
-            }
-
-            inHwRenderCallback->get_current_framebuffer = Marshal.GetFunctionPointerForDelegate(_videoDriverGetCurrentFrameBufferCallback);
-            inHwRenderCallback->get_proc_address        = Marshal.GetFunctionPointerForDelegate(_videoDriverGetProcAddressCallback);
-            _hwRenderCallback = *inHwRenderCallback;
 
             return true;
         }

@@ -55,7 +55,6 @@ namespace SK.Libretro.Utilities
             }
         }
 
-        [return: MarshalAs(UnmanagedType.FunctionPtr)]
         public T GetFunction<T>(string functionName) where T : Delegate
         {
             if (_nativeHandle == IntPtr.Zero)

@@ -74,7 +74,7 @@ namespace SK.Examples.Player
 
             float labelWidth = 100f;
             float fieldWidth = 100f;
-            float height = 20f;
+            float height     = 20f;
 
             // Show options
             GUILayout.BeginHorizontal();

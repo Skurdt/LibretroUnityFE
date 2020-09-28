@@ -35,7 +35,7 @@ namespace SK.Examples.Player
 
         public override void OnUpdate(float dt)
         {
-            if (Mouse.current.middleButton.wasPressedThisFrame)
+            if (Mouse.current != null && Mouse.current.middleButton.wasPressedThisFrame)
             {
                 Utils.ToggleMouseCursor();
                 _controls.InputEnabled = !_controls.InputEnabled;
@@ -43,7 +43,7 @@ namespace SK.Examples.Player
 
             if (_interactions.GetCurrentGame() != null)
             {
-                if (Keyboard.current.eKey.wasPressedThisFrame || (Gamepad.current!=null && Gamepad.current.rightStickButton.wasPressedThisFrame))
+                if ((Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame) || (Gamepad.current != null && Gamepad.current.rightStickButton.wasPressedThisFrame))
                 {
                     _stateController.TransitionTo<GameFocusState>();
                 }

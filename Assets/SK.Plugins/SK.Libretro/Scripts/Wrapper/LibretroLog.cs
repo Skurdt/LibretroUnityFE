@@ -97,12 +97,16 @@ namespace SK.Libretro
                     case "x":
                     case "s":
                     case "u":
+                    {
                         argumentsToPush += 1;
-                        break;
+                    }
+                    break;
                     case "f":
                     case "m":
+                    {
                         argumentsToPush += 2;
-                        break;
+                    }
+                    break;
                     default:
                         throw new NotImplementedException($"Placeholder '{match.Value}' not implemented");
                 }

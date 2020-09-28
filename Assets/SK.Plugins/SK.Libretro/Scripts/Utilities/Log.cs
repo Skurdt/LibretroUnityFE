@@ -44,7 +44,7 @@ namespace SK.Libretro.Utilities
         {
 #if UNITY_EDITOR
             Assembly assembly = Assembly.GetAssembly(typeof(UnityEditor.Editor));
-            Type type = assembly.GetType("UnityEditor.LogEntries");
+            Type type         = assembly.GetType("UnityEditor.LogEntries");
             MethodInfo method = type.GetMethod("Clear");
             _ = method.Invoke(new object(), null);
 #endif

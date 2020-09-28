@@ -222,9 +222,9 @@ namespace SK.Libretro
             RETRO_ENVIRONMENT_GET_INPUT_MAX_USERS                         = 61,
 
             // RetroArch Extensions
-            RETRO_ENVIRONMENT_SET_SAVE_STATE_IN_BACKGROUND                = (2 | RETRO_ENVIRONMENT_RETROARCH_START_BLOCK),
-            RETRO_ENVIRONMENT_GET_CLEAR_ALL_THREAD_WAITS_CB               = (3 | RETRO_ENVIRONMENT_RETROARCH_START_BLOCK),
-            RETRO_ENVIRONMENT_POLL_TYPE_OVERRIDE                          = (4 | RETRO_ENVIRONMENT_RETROARCH_START_BLOCK)
+            RETRO_ENVIRONMENT_SET_SAVE_STATE_IN_BACKGROUND                = 2 | RETRO_ENVIRONMENT_RETROARCH_START_BLOCK,
+            RETRO_ENVIRONMENT_GET_CLEAR_ALL_THREAD_WAITS_CB               = 3 | RETRO_ENVIRONMENT_RETROARCH_START_BLOCK,
+            RETRO_ENVIRONMENT_POLL_TYPE_OVERRIDE                          = 4 | RETRO_ENVIRONMENT_RETROARCH_START_BLOCK
         }
 
         private const int RETRO_VFS_FILE_ACCESS_READ            = 1 << 0;
@@ -293,8 +293,6 @@ namespace SK.Libretro
         private const int RETRO_SENSOR_GYROSCOPE_Y     = 4;
         private const int RETRO_SENSOR_GYROSCOPE_Z     = 5;
         private const int RETRO_SENSOR_ILLUMINANCE     = 6;
-
-        private const int RETRO_HW_FRAME_BUFFER_VALID = -1;
 
         private const int RETRO_NUM_CORE_OPTION_VALUES_MAX = 128;
 

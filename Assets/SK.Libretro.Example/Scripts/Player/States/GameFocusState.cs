@@ -44,7 +44,7 @@ namespace SK.Examples.Player
 
         public override void OnUpdate(float dt)
         {
-            if (Mouse.current.middleButton.wasPressedThisFrame)
+            if (Mouse.current != null && Mouse.current.middleButton.wasPressedThisFrame)
             {
                 Utils.ToggleMouseCursor();
                 _currentGame.InputEnabled = !_currentGame.InputEnabled;

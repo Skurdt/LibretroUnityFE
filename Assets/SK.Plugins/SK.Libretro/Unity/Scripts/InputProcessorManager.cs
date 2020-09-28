@@ -50,11 +50,15 @@ namespace SK.Libretro.Unity
                 switch (_controlScheme)
                 {
                     case ManagerControlScheme.KeyboardAndMouse:
+                    {
                         _ = playerInputManager.JoinPlayer(0, 0, "Keyboard & Mouse");
-                        break;
+                    }
+                    break;
                     case ManagerControlScheme.Gamepad:
+                    {
                         _ = playerInputManager.JoinPlayer(0, 0, "Gamepad");
-                        break;
+                    }
+                    break;
                 }
             }
         }
@@ -75,9 +79,9 @@ namespace SK.Libretro.Unity
 
         public bool JoypadButton(int port, int button) => _controls.ContainsKey(port) && _controls[port].JoypadButtons[button];
 
-        public float MouseDelta(int port, int axis)      => _controls.ContainsKey(port) ? (axis == 0 ? _controls[port].MousePositionDelta.x : -_controls[port].MousePositionDelta.y) : 0f;
+        public float MouseDelta(int port, int axis) => _controls.ContainsKey(port) ? (axis == 0 ? _controls[port].MousePositionDelta.x : -_controls[port].MousePositionDelta.y) : 0f;
         public float MouseWheelDelta(int port, int axis) => _controls.ContainsKey(port) ? (axis == 0 ? _controls[port].MouseWheelDelta.y : _controls[port].MouseWheelDelta.x) : 0f;
-        public bool MouseButton(int port, int button)    => _controls.ContainsKey(port) && _controls[port].MouseButtons[button];
+        public bool MouseButton(int port, int button) => _controls.ContainsKey(port) && _controls[port].MouseButtons[button];
 
         public bool KeyboardKey(int port, int key) => _controls.ContainsKey(port) && Input.GetKey((KeyCode)key);
     }

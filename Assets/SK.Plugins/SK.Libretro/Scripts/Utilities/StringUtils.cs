@@ -30,7 +30,7 @@ namespace SK.Libretro.Utilities
         public unsafe static IntPtr StringToChars(string src, out char* dst)
         {
             IntPtr srcPtr = Marshal.StringToHGlobalAnsi(src);
-            dst = (char*)srcPtr.ToPointer();
+            dst           = (char*)srcPtr.ToPointer();
             return srcPtr;
         }
 

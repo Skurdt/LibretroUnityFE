@@ -130,7 +130,7 @@ namespace SK.Examples
         [ContextMenu("Load configuration")]
         public void EditorLoadConfig()
         {
-            string text = File.ReadAllText(Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "game.json")));
+            string text        = File.ReadAllText(Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "game.json")));
             GameConfigFile cfg = JsonUtility.FromJson<GameConfigFile>(text);
             if (cfg != null)
             {
@@ -149,7 +149,7 @@ namespace SK.Examples
 
         private void OnEnable()
         {
-            string text = File.ReadAllText(Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "game.json")));
+            string text        = File.ReadAllText(Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "game.json")));
             GameConfigFile cfg = JsonUtility.FromJson<GameConfigFile>(text);
             if (cfg != null && cfg.UseConfig)
             {
@@ -273,7 +273,7 @@ namespace SK.Examples
             Libretro.Unity.GraphicsProcessor unityGraphics = new Libretro.Unity.GraphicsProcessor
             {
                 OnTextureRecreated = GraphicsSetTextureCallback,
-                VideoFilterMode = _videoFilterMode
+                VideoFilterMode    = _videoFilterMode
             };
             Wrapper?.ActivateGraphics(unityGraphics);
             _graphicsEnabled = true;

@@ -20,6 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+#if UNITY_EDITOR
 using HtmlAgilityPack;
 using SK.Libretro.Utilities;
 using System;
@@ -272,3 +273,4 @@ namespace SK.LibretroEditor
         }
     }
 }
+#endif

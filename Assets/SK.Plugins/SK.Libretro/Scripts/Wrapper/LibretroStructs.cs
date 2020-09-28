@@ -28,8 +28,12 @@ namespace SK.Libretro
     public partial class Wrapper
     {
 #pragma warning disable IDE1006 // Naming Styles
-        private struct retro_vfs_file_handle { }
-        private struct retro_vfs_dir_handle { }
+        private struct retro_vfs_file_handle
+        {
+        }
+        private struct retro_vfs_dir_handle
+        {
+        }
 
         [StructLayout(LayoutKind.Sequential)]
         private class retro_vfs_interface
@@ -275,12 +279,12 @@ namespace SK.Libretro
         [StructLayout(LayoutKind.Sequential)]
         private struct retro_disk_control_callback
         {
-            public IntPtr set_eject_state; // retro_set_eject_state_t
-            public IntPtr get_eject_state; // retro_get_eject_state_t
+            public IntPtr set_eject_state;     // retro_set_eject_state_t
+            public IntPtr get_eject_state;     // retro_get_eject_state_t
 
-            public IntPtr get_image_index; // retro_get_image_index_t
-            public IntPtr set_image_index; // retro_set_image_index_t
-            public IntPtr get_num_images;  // retro_get_num_images_t
+            public IntPtr get_image_index;     // retro_get_image_index_t
+            public IntPtr set_image_index;     // retro_set_image_index_t
+            public IntPtr get_num_images;      // retro_get_num_images_t
 
             public IntPtr replace_image_index; // retro_replace_image_index_t
             public IntPtr add_image_index;     // retro_add_image_index_t

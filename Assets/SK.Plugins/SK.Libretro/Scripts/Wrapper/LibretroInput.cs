@@ -28,10 +28,10 @@ namespace SK.Libretro
     {
         public const int MAX_USERS = 16;
 
-        private const int FIRST_CUSTOM_BIND = 16;
-        private const int FIRST_LIGHTGUN_BIND = (int)CustomBinds.ANALOG_BIND_LIST_END;
+        private const int FIRST_CUSTOM_BIND      = 16;
+        private const int FIRST_LIGHTGUN_BIND    = (int)CustomBinds.ANALOG_BIND_LIST_END;
         private const int FIRST_MISC_CUSTOM_BIND = (int)CustomBinds.LIGHTGUN_BIND_LIST_END;
-        public const int FIRST_META_KEY = (int)CustomBinds.CUSTOM_BIND_LIST_END;
+        public const int FIRST_META_KEY          = (int)CustomBinds.CUSTOM_BIND_LIST_END;
 
         private enum CustomBinds
         {

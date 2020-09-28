@@ -44,7 +44,7 @@ namespace SK.Libretro.NAudio
                 DeInit();
 
                 WaveFormat audioFormat = WaveFormat.CreateIeeeFloatWaveFormat(sampleRate > 0 ? sampleRate : 44100, 2);
-                _bufferedWaveProvider = new BufferedWaveProvider(audioFormat)
+                _bufferedWaveProvider  = new BufferedWaveProvider(audioFormat)
                 {
                     DiscardOnBufferOverflow = true,
                     BufferLength            = AUDIO_BUFFER_SIZE
@@ -71,21 +71,36 @@ namespace SK.Libretro.NAudio
 
         public void DeInit()
         {
-            _audioDevice?.Stop();
-            _audioDevice?.Dispose();
+            if (_audioDevice == null)
+            {
+                return;
+            }
+
+            _audioDevice.Stop();
+            _audioDevice.Dispose();
         }
 
         public void ProcessSamples(float[] samples)
         {
-            if (_bufferedWaveProvider != null)
+            if (_bufferedWaveProvider == null)
             {
-                byte[] byteBuffer = new byte[samples.Length * sizeof(float)];
-                Buffer.BlockCopy(samples, 0, byteBuffer, 0, byteBuffer.Length);
-                _bufferedWaveProvider.AddSamples(byteBuffer, 0, byteBuffer.Length);
+                return;
             }
+
+            byte[] byteBuffer = new byte[samples.Length * sizeof(float)];
+            Buffer.BlockCopy(samples, 0, byteBuffer, 0, byteBuffer.Length);
+            _bufferedWaveProvider.AddSamples(byteBuffer, 0, byteBuffer.Length);
         }
 
-        public void SetVolume(float volume) => _volumeProvider.Volume = math.clamp(volume, 0f, 1f);
+        public void SetVolume(float volume)
+        {
+            if (_volumeProvider == null)
+            {
+                return;
+            }
+
+            _volumeProvider.Volume = math.clamp(volume, 0f, 1f);
+        }
     }
 }
 #endif
