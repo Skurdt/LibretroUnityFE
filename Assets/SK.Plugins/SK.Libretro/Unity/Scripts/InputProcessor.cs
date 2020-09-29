@@ -23,8 +23,7 @@
 using SK.Libretro.Utilities;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static SK.Libretro.Wrapper;
-using static SK.Libretro.Wrapper.retro_device_id_joypad;
+using static SK.Libretro.LibretroConstants;
 
 namespace SK.Libretro.Unity
 {
@@ -49,24 +48,24 @@ namespace SK.Libretro.Unity
         private void OnJoypadDirections(InputValue value)
         {
             Vector2 vec = value.Get<Vector2>();
-            SetJoypadDirection(RETRO_DEVICE_ID_JOYPAD_UP, vec.y > 0.5f);
-            SetJoypadDirection(RETRO_DEVICE_ID_JOYPAD_DOWN, vec.y < -0.5f);
-            SetJoypadDirection(RETRO_DEVICE_ID_JOYPAD_LEFT, vec.x < -0.5f);
-            SetJoypadDirection(RETRO_DEVICE_ID_JOYPAD_RIGHT, vec.x > 0.5f);
+            SetJoypadDirection(retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_UP, vec.y > 0.5f);
+            SetJoypadDirection(retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_DOWN, vec.y < -0.5f);
+            SetJoypadDirection(retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_LEFT, vec.x < -0.5f);
+            SetJoypadDirection(retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_RIGHT, vec.x > 0.5f);
         }
 
-        private void OnJoypadStartButton(InputValue value)  => SetJoypadButtonState(RETRO_DEVICE_ID_JOYPAD_START, value);
-        private void OnJoypadSelectButton(InputValue value) => SetJoypadButtonState(RETRO_DEVICE_ID_JOYPAD_SELECT, value);
-        private void OnJoypadAButton(InputValue value) => SetJoypadButtonState(RETRO_DEVICE_ID_JOYPAD_A, value);
-        private void OnJoypadBButton(InputValue value) => SetJoypadButtonState(RETRO_DEVICE_ID_JOYPAD_B, value);
-        private void OnJoypadXButton(InputValue value) => SetJoypadButtonState(RETRO_DEVICE_ID_JOYPAD_X, value);
-        private void OnJoypadYButton(InputValue value) => SetJoypadButtonState(RETRO_DEVICE_ID_JOYPAD_Y, value);
-        private void OnJoypadLButton(InputValue value) => SetJoypadButtonState(RETRO_DEVICE_ID_JOYPAD_L, value);
-        private void OnJoypadRButton(InputValue value) => SetJoypadButtonState(RETRO_DEVICE_ID_JOYPAD_R, value);
-        private void OnJoypadL2Button(InputValue value) => SetJoypadButtonState(RETRO_DEVICE_ID_JOYPAD_L2, value);
-        private void OnJoypadR2Button(InputValue value) => SetJoypadButtonState(RETRO_DEVICE_ID_JOYPAD_R2, value);
-        private void OnJoypadL3Button(InputValue value) => SetJoypadButtonState(RETRO_DEVICE_ID_JOYPAD_L3, value);
-        private void OnJoypadR3Button(InputValue value) => SetJoypadButtonState(RETRO_DEVICE_ID_JOYPAD_R3, value);
+        private void OnJoypadStartButton(InputValue value)  => SetJoypadButtonState(retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_START, value);
+        private void OnJoypadSelectButton(InputValue value) => SetJoypadButtonState(retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_SELECT, value);
+        private void OnJoypadAButton(InputValue value) => SetJoypadButtonState(retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_A, value);
+        private void OnJoypadBButton(InputValue value) => SetJoypadButtonState(retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_B, value);
+        private void OnJoypadXButton(InputValue value) => SetJoypadButtonState(retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_X, value);
+        private void OnJoypadYButton(InputValue value) => SetJoypadButtonState(retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_Y, value);
+        private void OnJoypadLButton(InputValue value) => SetJoypadButtonState(retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_L, value);
+        private void OnJoypadRButton(InputValue value) => SetJoypadButtonState(retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_R, value);
+        private void OnJoypadL2Button(InputValue value) => SetJoypadButtonState(retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_L2, value);
+        private void OnJoypadR2Button(InputValue value) => SetJoypadButtonState(retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_R2, value);
+        private void OnJoypadL3Button(InputValue value) => SetJoypadButtonState(retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_L3, value);
+        private void OnJoypadR3Button(InputValue value) => SetJoypadButtonState(retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_R3, value);
 
         private void OnMousePositionDelta(InputValue value) => SetMousePositionDelta(value);
         private void OnMouseWheelDelta(InputValue value) => SetMouseWheelDelta(value);

@@ -25,130 +25,105 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using static SK.Libretro.Utilities.StringUtils;
-using static SK.Libretro.Wrapper;
+using static SK.Libretro.LibretroDelegates;
+using static SK.Libretro.LibretroStructs;
 
 namespace SK.Libretro
 {
-    [Serializable]
-    public class CoreOptions
-    {
-        public string CoreName      = string.Empty;
-        public List<string> Options = new List<string>();
-    }
-
-    [Serializable]
-    public class CoreOptionsList
-    {
-        public List<CoreOptions> Cores = new List<CoreOptions>();
-    }
-
-    public class LibretroCore
+    public sealed class LibretroCore
     {
         #region Dynamically loaded function pointers
-        public retro_set_environment_t retro_set_environment;
-        public retro_set_video_refresh_t retro_set_video_refresh;
-        public retro_set_audio_sample_t retro_set_audio_sample;
-        public retro_set_audio_sample_batch_t retro_set_audio_sample_batch;
-        public retro_set_input_poll_t retro_set_input_poll;
-        public retro_set_input_state_t retro_set_input_state;
-        public retro_init_t retro_init;
-        public retro_deinit_t retro_deinit;
-        public retro_api_version_t retro_api_version;
-        public retro_get_system_info_t retro_get_system_info;
-        public retro_get_system_av_info_t retro_get_system_av_info;
-        public retro_set_controller_port_device_t retro_set_controller_port_device;
-        public retro_reset_t retro_reset;
-        public retro_run_t retro_run;
-        public retro_serialize_size_t retro_serialize_size;
-        public retro_serialize_t retro_serialize;
-        public retro_unserialize_t retro_unserialize;
-        public retro_cheat_reset_t retro_cheat_reset;
-        public retro_cheat_set_t retro_cheat_set;
-        public retro_load_game_t retro_load_game;
-        public retro_load_game_special_t retro_load_game_special;
-        public retro_unload_game_t retro_unload_game;
-        public retro_get_region_t retro_get_region;
-        public retro_get_memory_data_t retro_get_memory_data;
-        public retro_get_memory_size_t retro_get_memory_size;
+        internal retro_set_environment_t retro_set_environment;
+        internal retro_set_video_refresh_t retro_set_video_refresh;
+        internal retro_set_audio_sample_t retro_set_audio_sample;
+        internal retro_set_audio_sample_batch_t retro_set_audio_sample_batch;
+        internal retro_set_input_poll_t retro_set_input_poll;
+        internal retro_set_input_state_t retro_set_input_state;
+        internal retro_init_t retro_init;
+        internal retro_deinit_t retro_deinit;
+        internal retro_api_version_t retro_api_version;
+        internal retro_get_system_info_t retro_get_system_info;
+        internal retro_get_system_av_info_t retro_get_system_av_info;
+        internal retro_set_controller_port_device_t retro_set_controller_port_device;
+        internal retro_reset_t retro_reset;
+        internal retro_run_t retro_run;
+        internal retro_serialize_size_t retro_serialize_size;
+        internal retro_serialize_t retro_serialize;
+        internal retro_unserialize_t retro_unserialize;
+        internal retro_cheat_reset_t retro_cheat_reset;
+        internal retro_cheat_set_t retro_cheat_set;
+        internal retro_load_game_t retro_load_game;
+        internal retro_load_game_special_t retro_load_game_special;
+        internal retro_unload_game_t retro_unload_game;
+        internal retro_get_region_t retro_get_region;
+        internal retro_get_memory_data_t retro_get_memory_data;
+        internal retro_get_memory_size_t retro_get_memory_size;
         #endregion
 
-        public bool Initialized { get; private set; } = false;
+        internal bool Initialized { get; private set; } = false;
 
-        public int ApiVersion { get; private set; }
+        internal int ApiVersion { get; private set; }
 
-        public string CoreName { get; private set; }
-        public string CoreLibraryName { get; private set; }
-        public string CoreLibraryVersion { get; private set; }
-        public string[] ValidExtensions { get; private set; }
-        public bool NeedFullPath { get; private set; }
-        public bool BlockExtract { get; private set; }
+        internal string CoreName { get; private set; }
+        internal string CoreLibraryName { get; private set; }
+        internal string CoreLibraryVersion { get; private set; }
+        internal string[] ValidExtensions { get; private set; }
+        internal bool NeedFullPath { get; private set; }
+        internal bool BlockExtract { get; private set; }
 
-        public int Rotation;
-        public int PerformanceLevel;
-        public bool SupportNoGame;
+        public int Rotation { get; internal set; }
 
-        public string[,] ButtonDescriptions = new string[MAX_USERS, FIRST_META_KEY];
-        public bool HasInputDescriptors;
+        internal int PerformanceLevel;
+        internal bool SupportNoGame;
 
-        public CoreOptions CoreOptions;
+        internal LibretroCoreOptions CoreOptions;
 
-        public retro_controller_info[] ControllerPorts;
+        internal retro_controller_info[] ControllerPorts;
 
         private DllModule _dll;
 
-        private retro_environment_t _environmentCallback;
-        private retro_video_refresh_t _videoRefreshCallback;
-        private retro_audio_sample_t _audioSampleCallback;
-        private retro_audio_sample_batch_t _audioSampleBatchCallback;
-        private retro_input_poll_t _inputPollCallback;
-        private retro_input_state_t _inputStateCallback;
-        private retro_log_printf_t _logPrintfCallback;
-        private retro_perf_get_time_usec_t _perfGetTimeUsecCallback;
-        private retro_perf_get_counter_t _perfGetCounterCallback;
-        private retro_get_cpu_features_t _getCPUFeaturesCallback;
-        private retro_perf_log_t _perfLogCallback;
-        private retro_perf_register_t _perfRegisterCallback;
-        private retro_perf_start_t _perfStartCallback;
-        private retro_perf_stop_t _perfStopCallback;
+        private readonly LibretroWrapper _wrapper;
+        private readonly List<IntPtr> _unsafeStrings = new List<IntPtr>();
 
-        public unsafe bool Start(Wrapper wrapper, string coreName)
+        internal LibretroCore(LibretroWrapper wrapper) => _wrapper = wrapper;
+
+        internal unsafe bool Start(string coreName)
         {
             try
             {
-                switch (wrapper.TargetPlatform)
+                switch (_wrapper.TargetPlatform)
                 {
-                    case TargetPlatform.WindowsEditor:
-                    case TargetPlatform.WindowsPlayer:
+                    case LibretroTargetPlatform.WindowsEditor:
+                    case LibretroTargetPlatform.WindowsPlayer:
                     {
                         _dll = new DllModuleWindows();
                     }
                     break;
-                    case TargetPlatform.OSXEditor:
-                    case TargetPlatform.OSXPlayer:
+                    case LibretroTargetPlatform.OSXEditor:
+                    case LibretroTargetPlatform.OSXPlayer:
                     {
                         _dll = new DllModuleOSX();
                     }
                     break;
-                    case TargetPlatform.LinuxEditor:
-                    case TargetPlatform.LinuxPlayer:
+                    case LibretroTargetPlatform.LinuxEditor:
+                    case LibretroTargetPlatform.LinuxPlayer:
                     {
                         _dll = new DllModuleLinux();
                     }
                     break;
                     default:
-                        Log.Error($"Target platform '{wrapper.TargetPlatform}' not supported.");
+                        Log.Error($"Target platform '{_wrapper.TargetPlatform}' not supported.");
                         return false;
                 }
 
-                string corePath = FileSystem.GetAbsolutePath($"{CoresDirectory}/{coreName}_libretro.{_dll.Extension}");
+                string corePath = FileSystem.GetAbsolutePath($"{LibretroWrapper.CoresDirectory}/{coreName}_libretro.{_dll.Extension}");
                 if (!FileSystem.FileExists(corePath))
                 {
                     Log.Error($"Core '{coreName}' at path '{corePath}' not found.");
                     return false;
                 }
 
-                string tempDirectory = FileSystem.GetAbsolutePath(TempDirectory);
+                string tempDirectory = FileSystem.GetAbsolutePath(LibretroWrapper.TempDirectory);
                 if (!Directory.Exists(tempDirectory))
                 {
                     _ = Directory.CreateDirectory(tempDirectory);
@@ -163,28 +138,26 @@ namespace SK.Libretro
 
                 ApiVersion = retro_api_version();
 
-                SetCallbacks(wrapper);
-
                 retro_system_info systemInfo = new retro_system_info();
                 retro_get_system_info(ref systemInfo);
 
                 CoreName           = coreName;
-                CoreLibraryName    = CharsToString(systemInfo.library_name);
-                CoreLibraryVersion = CharsToString(systemInfo.library_version);
+                CoreLibraryName    = StringUtils.CharsToString(systemInfo.library_name);
+                CoreLibraryVersion = StringUtils.CharsToString(systemInfo.library_version);
                 if (systemInfo.valid_extensions != null)
                 {
-                    ValidExtensions = CharsToString(systemInfo.valid_extensions).Split('|');
+                    ValidExtensions = StringUtils.CharsToString(systemInfo.valid_extensions).Split('|');
                 }
                 NeedFullPath = systemInfo.need_fullpath;
                 BlockExtract = systemInfo.block_extract;
 
-                retro_set_environment(_environmentCallback);
+                retro_set_environment(_wrapper.EnvironmentCallback);
+                retro_set_video_refresh(_wrapper.VideoRefreshCallback);
+                retro_set_audio_sample(_wrapper.AudioSampleCallback);
+                retro_set_audio_sample_batch(_wrapper.AudioSampleBatchCallback);
+                retro_set_input_poll(_wrapper.InputPollCallback);
+                retro_set_input_state(_wrapper.InputStateCallback);
                 retro_init();
-                retro_set_video_refresh(_videoRefreshCallback);
-                retro_set_audio_sample(_audioSampleCallback);
-                retro_set_audio_sample_batch(_audioSampleBatchCallback);
-                retro_set_input_poll(_inputPollCallback);
-                retro_set_input_state(_inputStateCallback);
 
                 Initialized = true;
                 return true;
@@ -198,7 +171,7 @@ namespace SK.Libretro
             return false;
         }
 
-        public void Stop()
+        internal void Stop()
         {
             try
             {
@@ -212,7 +185,7 @@ namespace SK.Libretro
                 {
                     _dll.Free();
 
-                    string dllPath = FileSystem.GetAbsolutePath($"{TempDirectory}/{_dll.Name}");
+                    string dllPath = FileSystem.GetAbsolutePath($"{LibretroWrapper.TempDirectory}/{_dll.Name}");
                     if (File.Exists(dllPath))
                     {
                         File.Delete(dllPath);
@@ -221,12 +194,23 @@ namespace SK.Libretro
                     _dll = null;
                 }
 
+                for (int i = 0; i < _unsafeStrings.Count; ++i)
+                {
+                    Marshal.FreeHGlobal(_unsafeStrings[i]);
+                }
+
                 Initialized = false;
             }
             catch (Exception e)
             {
                 Log.Exception(e, "Libretro.LibretroCore.Stop");
             }
+        }
+
+        internal unsafe char* GetUnsafeString(string source)
+        {
+            _unsafeStrings.Add(StringUtils.StringToChars(source, out char* result));
+            return result;
         }
 
         private void GetCoreFunctions()
@@ -256,41 +240,6 @@ namespace SK.Libretro
             retro_get_region                 = _dll.GetFunction<retro_get_region_t>("retro_get_region");
             retro_get_memory_data            = _dll.GetFunction<retro_get_memory_data_t>("retro_get_memory_data");
             retro_get_memory_size            = _dll.GetFunction<retro_get_memory_size_t>("retro_get_memory_size");
-        }
-
-        private unsafe void SetCallbacks(Wrapper wrapper)
-        {
-            _environmentCallback      = wrapper.RetroEnvironmentCallback;
-            _videoRefreshCallback     = wrapper.RetroVideoRefreshCallback;
-            _audioSampleCallback      = wrapper.RetroAudioSampleCallback;
-            _audioSampleBatchCallback = wrapper.RetroAudioSampleBatchCallback;
-            _inputPollCallback        = wrapper.RetroInputPollCallback;
-            _inputStateCallback       = wrapper.RetroInputStateCallback;
-            _logPrintfCallback        = wrapper.RetroLogPrintf;
-            _perfGetTimeUsecCallback  = wrapper.RetroPerfGetTimeUsec;
-            _perfGetCounterCallback   = wrapper.RetroPerfGetCounter;
-            _getCPUFeaturesCallback   = wrapper.RetroGetCPUFeatures;
-            _perfLogCallback          = wrapper.RetroPerfLog;
-            _perfRegisterCallback     = wrapper.RetroPerfRegister;
-            _perfStartCallback        = wrapper.RetroPerfStart;
-            _perfStopCallback         = wrapper.RetroPerfStop;
-        }
-
-        public IntPtr GetLogCallback() => Marshal.GetFunctionPointerForDelegate(_logPrintfCallback);
-
-        public IntPtr GetPerfGetTimeUsecCallback() => Marshal.GetFunctionPointerForDelegate(_perfGetTimeUsecCallback);
-        public IntPtr GetPerfGetCounterCallback() => Marshal.GetFunctionPointerForDelegate(_perfGetCounterCallback);
-        public IntPtr GetGetCPUFeaturesCallback() => Marshal.GetFunctionPointerForDelegate(_getCPUFeaturesCallback);
-        public IntPtr GetPerfLogCallback() => Marshal.GetFunctionPointerForDelegate(_perfLogCallback);
-        public IntPtr GetPerfRegisterCallback() => Marshal.GetFunctionPointerForDelegate(_perfRegisterCallback);
-        public IntPtr GetPerfStartCallback() => Marshal.GetFunctionPointerForDelegate(_perfStartCallback);
-        public IntPtr GetPerfStopCallback() => Marshal.GetFunctionPointerForDelegate(_perfStopCallback);
-
-        public void SetFrameTimeCallback(IntPtr callback, long reference)
-        {
-            _ = callback;
-            _ = reference;
-            Log.Warning("Not Implemented", "Libretro.LibretroCore.SetFrameTimeCallback");
         }
     }
 }

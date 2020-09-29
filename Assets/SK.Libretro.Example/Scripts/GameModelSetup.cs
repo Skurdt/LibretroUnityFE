@@ -20,6 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+using SK.Libretro;
 using System.Collections;
 using System.IO;
 using Unity.Mathematics;
@@ -46,7 +47,8 @@ namespace SK.Examples
     [SelectionBase]
     public class GameModelSetup : MonoBehaviour
     {
-        public Libretro.Wrapper Wrapper { get; private set; }
+        public LibretroWrapper Wrapper { get; private set; }
+
         public bool VideoEnabled
         {
             get => _graphicsEnabled;
@@ -62,6 +64,7 @@ namespace SK.Examples
                 }
             }
         }
+
         public bool AudioEnabled
         {
             get => _audioEnabled;
@@ -77,6 +80,7 @@ namespace SK.Examples
                 }
             }
         }
+
         public bool InputEnabled
         {
             get => _inputEnabled;
@@ -92,7 +96,9 @@ namespace SK.Examples
                 }
             }
         }
+
         public bool AudioVolumeControlledByDistance { get; set; } = true;
+
         public float AudioMaxVolume
         {
             get => _audioMaxVolume;
@@ -116,9 +122,6 @@ namespace SK.Examples
         private Transform _screenTransform   = null;
         private Renderer _rendererComponent  = null;
         private MaterialPropertyBlock _block = null;
-
-        private float _gameFps        = 0f;
-        private float _gameSampleRate = 0f;
 
         private bool _graphicsEnabled;
         private bool _audioEnabled;
@@ -163,14 +166,9 @@ namespace SK.Examples
 
         private void Update()
         {
-            if (Wrapper == null || _gameFps < 1f || _gameSampleRate < 1f)
+            if (Wrapper == null || Wrapper.Game.VideoFps < 1.0)
             {
                 return;
-            }
-
-            if (Wrapper.ForceQuit)
-            {
-                StopGame();
             }
 
             _frameTimer += Time.deltaTime;
@@ -183,7 +181,7 @@ namespace SK.Examples
 
         private IEnumerator CoUpdate()
         {
-            float targetFrameTime = 1f / _gameFps / _timeScale;
+            float targetFrameTime = 1f / (float)Wrapper.Game.VideoFps / _timeScale;
             while (_frameTimer >= targetFrameTime)
             {
                 Wrapper?.Update();
@@ -194,7 +192,7 @@ namespace SK.Examples
             GraphicsSetFilterMode(_videoFilterMode);
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            if (AudioVolumeControlledByDistance && Wrapper?.AudioProcessor is Libretro.NAudio.AudioProcessor NAudioAudio)
+            if (AudioVolumeControlledByDistance && Wrapper?.Audio.Processor is Libretro.NAudio.AudioProcessor NAudioAudio)
             {
                 float distance = Vector3.Distance(transform.position, _player.transform.position);
                 if (distance > 0f)
@@ -207,7 +205,7 @@ namespace SK.Examples
             _co = null;
         }
 
-        public void StartGame()
+        private void StartGame()
         {
             if (Game == null || string.IsNullOrEmpty(Game.Core))
             {
@@ -231,16 +229,13 @@ namespace SK.Examples
                 return;
             }
 
-            Wrapper = new Libretro.Wrapper((Libretro.TargetPlatform)Application.platform, $"{Application.streamingAssetsPath}/libretro~");
+            Wrapper = new LibretroWrapper((LibretroTargetPlatform)Application.platform, $"{Application.streamingAssetsPath}/libretro~");
 
             if (!Wrapper.StartGame(Game.Core, Game.Directory, Game.Name))
             {
                 StopGame();
                 return;
             }
-
-            _gameFps        = (float)Wrapper.Game.SystemAVInfo.timing.fps;
-            _gameSampleRate = (float)Wrapper.Game.SystemAVInfo.timing.sample_rate;
 
             ActivateGraphics();
             ActivateAudio();
@@ -252,7 +247,7 @@ namespace SK.Examples
             _rendererComponent.SetPropertyBlock(_block);
         }
 
-        public void StopGame()
+        private void StopGame()
         {
             Wrapper?.StopGame();
 
@@ -260,9 +255,9 @@ namespace SK.Examples
             _block  = null;
         }
 
-        public void GraphicsSetFilterMode(FilterMode filterMode)
+        private void GraphicsSetFilterMode(FilterMode filterMode)
         {
-            if (Wrapper?.GraphicsProcessor is Libretro.Unity.GraphicsProcessor unityGraphics && unityGraphics.Texture != null)
+            if (Wrapper?.Video.Processor is Libretro.Unity.GraphicsProcessor unityGraphics && unityGraphics.Texture != null)
             {
                 unityGraphics.VideoFilterMode = filterMode;
             }
@@ -323,7 +318,7 @@ namespace SK.Examples
 
         private void ActivateInput()
         {
-            Wrapper?.ActivateInput(FindObjectOfType<PlayerInputManager>().GetComponent<Libretro.IInputProcessor>());
+            Wrapper?.ActivateInput(FindObjectOfType<PlayerInputManager>().GetComponent<IInputProcessor>());
             _inputEnabled = true;
         }
 
@@ -345,7 +340,7 @@ namespace SK.Examples
         private void AudioSetVolume(float volume)
         {
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            if (Wrapper.AudioProcessor != null && Wrapper.AudioProcessor is Libretro.NAudio.AudioProcessor NAudioAudio)
+            if (Wrapper.Audio.Processor != null && Wrapper.Audio.Processor is Libretro.NAudio.AudioProcessor NAudioAudio)
             {
                 NAudioAudio.SetVolume(math.clamp(volume, 0f, _audioMaxVolume));
             }

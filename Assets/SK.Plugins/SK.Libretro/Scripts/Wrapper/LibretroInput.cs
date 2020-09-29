@@ -21,19 +21,23 @@
  * SOFTWARE. */
 
 using UnityEngine;
+using static SK.Libretro.LibretroConstants;
+using static SK.Libretro.LibretroEnums;
 
 namespace SK.Libretro
 {
-    public partial class Wrapper
+    public sealed class LibretroInput
     {
-        public const int MAX_USERS = 16;
+        public IInputProcessor Processor { get; internal set; }
 
-        private const int FIRST_CUSTOM_BIND      = 16;
+        internal const int MAX_USERS = 16;
+
+        internal const int FIRST_CUSTOM_BIND     = 16;
         private const int FIRST_LIGHTGUN_BIND    = (int)CustomBinds.ANALOG_BIND_LIST_END;
         private const int FIRST_MISC_CUSTOM_BIND = (int)CustomBinds.LIGHTGUN_BIND_LIST_END;
-        public const int FIRST_META_KEY          = (int)CustomBinds.CUSTOM_BIND_LIST_END;
+        internal const int FIRST_META_KEY        = (int)CustomBinds.CUSTOM_BIND_LIST_END;
 
-        private enum CustomBinds
+        internal enum CustomBinds
         {
             // Analogs (RETRO_DEVICE_ANALOG)
             ANALOG_LEFT_X_PLUS = FIRST_CUSTOM_BIND,
@@ -115,15 +119,15 @@ namespace SK.Libretro
             BIND_LIST_END_NULL
         };
 
-        public void RetroInputPollCallback()
+        internal void PollCallback()
         {
         }
 
-        public short RetroInputStateCallback(uint port, retro_device device, uint _/*index*/, uint id)
+        internal short StateCallback(uint port, retro_device device, uint _/*index*/, uint id)
         {
             short result = 0;
 
-            if (InputProcessor != null)
+            if (Processor != null)
             {
                 switch (device)
                 {
@@ -162,7 +166,7 @@ namespace SK.Libretro
             return result;
         }
 
-        private short ProcessJoypadDeviceState(int port, int button) => BoolToShort(InputProcessor.JoypadButton(port, button));
+        private short ProcessJoypadDeviceState(int port, int button) => BoolToShort(Processor.JoypadButton(port, button));
 
         private short ProcessMouseDeviceState(int port, retro_device_id_mouse command)
         {
@@ -172,49 +176,49 @@ namespace SK.Libretro
             {
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_X:
                 {
-                    result = FloatToShort(InputProcessor.MouseDelta(port, 0));
+                    result = FloatToShort(Processor.MouseDelta(port, 0));
                 }
                 break;
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_Y:
                 {
-                    result = FloatToShort(InputProcessor.MouseDelta(port, 1));
+                    result = FloatToShort(Processor.MouseDelta(port, 1));
                 }
                 break;
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_LEFT:
                 {
-                    result = BoolToShort(InputProcessor.MouseButton(port, 0));
+                    result = BoolToShort(Processor.MouseButton(port, 0));
                 }
                 break;
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_RIGHT:
                 {
-                    result = BoolToShort(InputProcessor.MouseButton(port, 1));
+                    result = BoolToShort(Processor.MouseButton(port, 1));
                 }
                 break;
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_WHEELUP:
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_WHEELDOWN:
                 {
-                    result = FloatToShort(InputProcessor.MouseWheelDelta(port, 0));
+                    result = FloatToShort(Processor.MouseWheelDelta(port, 0));
                 }
                 break;
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_MIDDLE:
                 {
-                    result = BoolToShort(InputProcessor.MouseButton(port, 2));
+                    result = BoolToShort(Processor.MouseButton(port, 2));
                 }
                 break;
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_HORIZ_WHEELUP:
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_HORIZ_WHEELDOWN:
                 {
-                    result = FloatToShort(InputProcessor.MouseWheelDelta(port, 1));
+                    result = FloatToShort(Processor.MouseWheelDelta(port, 1));
                 }
                 break;
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_BUTTON_4:
                 {
-                    result = BoolToShort(InputProcessor.MouseButton(port, 3));
+                    result = BoolToShort(Processor.MouseButton(port, 3));
                 }
                 break;
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_BUTTON_5:
                 {
-                    result = BoolToShort(InputProcessor.MouseButton(port, 4));
+                    result = BoolToShort(Processor.MouseButton(port, 4));
                 }
                 break;
                 default:

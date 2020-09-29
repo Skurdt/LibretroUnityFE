@@ -22,21 +22,24 @@
 
 using System;
 using System.Runtime.InteropServices;
+using static SK.Libretro.LibretroEnums;
+using static SK.Libretro.LibretroConstants;
 
 namespace SK.Libretro
 {
-    public partial class Wrapper
+    internal static class LibretroStructs
     {
 #pragma warning disable IDE1006 // Naming Styles
-        private struct retro_vfs_file_handle
+        public struct retro_vfs_file_handle
         {
         }
-        private struct retro_vfs_dir_handle
+
+        public struct retro_vfs_dir_handle
         {
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private class retro_vfs_interface
+        public struct retro_vfs_interface
         {
             public IntPtr get_path;        // retro_vfs_get_path_t
             public IntPtr open;            // retro_vfs_open_t
@@ -60,27 +63,27 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct retro_vfs_interface_info
+        public struct retro_vfs_interface_info
         {
             public uint required_interface_version;
             public retro_vfs_interface iface;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct retro_hw_render_interface
+        public struct retro_hw_render_interface
         {
             public retro_hw_render_interface_type interface_type;
             public uint interface_version;
         };
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct retro_led_interface
+        public struct retro_led_interface
         {
             public IntPtr set_led_state; // retro_set_led_state_t
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct retro_midi_interface
+        public struct retro_midi_interface
         {
             public IntPtr input_enabled;  // retro_midi_input_enabled_t
             public IntPtr output_enabled; // retro_midi_output_enabled_t
@@ -90,14 +93,14 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct retro_hw_render_context_negotiation_interface
+        public struct retro_hw_render_context_negotiation_interface
         {
             public retro_hw_render_context_negotiation_interface_type interface_type;
             public uint interface_version;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private unsafe struct retro_memory_descriptor
+        public unsafe struct retro_memory_descriptor
         {
             public ulong flags;
             public void* ptr;
@@ -110,7 +113,7 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private unsafe struct retro_memory_map
+        public unsafe struct retro_memory_map
         {
             public retro_memory_descriptor* descriptors;
             public uint num_descriptors;
@@ -131,14 +134,14 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private unsafe struct retro_subsystem_memory_info
+        public unsafe struct retro_subsystem_memory_info
         {
             public char* extension;
             public uint type;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private unsafe struct retro_subsystem_rom_info
+        public unsafe struct retro_subsystem_rom_info
         {
             public char* desc;
             public char* valid_extensions;
@@ -153,7 +156,7 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private unsafe struct retro_subsystem_info
+        public unsafe struct retro_subsystem_info
         {
             public char* desc;
             public char* ident;
@@ -163,13 +166,13 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct retro_get_proc_address_interface
+        public struct retro_get_proc_address_interface
         {
             public IntPtr get_proc_address; // retro_get_proc_address_t
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct retro_log_callback
+        public struct retro_log_callback
         {
             public IntPtr log; // retro_log_printf_t
         }
@@ -187,7 +190,7 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct retro_perf_callback
+        public struct retro_perf_callback
         {
             public IntPtr get_time_usec;    // retro_perf_get_time_usec_t
             public IntPtr get_cpu_features; // retro_get_cpu_features_t
@@ -200,7 +203,7 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct retro_camera_callback
+        public struct retro_camera_callback
         {
             public ulong caps;
             public uint width;
@@ -215,7 +218,7 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct retro_location_callback
+        public struct retro_location_callback
         {
             public IntPtr start;         // retro_location_start_t
             public IntPtr stop;          // retro_location_stop_t
@@ -227,13 +230,13 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct retro_rumble_interface
+        public struct retro_rumble_interface
         {
             public IntPtr set_rumble_state; // retro_set_rumble_state_t
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct retro_audio_callback
+        public struct retro_audio_callback
         {
             public IntPtr callback;  // retro_audio_callback_t
             public IntPtr set_state; // retro_audio_set_state_callback_t
@@ -247,7 +250,7 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct retro_hw_render_callback
+        public struct retro_hw_render_callback
         {
             public retro_hw_context_type context_type;
             public IntPtr context_reset;           // retro_hw_context_reset_t
@@ -271,13 +274,13 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct retro_keyboard_callback
+        public struct retro_keyboard_callback
         {
             public IntPtr callback; // retro_keyboard_event_t
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct retro_disk_control_callback
+        public struct retro_disk_control_callback
         {
             public IntPtr set_eject_state;     // retro_set_eject_state_t
             public IntPtr get_eject_state;     // retro_get_eject_state_t
@@ -291,7 +294,7 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct retro_disk_control_ext_callback
+        public struct retro_disk_control_ext_callback
         {
             public IntPtr set_eject_state;     // retro_set_eject_state_t
             public IntPtr get_eject_state;     // retro_get_eject_state_t
@@ -310,14 +313,14 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private unsafe struct retro_message
+        public unsafe struct retro_message
         {
             public char* msg;
             public uint frames;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private unsafe struct retro_message_ext
+        public unsafe struct retro_message_ext
         {
             public char* msg;
             public uint duration;
@@ -329,7 +332,7 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private unsafe struct retro_input_descriptor
+        public unsafe struct retro_input_descriptor
         {
             public uint port;
             public uint device;
@@ -375,14 +378,14 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private unsafe struct retro_variable
+        public unsafe struct retro_variable
         {
             public char* key;
             public char* value;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private unsafe struct retro_core_option_display
+        public unsafe struct retro_core_option_display
         {
             public char* key;
             [MarshalAs(UnmanagedType.U1)]
@@ -390,14 +393,14 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private unsafe struct retro_core_option_value
+        public unsafe struct retro_core_option_value
         {
             public char* value;
             public char* label;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private unsafe struct retro_core_option_definition
+        public unsafe struct retro_core_option_definition
         {
             public char* key;
             public char* desc;
@@ -408,7 +411,7 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private unsafe struct retro_core_options_intl
+        public unsafe struct retro_core_options_intl
         {
             public IntPtr us;    // retro_core_option_definition*
             public IntPtr local; // retro_core_option_definition*
@@ -426,7 +429,7 @@ namespace SK.Libretro
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct retro_framebuffer
+        public struct retro_framebuffer
         {
             public IntPtr data; // void*
             public uint width;

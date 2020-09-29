@@ -20,29 +20,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-namespace SK.Libretro.Utilities
-{
-    public static class Video
-    {
-        public static uint ARGB1555toBGRA32(ushort packed)
-        {
-            uint a   = (uint)packed & 0x8000;
-            uint r   = (uint)packed & 0x7C00;
-            uint g   = (uint)packed & 0x03E0;
-            uint b   = (uint)packed & 0x1F;
-            uint rgb = (r << 9) | (g << 6) | (b << 3);
-            return (a * 0x1FE00) | rgb | ((rgb >> 5) & 0x070707);
-        }
+using System;
+using System.Collections.Generic;
 
-        public static uint RGB565toBGRA32(ushort packed)
-        {
-            uint r = ((uint)packed >> 11) & 0x1f;
-            uint g = ((uint)packed >> 5) & 0x3f;
-            uint b = ((uint)packed >> 0) & 0x1f;
-            r      = (r << 3) | (r >> 2);
-            g      = (g << 2) | (g >> 4);
-            b      = (b << 3) | (b >> 2);
-            return (0xffu << 24) | (r << 16) | (g << 8) | (b << 0);
-        }
+namespace SK.Libretro
+{
+    [Serializable]
+    public class LibretroCoreOptions
+    {
+        public string CoreName      = string.Empty;
+        public List<string> Options = new List<string>();
     }
 }

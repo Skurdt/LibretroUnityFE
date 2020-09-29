@@ -20,36 +20,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using SK.Libretro.Utilities;
+using System;
+using System.Collections.Generic;
 
 namespace SK.Libretro
 {
-    public partial class Wrapper
+    [Serializable]
+    public class LibretroCoreOptionsList
     {
-        public long RetroPerfGetTimeUsec()
-        {
-            Log.Warning("RetroPerfGetTimeUsec");
-            return 0;
-        }
-
-        public ulong RetroPerfGetCounter()
-        {
-            Log.Warning("RetroPerfGetCounter");
-            return 0;
-        }
-
-        public ulong RetroGetCPUFeatures()
-        {
-            Log.Warning("RetroGetCPUFeatures");
-            return 0;
-        }
-
-        public void RetroPerfLog() => Log.Warning("RetroPerfLog");
-
-        public void RetroPerfRegister(ref retro_perf_counter _/*counter*/) => Log.Warning("RetroPerfRegister");
-
-        public void RetroPerfStart(ref retro_perf_counter _/*counter*/) => Log.Warning("RetroPerfStart");
-
-        public void RetroPerfStop(ref retro_perf_counter _/*counter*/) => Log.Warning("RetroPerfStop");
+        public List<LibretroCoreOptions> Cores = new List<LibretroCoreOptions>();
     }
 }

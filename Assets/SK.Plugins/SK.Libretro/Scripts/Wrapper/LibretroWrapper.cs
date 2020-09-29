@@ -22,18 +22,41 @@
 
 using SK.Libretro.Utilities;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.ExceptionServices;
-using System.Runtime.InteropServices;
-using System.Security;
+using static SK.Libretro.LibretroDelegates;
+using static SK.Libretro.LibretroEnums;
 
 namespace SK.Libretro
 {
-    public partial class Wrapper
+    public sealed class LibretroWrapper
     {
-        public retro_log_level LogLevel = retro_log_level.RETRO_LOG_INFO;
+        public enum Language
+        {
+            English             = 0,
+            Japanese            = 1,
+            French              = 2,
+            Spanish             = 3,
+            German              = 4,
+            Italian             = 5,
+            Dutch               = 6,
+            Portuguese_brazil   = 7,
+            Portuguese_portugal = 8,
+            Russian             = 9,
+            Korean              = 10,
+            Chinese_traditional = 11,
+            Chinese_simplified  = 12,
+            Esperanto           = 13,
+            Polish              = 14,
+            Vietnamese          = 15,
+            Arabic              = 16,
+            Greek               = 17,
+            Turkish             = 18,
+            Slovak              = 19,
+            Persian             = 20,
+            Hebrew              = 21,
+            Asturian            = 22
+        }
 
         public bool OptionCropOverscan
         {
@@ -42,70 +65,125 @@ namespace SK.Libretro
             {
                 if (_optionCropOverscan != value)
                 {
-                    _optionCropOverscan = value;
-                    _dirtyVariables     = true;
+                    _optionCropOverscan         = value;
+                    Environment.UpdateVariables = true;
                 }
             }
         }
 
-        public bool ForceQuit { get; private set; } = false;
+        public string OptionUserName
+        {
+            get => _optionUserName;
+            set
+            {
+                if (!_optionUserName.Equals(value, StringComparison.Ordinal))
+                {
+                    _optionUserName             = value;
+                    Environment.UpdateVariables = true;
+                }
+            }
+        }
 
-        public IGraphicsProcessor GraphicsProcessor { get; private set; }
-        public IAudioProcessor AudioProcessor { get; private set; }
-        public IInputProcessor InputProcessor { get; private set; }
+        public Language OptionLanguage
+        {
+            get => _optionLanguage;
+            set
+            {
+                if (_optionLanguage != value)
+                {
+                    _optionLanguage             = value;
+                    Environment.UpdateVariables = true;
+                }
+            }
+        }
 
-        public readonly TargetPlatform TargetPlatform;
+        public readonly LibretroVideo Video;
+        public readonly LibretroAudio Audio;
+        public readonly LibretroInput Input;
 
-        public static string WrapperDirectory;
-        public static string CoresDirectory;
-        public static string SystemDirectory;
-        public static string CoreAssetsDirectory;
-        public static string SavesDirectory;
-        public static string TempDirectory;
-        public static string CoreOptionsFile;
+        public readonly LibretroCore Core;
+        public readonly LibretroGame Game;
 
-        public LibretroCore Core { get; private set; } = new LibretroCore();
-        public LibretroGame Game { get; private set; } = new LibretroGame();
+        internal static readonly retro_log_level LogLevel = retro_log_level.RETRO_LOG_WARN;
 
-        private readonly List<IntPtr> _unsafeStrings = new List<IntPtr>();
+        internal static string MainDirectory;
+        internal static string CoresDirectory;
+        internal static string SystemDirectory;
+        internal static string CoreAssetsDirectory;
+        internal static string SavesDirectory;
+        internal static string TempDirectory;
+        internal static string CoreOptionsFile;
 
-        private CoreOptionsList _coreOptionsList;
+        internal static LibretroCoreOptionsList CoreOptionsList;
+
+        internal readonly LibretroTargetPlatform TargetPlatform;
+
+        internal readonly LibretroEnvironment Environment;
+
+        private string _optionUserName   = "LibretroUnityFE's Awesome User";
+        private Language _optionLanguage = Language.English;
         private bool _optionCropOverscan = true;
-        private bool _dirtyVariables     = true;
 
-        public Wrapper(TargetPlatform targetPlatform, string baseDirectory = null)
+        #region GC pinned delegates
+        internal readonly retro_environment_t EnvironmentCallback;
+        internal readonly retro_video_refresh_t VideoRefreshCallback;
+        internal readonly retro_audio_sample_t AudioSampleCallback;
+        internal readonly retro_audio_sample_batch_t AudioSampleBatchCallback;
+        internal readonly retro_input_poll_t InputPollCallback;
+        internal readonly retro_input_state_t InputStateCallback;
+        internal readonly retro_log_printf_t LogPrintfCallback;
+        #endregion
+
+        public unsafe LibretroWrapper(LibretroTargetPlatform targetPlatform, string baseDirectory = null)
         {
             TargetPlatform = targetPlatform;
 
-            if (WrapperDirectory == null)
+            if (MainDirectory == null)
             {
-                WrapperDirectory    = !string.IsNullOrEmpty(baseDirectory) ? baseDirectory : "libretro~";
-                CoresDirectory      = $"{WrapperDirectory}/cores";
-                SystemDirectory     = $"{WrapperDirectory}/system";
-                CoreAssetsDirectory = $"{WrapperDirectory}/core_assets";
-                SavesDirectory      = $"{WrapperDirectory}/saves";
-                TempDirectory       = $"{WrapperDirectory}/temp";
-                CoreOptionsFile     = $"{WrapperDirectory}/core_options.json";
+                MainDirectory       = !string.IsNullOrEmpty(baseDirectory) ? baseDirectory : "libretro~";
+                CoresDirectory      = $"{MainDirectory}/cores";
+                SystemDirectory     = $"{MainDirectory}/system";
+                CoreAssetsDirectory = $"{MainDirectory}/core_assets";
+                SavesDirectory      = $"{MainDirectory}/saves";
+                TempDirectory       = $"{MainDirectory}/temp";
+                CoreOptionsFile     = $"{MainDirectory}/core_options.json";
+
+                string tempDirectoryToClear = Path.GetFullPath(TempDirectory);
+                if (Directory.Exists(tempDirectoryToClear))
+                {
+                    string[] fileNames = Directory.GetFiles(tempDirectoryToClear, "*.*", SearchOption.AllDirectories);
+                    foreach (string fileName in fileNames)
+                    {
+                        if (File.Exists(fileName))
+                        {
+                            File.Delete(fileName);
+                        }
+                    }
+                }
             }
 
-            string wrapperDirectory = FileSystem.GetAbsolutePath(WrapperDirectory);
-            if (!Directory.Exists(wrapperDirectory))
-            {
-                _ = Directory.CreateDirectory(wrapperDirectory);
-            }
+            Core = new LibretroCore(this);
+            Game = new LibretroGame();
 
-            string tempDirectory = FileSystem.GetAbsolutePath(TempDirectory);
-            if (Directory.Exists(tempDirectory))
-            {
-                Directory.Delete(tempDirectory, true);
-            }
+            Environment = new LibretroEnvironment(this);
+            Video       = new LibretroVideo(Game);
+            Audio       = new LibretroAudio();
+            Input       = new LibretroInput();
+
+            EnvironmentCallback       = Environment.Callback;
+            VideoRefreshCallback      = Video.Callback;
+            AudioSampleCallback       = Audio.SampleCallback;
+            AudioSampleBatchCallback  = Audio.SampleBatchCallback;
+            InputPollCallback         = Input.PollCallback;
+            InputStateCallback        = Input.StateCallback;
+            LogPrintfCallback         = LibretroLog.RetroLogPrintf;
         }
 
         public bool StartGame(string coreName, string gameDirectory, string gameName)
         {
             LoadCoreOptionsFile();
 
-            if (!Core.Start(this, coreName))
+            if (!Core.Start(coreName))
             {
                 return false;
             }
@@ -120,85 +198,64 @@ namespace SK.Libretro
 
         public void StopGame()
         {
-            AudioProcessor?.DeInit();
+            Audio.Processor?.DeInit();
 
             Game.Stop();
             Core.Stop();
-
-            for (int i = 0; i < _unsafeStrings.Count; ++i)
-            {
-                Marshal.FreeHGlobal(_unsafeStrings[i]);
-            }
         }
 
-        [HandleProcessCorruptedStateExceptions, SecurityCritical]
         public void Update()
         {
-            if (ForceQuit || !Game.Running || !Core.Initialized)
+            if (!Game.Running || !Core.Initialized)
             {
                 return;
             }
 
-            // FIXME(Tom):
-            // An AccessViolationException get thrown by the core when files (roms, bios, etc...) are missing and probably for other various reasons...
-            // In a normal C# project, this get captured here (when using the attributes) and errors can be displayed properly.
-            // Unity simply crashes here but we only know about the missing things after a call to retro_run...
-            try
-            {
-                Core.retro_run();
-            }
-            catch (AccessViolationException e)
-            {
-                Log.Exception(e);
-            }
-            catch (Exception e)
-            {
-                Log.Exception(e);
-            }
+            Core.retro_run();
         }
 
-        public void ActivateGraphics(IGraphicsProcessor graphicsProcessor) => GraphicsProcessor = graphicsProcessor;
+        public void ActivateGraphics(IGraphicsProcessor graphicsProcessor) => Video.Processor = graphicsProcessor;
 
-        public void DeactivateGraphics() => GraphicsProcessor = null;
+        public void DeactivateGraphics() => Video.Processor = null;
 
         public void ActivateAudio(IAudioProcessor audioProcessor)
         {
-            AudioProcessor = audioProcessor;
-            AudioProcessor?.Init((int)Game.SystemAVInfo.timing.sample_rate);
+            Audio.Processor = audioProcessor;
+            Audio.Processor?.Init((int)Game.SystemAVInfo.timing.sample_rate);
         }
 
         public void DeactivateAudio()
         {
-            AudioProcessor?.DeInit();
-            AudioProcessor = null;
+            Audio.Processor?.DeInit();
+            Audio.Processor = null;
         }
 
-        public void ActivateInput(IInputProcessor inputProcessor) => InputProcessor = inputProcessor;
+        public void ActivateInput(IInputProcessor inputProcessor) => Input.Processor = inputProcessor;
 
-        public void DeactivateInput() => InputProcessor = null;
+        public void DeactivateInput() => Input.Processor = null;
 
-        private void LoadCoreOptionsFile()
+        internal void LoadCoreOptionsFile()
         {
-            _coreOptionsList = FileSystem.DeserializeFromJson<CoreOptionsList>(CoreOptionsFile);
-            if (_coreOptionsList == null)
+            CoreOptionsList = FileSystem.DeserializeFromJson<LibretroCoreOptionsList>(CoreOptionsFile);
+            if (CoreOptionsList == null)
             {
-                _coreOptionsList = new CoreOptionsList();
+                CoreOptionsList = new LibretroCoreOptionsList();
             }
         }
 
-        private void SaveCoreOptionsFile()
+        internal void SaveCoreOptionsFile()
         {
-            if (_coreOptionsList == null || _coreOptionsList.Cores.Count == 0)
+            if (CoreOptionsList == null || CoreOptionsList.Cores.Count == 0)
             {
                 return;
             }
 
-            _coreOptionsList.Cores = _coreOptionsList.Cores.OrderBy(x => x.CoreName).ToList();
-            for (int i = 0; i < _coreOptionsList.Cores.Count; ++i)
+            CoreOptionsList.Cores = CoreOptionsList.Cores.OrderBy(x => x.CoreName).ToList();
+            for (int i = 0; i < CoreOptionsList.Cores.Count; ++i)
             {
-                _coreOptionsList.Cores[i].Options.Sort();
+                CoreOptionsList.Cores[i].Options.Sort();
             }
-            _ = FileSystem.SerializeToJson(_coreOptionsList, CoreOptionsFile);
+            _ = FileSystem.SerializeToJson(CoreOptionsList, CoreOptionsFile);
         }
     }
 }

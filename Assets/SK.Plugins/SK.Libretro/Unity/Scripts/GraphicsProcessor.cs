@@ -25,7 +25,7 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using UnityEngine;
-using static SK.Libretro.Utilities.Video;
+using static SK.Libretro.Utilities.PixelConversion;
 
 namespace SK.Libretro.Unity
 {

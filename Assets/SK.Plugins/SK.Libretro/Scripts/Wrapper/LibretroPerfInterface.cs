@@ -20,32 +20,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+using static SK.Libretro.LibretroStructs;
+
 namespace SK.Libretro
 {
-    public sealed class LibretroAudio
+    internal sealed class LibretroPerfInterface
     {
-        public IAudioProcessor Processor { get; internal set; }
-
-        private const float AUDIO_GAIN = 1f;
-
-        internal void SampleCallback(short left, short right)
+        public long GetTimeUsec()
         {
-            if (Processor != null)
-            {
-                float[] floatBuffer = Utilities.AudioConversion.ConvertShortToFloat(left, right, AUDIO_GAIN);
-                Processor.ProcessSamples(floatBuffer);
-            }
-        }
-
-        internal unsafe uint SampleBatchCallback(short* data, uint frames)
-        {
-            if (Processor != null)
-            {
-                float[] floatBuffer = Utilities.AudioConversion.ConvertShortToFloat(data, frames * 2, AUDIO_GAIN);
-                Processor.ProcessSamples(floatBuffer);
-                return frames;
-            }
+            Utilities.Log.Warning("RetroPerfGetTimeUsec");
             return 0;
         }
+
+        public ulong GetCounter()
+        {
+            Utilities.Log.Warning("RetroPerfGetCounter");
+            return 0;
+        }
+
+        public ulong GetCPUFeatures()
+        {
+            Utilities.Log.Warning("RetroGetCPUFeatures");
+            return 0;
+        }
+
+        public void Log() => Utilities.Log.Warning("RetroPerfLog");
+
+        public void Register(ref retro_perf_counter _/*counter*/) => Utilities.Log.Warning("RetroPerfRegister");
+
+        public void RetroPerfStart(ref retro_perf_counter _/*counter*/) => Utilities.Log.Warning("RetroPerfStart");
+
+        public void RetroPerfStop(ref retro_perf_counter _/*counter*/) => Utilities.Log.Warning("RetroPerfStop");
     }
 }

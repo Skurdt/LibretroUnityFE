@@ -27,21 +27,22 @@ using System.Runtime.InteropServices;
 using System.Text;
 #endif
 using System.Text.RegularExpressions;
+using static SK.Libretro.LibretroEnums;
 
 namespace SK.Libretro
 {
-    public partial class Wrapper
+    internal static class LibretroLog
     {
         private const string LOG_PRINTF_CALLER = "Libretro.Wrapper.RetroLogPrintf";
 
         private static readonly Regex _argumentsRegex = new Regex(@"%(?:\d+\$)?[+-]?(?:[ 0]|'.{1})?-?\d*(?:\.\d+)?([bcdeEufFgGosxX])", RegexOptions.Compiled);
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-        private readonly StringBuilder _sprintfBuffer = new StringBuilder();
+        private static readonly StringBuilder _sprintfBuffer = new StringBuilder();
 #endif
 
-        public void RetroLogPrintf(retro_log_level level, string format, IntPtr arg1, IntPtr arg2, IntPtr arg3, IntPtr arg4, IntPtr arg5, IntPtr arg6, IntPtr arg7, IntPtr arg8, IntPtr arg9, IntPtr arg10, IntPtr arg11, IntPtr arg12)
+        public static void RetroLogPrintf(retro_log_level level, string format, IntPtr arg1, IntPtr arg2, IntPtr arg3, IntPtr arg4, IntPtr arg5, IntPtr arg6, IntPtr arg7, IntPtr arg8, IntPtr arg9, IntPtr arg10, IntPtr arg11, IntPtr arg12)
         {
-            if (level < LogLevel)
+            if (level < LibretroWrapper.LogLevel)
             {
                 return;
             }
@@ -123,7 +124,7 @@ namespace SK.Libretro
         private static extern int Platform_scprintf([In, MarshalAs(UnmanagedType.LPStr)] string format, IntPtr arg1, IntPtr arg2, IntPtr arg3, IntPtr arg4, IntPtr arg5, IntPtr arg6, IntPtr arg7, IntPtr arg8, IntPtr arg9, IntPtr arg10, IntPtr arg11, IntPtr arg12);
 #endif
 
-        private void Sprintf(out string buffer, string format, params IntPtr[] args)
+        private static void Sprintf(out string buffer, string format, params IntPtr[] args)
         {
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
             _ = _sprintfBuffer.EnsureCapacity(Platform_scprintf(format, args.Length >= 1 ? args[0] : IntPtr.Zero, args.Length >= 2 ? args[1] : IntPtr.Zero, args.Length >= 3 ? args[2] : IntPtr.Zero, args.Length >= 4 ? args[3] : IntPtr.Zero, args.Length >= 5 ? args[4] : IntPtr.Zero, args.Length >= 6 ? args[5] : IntPtr.Zero, args.Length >= 7 ? args[6] : IntPtr.Zero, args.Length >= 8 ? args[7] : IntPtr.Zero, args.Length >= 9 ? args[8] : IntPtr.Zero, args.Length >= 10 ? args[9] : IntPtr.Zero, args.Length >= 11 ? args[10] : IntPtr.Zero, args.Length >= 12 ? args[11] : IntPtr.Zero) + 1);

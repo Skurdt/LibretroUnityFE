@@ -20,32 +20,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+using static SK.Libretro.LibretroEnums;
+
 namespace SK.Libretro
 {
-    public partial class Wrapper
+    public sealed class LibretroVideo
     {
-        public unsafe void RetroVideoRefreshCallback(void* data, uint width, uint height, uint pitch)
+        public IGraphicsProcessor Processor { get; internal set; }
+
+        private readonly LibretroGame _game;
+
+        internal LibretroVideo(LibretroGame game) => _game = game;
+
+        internal unsafe void Callback(void* data, uint width, uint height, uint pitch)
         {
-            if (data == null || GraphicsProcessor == null)
+            if (data == null || Processor == null)
             {
                 return;
             }
 
-            switch (Game.PixelFormat)
+            switch (_game.PixelFormat)
             {
                 case retro_pixel_format.RETRO_PIXEL_FORMAT_0RGB1555:
                 {
-                    GraphicsProcessor.ProcessFrame0RGB1555((ushort*)data, (int)width, (int)height, (int)pitch);
+                    Processor.ProcessFrame0RGB1555((ushort*)data, (int)width, (int)height, (int)pitch);
                 }
                 break;
                 case retro_pixel_format.RETRO_PIXEL_FORMAT_XRGB8888:
                 {
-                    GraphicsProcessor.ProcessFrameXRGB8888((uint*)data, (int)width, (int)height, (int)pitch);
+                    Processor.ProcessFrameXRGB8888((uint*)data, (int)width, (int)height, (int)pitch);
                 }
                 break;
                 case retro_pixel_format.RETRO_PIXEL_FORMAT_RGB565:
                 {
-                    GraphicsProcessor.ProcessFrameRGB565((ushort*)data, (int)width, (int)height, (int)pitch);
+                    Processor.ProcessFrameRGB565((ushort*)data, (int)width, (int)height, (int)pitch);
                 }
                 break;
             }

@@ -22,7 +22,7 @@
 
 namespace SK.Libretro.Utilities
 {
-    public static class Audio
+    public static class AudioConversion
     {
         public static float[] ConvertShortToFloat(short left, short right, float gain)
         {

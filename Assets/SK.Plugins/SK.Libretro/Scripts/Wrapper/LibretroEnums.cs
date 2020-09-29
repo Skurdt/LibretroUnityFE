@@ -22,10 +22,10 @@
 
 namespace SK.Libretro
 {
-    public partial class Wrapper
+    internal static class LibretroEnums
     {
 #pragma warning disable IDE1006 // Naming Styles
-        private enum retro_language
+        public enum retro_language
         {
             RETRO_LANGUAGE_ENGLISH             = 0,
             RETRO_LANGUAGE_JAPANESE            = 1,
@@ -53,7 +53,7 @@ namespace SK.Libretro
             RETRO_LANGUAGE_LAST
         };
 
-        private enum retro_key
+        public enum retro_key
         {
             RETROK_UNKNOWN      = 0,
             RETROK_FIRST        = 0,
@@ -206,7 +206,7 @@ namespace SK.Libretro
             RETROK_LAST
         }
 
-        private enum retro_mod
+        public enum retro_mod
         {
             RETROKMOD_NONE      = 0x0000,
 
@@ -220,7 +220,7 @@ namespace SK.Libretro
             RETROKMOD_SCROLLOCK = 0x40
         }
 
-        private enum retro_hw_render_interface_type
+        public enum retro_hw_render_interface_type
         {
             RETRO_HW_RENDER_INTERFACE_VULKAN    = 0,
             RETRO_HW_RENDER_INTERFACE_D3D9      = 1,
@@ -230,7 +230,7 @@ namespace SK.Libretro
             RETRO_HW_RENDER_INTERFACE_GSKIT_PS2 = 5
         }
 
-        private enum retro_hw_render_context_negotiation_interface_type
+        public enum retro_hw_render_context_negotiation_interface_type
         {
             RETRO_HW_RENDER_CONTEXT_NEGOTIATION_INTERFACE_VULKAN = 0
         }
@@ -243,7 +243,7 @@ namespace SK.Libretro
             RETRO_LOG_ERROR = 3
         }
 
-        private enum retro_sensor_action
+        public enum retro_sensor_action
         {
             RETRO_SENSOR_ACCELEROMETER_ENABLE = 0,
             RETRO_SENSOR_ACCELEROMETER_DISABLE,
@@ -253,19 +253,19 @@ namespace SK.Libretro
             RETRO_SENSOR_ILLUMINANCE_DISABLE
         }
 
-        private enum retro_camera_buffer
+        public enum retro_camera_buffer
         {
             RETRO_CAMERA_BUFFER_OPENGL_TEXTURE = 0,
             RETRO_CAMERA_BUFFER_RAW_FRAMEBUFFER
         }
 
-        private enum retro_rumble_effect
+        public enum retro_rumble_effect
         {
             RETRO_RUMBLE_STRONG = 0,
             RETRO_RUMBLE_WEAK   = 1
         }
 
-        private enum retro_hw_context_type
+        public enum retro_hw_context_type
         {
             RETRO_HW_CONTEXT_NONE             = 0,
             RETRO_HW_CONTEXT_OPENGL           = 1,

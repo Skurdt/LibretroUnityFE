@@ -22,14 +22,14 @@
 
 namespace SK.Libretro
 {
-    public partial class Wrapper
+    internal static class LibretroConstants
     {
 #pragma warning disable IDE1006 // Naming Styles
-        private const int RETRO_API_VERSION = 1;
+        public const int RETRO_API_VERSION = 1;
 
-        private const int RETRO_DEVICE_TYPE_SHIFT = 8;
-        private const int RETRO_DEVICE_MASK       = (1 << RETRO_DEVICE_TYPE_SHIFT) - 1;
-        private static int RETRO_DEVICE_SUBCLASS(int base_, int id) => ((id + 1) << RETRO_DEVICE_TYPE_SHIFT) | base_;
+        public const int RETRO_DEVICE_TYPE_SHIFT = 8;
+        public const int RETRO_DEVICE_MASK       = (1 << RETRO_DEVICE_TYPE_SHIFT) - 1;
+        public static int RETRO_DEVICE_SUBCLASS(int base_, int id) => ((id + 1) << RETRO_DEVICE_TYPE_SHIFT) | base_;
 
         // NOTE(Tom): Original defines converted to enum
         public enum retro_device
@@ -66,10 +66,10 @@ namespace SK.Libretro
             RETRO_DEVICE_ID_JOYPAD_END    = 16
         }
 
-        private const int RETRO_DEVICE_ID_JOYPAD_MASK = 256;
+        public const int RETRO_DEVICE_ID_JOYPAD_MASK = 256;
 
         // NOTE(Tom): Original defines converted to enum
-        private enum retro_device_index_analog
+        public enum retro_device_index_analog
         {
             RETRO_DEVICE_INDEX_ANALOG_LEFT   = 0,
             RETRO_DEVICE_INDEX_ANALOG_RIGHT  = 1,
@@ -77,14 +77,14 @@ namespace SK.Libretro
         }
 
         // NOTE(Tom): Original defines converted to enum
-        private enum retro_device_id_analog
+        public enum retro_device_id_analog
         {
             RETRO_DEVICE_ID_ANALOG_X = 0,
             RETRO_DEVICE_ID_ANALOG_Y = 1
         }
 
         // NOTE(Tom): Original defines converted to enum
-        private enum retro_device_id_mouse
+        public enum retro_device_id_mouse
         {
             RETRO_DEVICE_ID_MOUSE_X               = 0,
             RETRO_DEVICE_ID_MOUSE_Y               = 1,
@@ -102,7 +102,7 @@ namespace SK.Libretro
         }
 
         // NOTE(Tom): Original defines converted to enum
-        private enum retro_device_id_lightgun
+        public enum retro_device_id_lightgun
         {
             RETRO_DEVICE_ID_LIGHTGUN_SCREEN_X     = 13,
             RETRO_DEVICE_ID_LIGHTGUN_SCREEN_Y     = 14,
@@ -126,7 +126,7 @@ namespace SK.Libretro
         }
 
         // NOTE(Tom): Original defines converted to enum
-        private enum retro_device_id_pointer
+        public enum retro_device_id_pointer
         {
             RETRO_DEVICE_ID_POINTER_X       = 0,
             RETRO_DEVICE_ID_POINTER_Y       = 1,
@@ -135,15 +135,16 @@ namespace SK.Libretro
         }
 
         // NOTE(Tom): Original defines converted to enum
-        private enum retro_region
+        public enum retro_region
         {
             RETRO_REGION_NTSC = 0,
             RETRO_REGION_PAL  = 1
         }
 
-        private const int RETRO_MEMORY_MASK = 0xff;
+        public const int RETRO_MEMORY_MASK = 0xff;
+
         // NOTE(Tom): Original defines converted to enum
-        private enum retro_memory
+        public enum retro_memory
         {
             RETRO_MEMORY_SAVE_RAM   = 0,
             RETRO_MEMORY_RTC        = 1,
@@ -151,11 +152,11 @@ namespace SK.Libretro
             RETRO_MEMORY_VIDEO_RAM  = 3
         }
 
-        private const int RETRO_ENVIRONMENT_EXPERIMENTAL = 0x10000;
-        private const int RETRO_ENVIRONMENT_PRIVATE      = 0x20000;
+        public const int RETRO_ENVIRONMENT_EXPERIMENTAL = 0x10000;
+        public const int RETRO_ENVIRONMENT_PRIVATE      = 0x20000;
 
         // RetroArch Extensions
-        private const int RETRO_ENVIRONMENT_RETROARCH_START_BLOCK = 0x800000;
+        public const int RETRO_ENVIRONMENT_RETROARCH_START_BLOCK = 0x800000;
 
         // NOTE(Tom): Original defines as an enum
         public enum retro_environment
@@ -227,78 +228,78 @@ namespace SK.Libretro
             RETRO_ENVIRONMENT_POLL_TYPE_OVERRIDE                          = 4 | RETRO_ENVIRONMENT_RETROARCH_START_BLOCK
         }
 
-        private const int RETRO_VFS_FILE_ACCESS_READ            = 1 << 0;
-        private const int RETRO_VFS_FILE_ACCESS_WRITE           = 1 << 1;
-        private const int RETRO_VFS_FILE_ACCESS_READ_WRITE      = RETRO_VFS_FILE_ACCESS_READ | RETRO_VFS_FILE_ACCESS_WRITE;
-        private const int RETRO_VFS_FILE_ACCESS_UPDATE_EXISTING = 1 << 2;
+        public const int RETRO_VFS_FILE_ACCESS_READ            = 1 << 0;
+        public const int RETRO_VFS_FILE_ACCESS_WRITE           = 1 << 1;
+        public const int RETRO_VFS_FILE_ACCESS_READ_WRITE      = RETRO_VFS_FILE_ACCESS_READ | RETRO_VFS_FILE_ACCESS_WRITE;
+        public const int RETRO_VFS_FILE_ACCESS_UPDATE_EXISTING = 1 << 2;
 
-        private const int RETRO_VFS_FILE_ACCESS_HINT_NONE            = 0;
-        private const int RETRO_VFS_FILE_ACCESS_HINT_FREQUENT_ACCESS = 1 << 0;
+        public const int RETRO_VFS_FILE_ACCESS_HINT_NONE            = 0;
+        public const int RETRO_VFS_FILE_ACCESS_HINT_FREQUENT_ACCESS = 1 << 0;
 
-        private const int RETRO_VFS_SEEK_POSITION_START   = 0;
-        private const int RETRO_VFS_SEEK_POSITION_CURRENT = 1;
-        private const int RETRO_VFS_SEEK_POSITION_END     = 2;
+        public const int RETRO_VFS_SEEK_POSITION_START   = 0;
+        public const int RETRO_VFS_SEEK_POSITION_CURRENT = 1;
+        public const int RETRO_VFS_SEEK_POSITION_END     = 2;
 
-        private const int RETRO_VFS_STAT_IS_VALID             = 1 << 0;
-        private const int RETRO_VFS_STAT_IS_DIRECTORY         = 1 << 1;
-        private const int RETRO_VFS_STAT_IS_CHARACTER_SPECIAL = 1 << 2;
+        public const int RETRO_VFS_STAT_IS_VALID             = 1 << 0;
+        public const int RETRO_VFS_STAT_IS_DIRECTORY         = 1 << 1;
+        public const int RETRO_VFS_STAT_IS_CHARACTER_SPECIAL = 1 << 2;
 
-        private const int RETRO_SERIALIZATION_QUIRK_INCOMPLETE          = 1 << 0;
-        private const int RETRO_SERIALIZATION_QUIRK_MUST_INITIALIZE     = 1 << 1;
-        private const int RETRO_SERIALIZATION_QUIRK_CORE_VARIABLE_SIZE  = 1 << 2;
-        private const int RETRO_SERIALIZATION_QUIRK_FRONT_VARIABLE_SIZE = 1 << 3;
-        private const int RETRO_SERIALIZATION_QUIRK_SINGLE_SESSION      = 1 << 4;
-        private const int RETRO_SERIALIZATION_QUIRK_ENDIAN_DEPENDENT    = 1 << 5;
-        private const int RETRO_SERIALIZATION_QUIRK_PLATFORM_DEPENDENT  = 1 << 6;
+        public const int RETRO_SERIALIZATION_QUIRK_INCOMPLETE          = 1 << 0;
+        public const int RETRO_SERIALIZATION_QUIRK_MUST_INITIALIZE     = 1 << 1;
+        public const int RETRO_SERIALIZATION_QUIRK_CORE_VARIABLE_SIZE  = 1 << 2;
+        public const int RETRO_SERIALIZATION_QUIRK_FRONT_VARIABLE_SIZE = 1 << 3;
+        public const int RETRO_SERIALIZATION_QUIRK_SINGLE_SESSION      = 1 << 4;
+        public const int RETRO_SERIALIZATION_QUIRK_ENDIAN_DEPENDENT    = 1 << 5;
+        public const int RETRO_SERIALIZATION_QUIRK_PLATFORM_DEPENDENT  = 1 << 6;
 
-        private const int RETRO_MEMDESC_CONST      = 1 << 0;
-        private const int RETRO_MEMDESC_BIGENDIAN  = 1 << 1;
-        private const int RETRO_MEMDESC_SYSTEM_RAM = 1 << 2;
-        private const int RETRO_MEMDESC_SAVE_RAM   = 1 << 3;
-        private const int RETRO_MEMDESC_VIDEO_RAM  = 1 << 4;
-        private const int RETRO_MEMDESC_ALIGN_2    = 1 << 16;
-        private const int RETRO_MEMDESC_ALIGN_4    = 2 << 16;
-        private const int RETRO_MEMDESC_ALIGN_8    = 3 << 16;
-        private const int RETRO_MEMDESC_MINSIZE_2  = 1 << 24;
-        private const int RETRO_MEMDESC_MINSIZE_4  = 2 << 24;
-        private const int RETRO_MEMDESC_MINSIZE_8  = 3 << 24;
+        public const int RETRO_MEMDESC_CONST      = 1 << 0;
+        public const int RETRO_MEMDESC_BIGENDIAN  = 1 << 1;
+        public const int RETRO_MEMDESC_SYSTEM_RAM = 1 << 2;
+        public const int RETRO_MEMDESC_SAVE_RAM   = 1 << 3;
+        public const int RETRO_MEMDESC_VIDEO_RAM  = 1 << 4;
+        public const int RETRO_MEMDESC_ALIGN_2    = 1 << 16;
+        public const int RETRO_MEMDESC_ALIGN_4    = 2 << 16;
+        public const int RETRO_MEMDESC_ALIGN_8    = 3 << 16;
+        public const int RETRO_MEMDESC_MINSIZE_2  = 1 << 24;
+        public const int RETRO_MEMDESC_MINSIZE_4  = 2 << 24;
+        public const int RETRO_MEMDESC_MINSIZE_8  = 3 << 24;
 
-        private const int RETRO_SIMD_SSE    = 1 << 0;
-        private const int RETRO_SIMD_SSE2   = 1 << 1;
-        private const int RETRO_SIMD_VMX    = 1 << 2;
-        private const int RETRO_SIMD_VMX128 = 1 << 3;
-        private const int RETRO_SIMD_AVX    = 1 << 4;
-        private const int RETRO_SIMD_NEON   = 1 << 5;
-        private const int RETRO_SIMD_SSE3   = 1 << 6;
-        private const int RETRO_SIMD_SSSE3  = 1 << 7;
-        private const int RETRO_SIMD_MMX    = 1 << 8;
-        private const int RETRO_SIMD_MMXEXT = 1 << 9;
-        private const int RETRO_SIMD_SSE4   = 1 << 10;
-        private const int RETRO_SIMD_SSE42  = 1 << 11;
-        private const int RETRO_SIMD_AVX2   = 1 << 12;
-        private const int RETRO_SIMD_VFPU   = 1 << 13;
-        private const int RETRO_SIMD_PS     = 1 << 14;
-        private const int RETRO_SIMD_AES    = 1 << 15;
-        private const int RETRO_SIMD_VFPV3  = 1 << 16;
-        private const int RETRO_SIMD_VFPV4  = 1 << 17;
-        private const int RETRO_SIMD_POPCNT = 1 << 18;
-        private const int RETRO_SIMD_MOVBE  = 1 << 19;
-        private const int RETRO_SIMD_CMOV   = 1 << 20;
-        private const int RETRO_SIMD_ASIMD  = 1 << 21;
+        public const int RETRO_SIMD_SSE    = 1 << 0;
+        public const int RETRO_SIMD_SSE2   = 1 << 1;
+        public const int RETRO_SIMD_VMX    = 1 << 2;
+        public const int RETRO_SIMD_VMX128 = 1 << 3;
+        public const int RETRO_SIMD_AVX    = 1 << 4;
+        public const int RETRO_SIMD_NEON   = 1 << 5;
+        public const int RETRO_SIMD_SSE3   = 1 << 6;
+        public const int RETRO_SIMD_SSSE3  = 1 << 7;
+        public const int RETRO_SIMD_MMX    = 1 << 8;
+        public const int RETRO_SIMD_MMXEXT = 1 << 9;
+        public const int RETRO_SIMD_SSE4   = 1 << 10;
+        public const int RETRO_SIMD_SSE42  = 1 << 11;
+        public const int RETRO_SIMD_AVX2   = 1 << 12;
+        public const int RETRO_SIMD_VFPU   = 1 << 13;
+        public const int RETRO_SIMD_PS     = 1 << 14;
+        public const int RETRO_SIMD_AES    = 1 << 15;
+        public const int RETRO_SIMD_VFPV3  = 1 << 16;
+        public const int RETRO_SIMD_VFPV4  = 1 << 17;
+        public const int RETRO_SIMD_POPCNT = 1 << 18;
+        public const int RETRO_SIMD_MOVBE  = 1 << 19;
+        public const int RETRO_SIMD_CMOV   = 1 << 20;
+        public const int RETRO_SIMD_ASIMD  = 1 << 21;
 
-        private const int RETRO_SENSOR_ACCELEROMETER_X = 0;
-        private const int RETRO_SENSOR_ACCELEROMETER_Y = 1;
-        private const int RETRO_SENSOR_ACCELEROMETER_Z = 2;
-        private const int RETRO_SENSOR_GYROSCOPE_X     = 3;
-        private const int RETRO_SENSOR_GYROSCOPE_Y     = 4;
-        private const int RETRO_SENSOR_GYROSCOPE_Z     = 5;
-        private const int RETRO_SENSOR_ILLUMINANCE     = 6;
+        public const int RETRO_SENSOR_ACCELEROMETER_X = 0;
+        public const int RETRO_SENSOR_ACCELEROMETER_Y = 1;
+        public const int RETRO_SENSOR_ACCELEROMETER_Z = 2;
+        public const int RETRO_SENSOR_GYROSCOPE_X     = 3;
+        public const int RETRO_SENSOR_GYROSCOPE_Y     = 4;
+        public const int RETRO_SENSOR_GYROSCOPE_Z     = 5;
+        public const int RETRO_SENSOR_ILLUMINANCE     = 6;
 
-        private const int RETRO_NUM_CORE_OPTION_VALUES_MAX = 128;
+        public const int RETRO_NUM_CORE_OPTION_VALUES_MAX = 128;
 
-        private const int RETRO_MEMORY_ACCESS_WRITE = 1 << 0;
-        private const int RETRO_MEMORY_ACCESS_READ  = 1 << 1;
-        private const int RETRO_MEMORY_TYPE_CACHED  = 1 << 0;
+        public const int RETRO_MEMORY_ACCESS_WRITE = 1 << 0;
+        public const int RETRO_MEMORY_ACCESS_READ  = 1 << 1;
+        public const int RETRO_MEMORY_TYPE_CACHED  = 1 << 0;
 #pragma warning restore IDE1006 // Naming Styles
     }
 }

@@ -24,25 +24,30 @@ using SK.Libretro.Utilities;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using static SK.Libretro.Wrapper;
+using static SK.Libretro.LibretroEnums;
+using static SK.Libretro.LibretroStructs;
 
 namespace SK.Libretro
 {
-    public class LibretroGame
+    public sealed class LibretroGame
     {
-        public string Name { get; private set; }
-        public bool Running { get; private set; }
+        public double VideoFps => SystemAVInfo.timing.fps;
 
-        public retro_system_av_info SystemAVInfo;
-        public retro_pixel_format PixelFormat;
+        internal string Name { get; private set; }
+        internal bool Running { get; private set; }
 
-        private retro_game_info _gameInfo;
+        internal retro_system_av_info SystemAVInfo;
+        internal retro_game_info GameInfo;
+        internal retro_pixel_format PixelFormat;
+
+        internal readonly string[,] ButtonDescriptions = new string[LibretroInput.MAX_USERS, LibretroInput.FIRST_META_KEY];
+        internal bool HasInputDescriptors;
 
         private LibretroCore _core;
 
         private string _extractedPath = null;
 
-        public bool Start(LibretroCore core, string gameDirectory, string gameName)
+        internal bool Start(LibretroCore core, string gameDirectory, string gameName)
         {
             _core = core;
             Name  = gameName;
@@ -58,7 +63,7 @@ namespace SK.Libretro
                     string archivePath = FileSystem.GetAbsolutePath($"{directory}/{gameName}.zip");
                     if (File.Exists(archivePath))
                     {
-                        string extractDirectory = FileSystem.GetAbsolutePath($"{TempDirectory}/extracted/{gameName}_{Guid.NewGuid()}");
+                        string extractDirectory = FileSystem.GetAbsolutePath($"{LibretroWrapper.TempDirectory}/extracted/{gameName}_{Guid.NewGuid()}");
                         System.IO.Compression.ZipFile.ExtractToDirectory(archivePath, extractDirectory);
 
                         gamePath       = GetGamePath(extractDirectory, gameName);
@@ -66,13 +71,13 @@ namespace SK.Libretro
                     }
                 }
 
-                if (!GetGameInfo(gamePath, out _gameInfo))
+                if (!GetGameInfo(gamePath, out GameInfo))
                 {
                     Log.Warning($"Game not set, running '{core.CoreName}' core only.", "Libretro.LibretroGame.Start");
                     return false;
                 }
 
-                Running = LoadGame(ref _gameInfo);
+                Running = LoadGame(ref GameInfo);
                 return Running;
             }
             catch (Exception e)
@@ -83,7 +88,7 @@ namespace SK.Libretro
             return false;
         }
 
-        public void Stop()
+        internal void Stop()
         {
             if (Running)
             {
@@ -91,14 +96,14 @@ namespace SK.Libretro
                 Running = false;
             }
 
-            if (_gameInfo.data != IntPtr.Zero)
+            if (GameInfo.data != IntPtr.Zero)
             {
-                Marshal.FreeHGlobal(_gameInfo.data);
+                Marshal.FreeHGlobal(GameInfo.data);
             }
 
-            if (!string.IsNullOrEmpty(_extractedPath) && FileSystem.FileExists(_extractedPath))
+            if (_extractedPath != null && FileSystem.FileExists(_extractedPath))
             {
-                Directory.Delete(Path.GetDirectoryName(_extractedPath), true);
+                _ = FileSystem.DeleteFile(_extractedPath);
             }
         }
 
@@ -112,7 +117,7 @@ namespace SK.Libretro
             foreach (string extension in _core.ValidExtensions)
             {
                 string filePath = FileSystem.GetAbsolutePath($"{directory}/{gameName}.{extension}");
-                if (File.Exists(filePath))
+                if (FileSystem.FileExists(filePath))
                 {
                     return filePath;
                 }
