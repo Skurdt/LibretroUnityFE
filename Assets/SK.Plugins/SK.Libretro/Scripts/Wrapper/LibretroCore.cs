@@ -1,4 +1,4 @@
-﻿/* MIT License
+/* MIT License
 
  * Copyright (c) 2020 Skurdt
  *
@@ -185,7 +185,7 @@ namespace SK.Libretro
                 {
                     _dll.Free();
 
-                    string dllPath = FileSystem.GetAbsolutePath($"{LibretroWrapper.TempDirectory}/{_dll.Name}");
+                    string dllPath = FileSystem.GetAbsolutePath($"{LibretroWrapper.TempDirectory}/{_dll.Name}.{_dll.Extension}");
                     if (File.Exists(dllPath))
                     {
                         File.Delete(dllPath);
