@@ -1,4 +1,4 @@
-/* MIT License
+﻿/* MIT License
 
  * Copyright (c) 2020 Skurdt
  *
@@ -116,6 +116,7 @@ namespace SK.Examples
         [SerializeField] private float _audioMinDistance              = 2f;
         [SerializeField] private float _audioMaxDistance              = 10f;
         [SerializeField] private FilterMode _videoFilterMode          = FilterMode.Point;
+        [SerializeField] private bool _correctAspectRatio             = false;
 
         private Player.Controls _player;
 
@@ -209,9 +210,6 @@ namespace SK.Examples
 
             _block = new MaterialPropertyBlock();
             _rendererComponent.GetPropertyBlock(_block);
-            _block.SetFloat("_Intensity", 1.1f);
-            _block.SetInt("_Rotation", Wrapper.Core.Rotation);
-            _rendererComponent.SetPropertyBlock(_block);
 
             return true;
         }
@@ -221,7 +219,6 @@ namespace SK.Examples
             Wrapper?.StopGame();
 
             Wrapper = null;
-            _block  = null;
         }
 
         private IEnumerator CoUpdateGame()
@@ -338,7 +335,32 @@ namespace SK.Examples
         {
             if (_block != null && _rendererComponent != null && texture != null)
             {
+                Vector2 tiling;
+                Vector2 offset;
+                if (_correctAspectRatio)
+                {
+                    if (texture.width >= texture.height)
+                    {
+                        tiling = new Vector2(1f, (float)texture.width / texture.height);
+                        offset = new Vector2(0f, (tiling.y - 1f) / -2f);
+                    }
+                    else
+                    {
+                        tiling = new Vector2((float)texture.height / texture.width, 1f);
+                        offset = new Vector2((tiling.x - 1f) / -2f, 0f);
+                    }
+                }
+                else
+                {
+                    tiling = Vector2.one;
+                    offset = Vector2.zero;
+                }
+
                 _block.SetTexture("_Texture", texture);
+                _block.SetVector("_UVTiling", tiling);
+                _block.SetVector("_UVOffset", offset);
+                _block.SetInt("_Rotation", Wrapper.Core.Rotation);
+                _block.SetFloat("_Intensity", 1.1f);
                 _rendererComponent.SetPropertyBlock(_block);
             }
         }
