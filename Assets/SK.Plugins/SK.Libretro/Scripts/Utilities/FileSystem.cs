@@ -51,9 +51,6 @@ namespace SK.Libretro.Utilities
             try
             {
                 File.Delete(GetAbsolutePath(path));
-#if UNITY_EDITOR
-                File.Delete(GetAbsolutePath($"{path}.meta"));
-#endif
                 return true;
             }
             catch (Exception e)
@@ -77,15 +74,13 @@ namespace SK.Libretro.Utilities
                 {
                     return Path.GetFullPath(Path.Combine(UnityEngine.Application.streamingAssetsPath, path.Remove(0, 1)));
                 }
-
-                return Path.GetFullPath(path);
             }
             catch (Exception e)
             {
                 Log.Exception(e, "FileSystem.GetAbsolutePath");
             }
 
-            return path;
+            return Path.GetFullPath(path);
         }
 
         public static string GetRelativePath(string path)

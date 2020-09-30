@@ -1,4 +1,4 @@
-﻿/* MIT License
+/* MIT License
 
  * Copyright (c) 2020 Skurdt
  *
@@ -148,16 +148,25 @@ namespace SK.Libretro
                 TempDirectory       = $"{MainDirectory}/temp";
                 CoreOptionsFile     = $"{MainDirectory}/core_options.json";
 
-                string tempDirectoryToClear = Path.GetFullPath(TempDirectory);
-                if (Directory.Exists(tempDirectoryToClear))
+                string dir = FileSystem.GetAbsolutePath(MainDirectory);
+                if (!Directory.Exists(dir))
                 {
-                    string[] fileNames = Directory.GetFiles(tempDirectoryToClear, "*.*", SearchOption.AllDirectories);
+                    _ = Directory.CreateDirectory(dir);
+                }
+
+                dir = FileSystem.GetAbsolutePath(CoresDirectory);
+                if (!Directory.Exists(dir))
+                {
+                    _ = Directory.CreateDirectory(dir);
+                }
+
+                dir = Path.GetFullPath(TempDirectory);
+                if (Directory.Exists(dir))
+                {
+                    string[] fileNames = Directory.GetFiles(dir, "*.*", SearchOption.AllDirectories);
                     foreach (string fileName in fileNames)
                     {
-                        if (File.Exists(fileName))
-                        {
-                            File.Delete(fileName);
-                        }
+                        _ = FileSystem.DeleteFile(fileName);
                     }
                 }
             }

@@ -64,6 +64,10 @@ namespace SK.Libretro
                     if (File.Exists(archivePath))
                     {
                         string extractDirectory = FileSystem.GetAbsolutePath($"{LibretroWrapper.TempDirectory}/extracted/{gameName}_{Guid.NewGuid()}");
+                        if (!Directory.Exists(extractDirectory))
+                        {
+                            _ = Directory.CreateDirectory(extractDirectory);
+                        }
                         System.IO.Compression.ZipFile.ExtractToDirectory(archivePath, extractDirectory);
 
                         gamePath       = GetGamePath(extractDirectory, gameName);
