@@ -24,8 +24,10 @@ using SK.Libretro.Utilities;
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using static SK.Libretro.LibretroDelegates;
 using static SK.Libretro.LibretroEnums;
+using static SK.Libretro.LibretroStructs;
 
 namespace SK.Libretro
 {
@@ -134,6 +136,9 @@ namespace SK.Libretro
         internal readonly retro_log_printf_t LogPrintfCallback;
         #endregion
 
+        internal retro_frame_time_callback FrameTimeInterface;
+        internal retro_frame_time_callback_t FrameTimeInterfaceCallback;
+        private long _frameTimeLast = 0;
         public unsafe LibretroWrapper(LibretroTargetPlatform targetPlatform, string baseDirectory = null)
         {
             TargetPlatform = targetPlatform;
@@ -212,6 +217,22 @@ namespace SK.Libretro
 
             Game.Stop();
             Core.Stop();
+        }
+
+        public void FrameTimeUpdate()
+        {
+            if (FrameTimeInterface.callback != IntPtr.Zero)
+            {
+                long current = System.Diagnostics.Stopwatch.GetTimestamp();
+                long delta   = current - _frameTimeLast;
+
+                if (_frameTimeLast <= 0)
+                {
+                    delta = FrameTimeInterface.reference;
+                }
+                _frameTimeLast = current;
+                FrameTimeInterfaceCallback(delta * 1000);
+            }
         }
 
         public void Update()

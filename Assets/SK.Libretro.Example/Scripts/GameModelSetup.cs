@@ -1,4 +1,4 @@
-﻿/* MIT License
+/* MIT License
 
  * Copyright (c) 2020 Skurdt
  *
@@ -229,6 +229,8 @@ namespace SK.Examples
             while (Wrapper != null)
             {
                 yield return null;
+
+                Wrapper.FrameTimeUpdate();
 
                 _targetFrameTime  = 1.0 / Wrapper.Game.VideoFps / _timeScale;
                 _accumulatedTime += _stopwatch.Elapsed.TotalSeconds;

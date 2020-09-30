@@ -72,7 +72,7 @@ namespace SK.Libretro
                 case retro_environment.RETRO_ENVIRONMENT_GET_MIDI_INTERFACE:                          return ENVIRONMENT_NOT_IMPLEMENTED();
                 case retro_environment.RETRO_ENVIRONMENT_GET_FASTFORWARDING:                          return ENVIRONMENT_NOT_IMPLEMENTED();
                 case retro_environment.RETRO_ENVIRONMENT_GET_TARGET_REFRESH_RATE:                     return ENVIRONMENT_NOT_IMPLEMENTED();
-                case retro_environment.RETRO_ENVIRONMENT_GET_INPUT_BITMASKS:                          return false;
+                case retro_environment.RETRO_ENVIRONMENT_GET_INPUT_BITMASKS:                          return GetInputBitmasks();
                 case retro_environment.RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:                    return GetCoreOptionsVersion();
                 case retro_environment.RETRO_ENVIRONMENT_GET_PREFERRED_HW_RENDER:                     return ENVIRONMENT_NOT_IMPLEMENTED();
                 case retro_environment.RETRO_ENVIRONMENT_GET_DISK_CONTROL_INTERFACE_VERSION:          return ENVIRONMENT_NOT_IMPLEMENTED();
@@ -92,7 +92,7 @@ namespace SK.Libretro
                 case retro_environment.RETRO_ENVIRONMENT_SET_HW_RENDER:                               return ENVIRONMENT_NOT_IMPLEMENTED();
                 case retro_environment.RETRO_ENVIRONMENT_SET_VARIABLES:                               return SetVariables();
                 case retro_environment.RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:                         return SetSupportNoGame();
-                case retro_environment.RETRO_ENVIRONMENT_SET_FRAME_TIME_CALLBACK:                     return ENVIRONMENT_NOT_IMPLEMENTED();
+                case retro_environment.RETRO_ENVIRONMENT_SET_FRAME_TIME_CALLBACK:                     return SetFrameTimeCallback();
                 case retro_environment.RETRO_ENVIRONMENT_SET_AUDIO_CALLBACK:                          return ENVIRONMENT_NOT_IMPLEMENTED();
                 case retro_environment.RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO:                          return SetSystemAvInfo();
                 case retro_environment.RETRO_ENVIRONMENT_SET_PROC_ADDRESS_CALLBACK:                   return ENVIRONMENT_NOT_IMPLEMENTED();
@@ -213,7 +213,7 @@ namespace SK.Libretro
 
             bool GetLibretroPath()
             {
-                string path = FileSystem.GetAbsolutePath(LibretroWrapper.MainDirectory);
+                string path = FileSystem.GetAbsolutePath(Path.Combine(LibretroWrapper.CoresDirectory, _wrapper.Core.CoreName));
                 if (!Directory.Exists(path))
                 {
                     _ = Directory.CreateDirectory(path);
@@ -237,7 +237,7 @@ namespace SK.Libretro
 
             bool GetCoreAssetsDirectory()
             {
-                string path = FileSystem.GetAbsolutePath(LibretroWrapper.CoreAssetsDirectory);
+                string path = FileSystem.GetAbsolutePath(Path.Combine(LibretroWrapper.CoreAssetsDirectory, _wrapper.Core.CoreName));
                 if (!Directory.Exists(path))
                 {
                     _ = Directory.CreateDirectory(path);
@@ -252,7 +252,7 @@ namespace SK.Libretro
 
             bool GetSaveDirectory()
             {
-                string path = FileSystem.GetAbsolutePath(LibretroWrapper.SavesDirectory);
+                string path = FileSystem.GetAbsolutePath(Path.Combine(LibretroWrapper.SavesDirectory, _wrapper.Core.CoreName));
                 if (!Directory.Exists(path))
                 {
                     _ = Directory.CreateDirectory(path);
@@ -289,12 +289,22 @@ namespace SK.Libretro
             {
                 if (data != null)
                 {
-                    int result = 0;
-                    result |= 1; // if video enabled
-                    result |= 2; // if audio enabled
-                    *(int*)data = result;
+                    int mask = 0;
+                    mask |= 1; // if video enabled
+                    mask |= 2; // if audio enabled
+                    *(int*)data = mask;
                 }
                 return true;
+            }
+
+            bool GetInputBitmasks()
+            {
+                if (data != null)
+                {
+                    *(bool*)data = false;
+                }
+                Log.Info("-> Input Bitmasks: False", "RETRO_ENVIRONMENT_GET_INPUT_BITMASKS");
+                return false;
             }
 
             bool GetCoreOptionsVersion()
@@ -503,6 +513,17 @@ namespace SK.Libretro
                 if (data != null)
                 {
                     _wrapper.Core.SupportNoGame = *(bool*)data;
+                }
+                return true;
+            }
+
+            bool SetFrameTimeCallback()
+            {
+                if (data != null)
+                {
+                    _wrapper.FrameTimeInterface         = Marshal.PtrToStructure<retro_frame_time_callback>((IntPtr)data);
+                    _wrapper.FrameTimeInterfaceCallback = Marshal.GetDelegateForFunctionPointer<retro_frame_time_callback_t>(_wrapper.FrameTimeInterface.callback);
+
                 }
                 return true;
             }
