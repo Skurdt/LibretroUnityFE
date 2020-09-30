@@ -127,8 +127,11 @@ namespace SK.Examples
         private bool _audioEnabled;
         private bool _inputEnabled;
 
-        private Coroutine _co;
-        private float _frameTimer = 0f;
+        private readonly System.Diagnostics.Stopwatch _stopwatch = new System.Diagnostics.Stopwatch();
+        private readonly int _maxSkipFrames = 10;
+        private double _targetFrameTime     = 0.0;
+        private double _accumulatedTime     = 0.0;
+        private int _nLoops                 = 0;
 
         [ContextMenu("Load configuration")]
         public void EditorLoadConfig()
@@ -150,7 +153,7 @@ namespace SK.Examples
 
         private void Awake() => _player = FindObjectOfType<Player.Controls>();
 
-        private void OnEnable()
+        private IEnumerator Start()
         {
             string text        = File.ReadAllText(Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "game.json")));
             GameConfigFile cfg = JsonUtility.FromJson<GameConfigFile>(text);
@@ -159,74 +162,38 @@ namespace SK.Examples
                 Game = cfg.Game;
             }
 
-            StartGame();
+            if (!StartGame())
+            {
+                yield break;
+            }
+
+            yield return CoUpdateGame();
         }
 
         private void OnDisable() => StopGame();
 
-        private void Update()
-        {
-            if (Wrapper == null || Wrapper.Game.VideoFps < 1.0)
-            {
-                return;
-            }
-
-            _frameTimer += Time.deltaTime;
-
-            if (_co == null)
-            {
-                _co = StartCoroutine(CoUpdate());
-            }
-        }
-
-        private IEnumerator CoUpdate()
-        {
-            float targetFrameTime = 1f / (float)Wrapper.Game.VideoFps / _timeScale;
-            while (_frameTimer >= targetFrameTime)
-            {
-                Wrapper?.Update();
-                _frameTimer -= targetFrameTime;
-                yield return null;
-            }
-
-            GraphicsSetFilterMode(_videoFilterMode);
-
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            if (AudioVolumeControlledByDistance && Wrapper?.Audio.Processor is Libretro.NAudio.AudioProcessor NAudioAudio)
-            {
-                float distance = Vector3.Distance(transform.position, _player.transform.position);
-                if (distance > 0f)
-                {
-                    float volume = math.clamp(math.pow((distance - _audioMaxDistance) / (_audioMinDistance - _audioMaxDistance), 2f), 0f, _audioMaxVolume);
-                    NAudioAudio.SetVolume(volume);
-                }
-            }
-#endif
-            _co = null;
-        }
-
-        private void StartGame()
+        private bool StartGame()
         {
             if (Game == null || string.IsNullOrEmpty(Game.Core))
             {
-                return;
+                return false;
             }
 
             if (transform.childCount == 0)
             {
-                return;
+                return false;
             }
 
             Transform modelTransform = transform.GetChild(0);
             if (modelTransform == null || modelTransform.childCount == 1)
             {
-                return;
+                return false;
             }
 
             _screenTransform = modelTransform.GetChild(1);
             if (!_screenTransform.TryGetComponent(out _rendererComponent))
             {
-                return;
+                return false;
             }
 
             Wrapper = new LibretroWrapper((LibretroTargetPlatform)Application.platform, $"{Application.streamingAssetsPath}/libretro~");
@@ -234,7 +201,7 @@ namespace SK.Examples
             if (!Wrapper.StartGame(Game.Core, Game.Directory, Game.Name))
             {
                 StopGame();
-                return;
+                return false;
             }
 
             ActivateGraphics();
@@ -245,6 +212,8 @@ namespace SK.Examples
             _block.SetFloat("_Intensity", 1.1f);
             _block.SetInt("_Rotation", Wrapper.Core.Rotation);
             _rendererComponent.SetPropertyBlock(_block);
+
+            return true;
         }
 
         private void StopGame()
@@ -253,6 +222,41 @@ namespace SK.Examples
 
             Wrapper = null;
             _block  = null;
+        }
+
+        private IEnumerator CoUpdateGame()
+        {
+            while (Wrapper != null)
+            {
+                yield return null;
+
+                _targetFrameTime  = 1.0 / Wrapper.Game.VideoFps / _timeScale;
+                _accumulatedTime += _stopwatch.Elapsed.TotalSeconds;
+                _stopwatch.Restart();
+                _nLoops = 0;
+
+                while (_accumulatedTime >= _targetFrameTime && _nLoops < _maxSkipFrames)
+                {
+                    Wrapper.Update();
+                    _accumulatedTime -= _targetFrameTime;
+                    ++_nLoops;
+                    yield return null;
+                }
+
+                GraphicsSetFilterMode(_videoFilterMode);
+
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+                if (AudioVolumeControlledByDistance && Wrapper.Audio.Processor is Libretro.NAudio.AudioProcessor NAudioAudio)
+                {
+                    float distance = Vector3.Distance(transform.position, _player.transform.position);
+                    if (distance > 0f)
+                    {
+                        float volume = math.clamp(math.pow((distance - _audioMaxDistance) / (_audioMinDistance - _audioMaxDistance), 2f), 0f, _audioMaxVolume);
+                        NAudioAudio.SetVolume(volume);
+                    }
+                }
+#endif
+            }
         }
 
         private void GraphicsSetFilterMode(FilterMode filterMode)
@@ -293,19 +297,19 @@ namespace SK.Examples
                 Wrapper?.ActivateAudio(new Libretro.NAudio.AudioProcessor());
             }
 #else
-            var unityAudio = GetComponentInChildren<Libretro.Unity.AudioProcessor>(true);
+            Libretro.Unity.AudioProcessor unityAudio = GetComponentInChildren<Libretro.Unity.AudioProcessor>(true);
             if (unityAudio != null)
             {
                 unityAudio.gameObject.SetActive(true);
-                Wrapper?.ActivateAudio(unityAudio);
             }
             else
             {
-                var audioProcessorGameObject = new GameObject("AudioProcessor");
+                GameObject audioProcessorGameObject = new GameObject("AudioProcessor");
                 audioProcessorGameObject.transform.SetParent(_screenTransform);
-                var audioProcessorComponent = audioProcessorGameObject.AddComponent<Libretro.Unity.AudioProcessor>();
-                Wrapper?.ActivateAudio(audioProcessorComponent);
+                unityAudio = audioProcessorGameObject.AddComponent<Libretro.Unity.AudioProcessor>();
             }
+
+            Wrapper?.ActivateAudio(unityAudio);
 #endif
             _audioEnabled = true;
         }

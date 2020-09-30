@@ -501,7 +501,7 @@ namespace SK.Libretro
                     Log.Exception(e);
                 }
 
-                _wrapper.SaveCoreOptionsFile();
+                LibretroWrapper.SaveCoreOptionsFile();
 
                 return true;
             }
@@ -630,7 +630,7 @@ namespace SK.Libretro
                     }
                 }
 
-                _wrapper.SaveCoreOptionsFile();
+                LibretroWrapper.SaveCoreOptionsFile();
 
                 return true;
             }

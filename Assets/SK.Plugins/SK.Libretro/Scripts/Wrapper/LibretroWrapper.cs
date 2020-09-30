@@ -176,7 +176,8 @@ namespace SK.Libretro
             AudioSampleBatchCallback  = Audio.SampleBatchCallback;
             InputPollCallback         = Input.PollCallback;
             InputStateCallback        = Input.StateCallback;
-            LogPrintfCallback         = LibretroLog.RetroLogPrintf;
+
+            LogPrintfCallback = LibretroLog.RetroLogPrintf;
         }
 
         public bool StartGame(string coreName, string gameDirectory, string gameName)
@@ -234,7 +235,7 @@ namespace SK.Libretro
 
         public void DeactivateInput() => Input.Processor = null;
 
-        internal void LoadCoreOptionsFile()
+        internal static void LoadCoreOptionsFile()
         {
             CoreOptionsList = FileSystem.DeserializeFromJson<LibretroCoreOptionsList>(CoreOptionsFile);
             if (CoreOptionsList == null)
@@ -243,7 +244,7 @@ namespace SK.Libretro
             }
         }
 
-        internal void SaveCoreOptionsFile()
+        internal static void SaveCoreOptionsFile()
         {
             if (CoreOptionsList == null || CoreOptionsList.Cores.Count == 0)
             {
