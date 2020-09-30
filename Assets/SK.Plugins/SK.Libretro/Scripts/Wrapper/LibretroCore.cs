@@ -1,4 +1,4 @@
-/* MIT License
+﻿/* MIT License
 
  * Copyright (c) 2020 Skurdt
  *
@@ -176,10 +176,10 @@ namespace SK.Libretro
             try
             {
                 //FIXME(Tom): This sometimes crash (mostly on cores using lico)
-                //if (Initialized)
-                //{
-                //    retro_deinit();
-                //}
+                if (Initialized)
+                {
+                    retro_deinit();
+                }
 
                 if (_dll != null)
                 {
