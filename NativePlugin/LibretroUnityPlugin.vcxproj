@@ -63,12 +63,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetDir)$(ProjectName).dll" "D:\_UnityProjects\LibretroUnityFE\Assets\SK.Plugins\SK.Libretro\Unity\Plugins\$(ProjectName).dll"
-copy /Y "$(TargetDir)$(ProjectName).pdb" "D:\_UnityProjects\LibretroUnityFE\Assets\SK.Plugins\SK.Libretro\Unity\Plugins\$(ProjectName).pdb"
-
-copy /Y "$(TargetDir)$(ProjectName).dll" "D:\build\LibretroUnityFE_Data\Plugins\x86_64\$(ProjectName).dll"
-copy /Y "$(TargetDir)$(ProjectName).pdb" "D:\build\LibretroUnityFE_Data\Plugins\x86_64\$(ProjectName).pdb"
-</Command>
+      <Command>copy /Y "$(TargetDir)$(ProjectName).dll" "..\Assets\SK.Plugins\SK.Libretro\Unity\Plugins\$(ProjectName).dll"
+copy /Y "$(TargetDir)$(ProjectName).pdb" "..\Assets\SK.Plugins\SK.Libretro\Unity\Plugins\$(ProjectName).pdb"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -89,12 +85,8 @@ copy /Y "$(TargetDir)$(ProjectName).pdb" "D:\build\LibretroUnityFE_Data\Plugins\
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetDir)$(ProjectName).dll" "D:\_UnityProjects\LibretroUnityFE\Assets\SK.Plugins\SK.Libretro\Unity\Plugins\$(ProjectName).dll"
-copy /Y "$(TargetDir)$(ProjectName).pdb" "D:\_UnityProjects\LibretroUnityFE\Assets\SK.Plugins\SK.Libretro\Unity\Plugins\$(ProjectName).pdb"
-
-copy /Y "$(TargetDir)$(ProjectName).dll" "D:\build\LibretroUnityFE_Data\Plugins\x86_64\$(ProjectName).dll"
-copy /Y "$(TargetDir)$(ProjectName).pdb" "D:\build\LibretroUnityFE_Data\Plugins\x86_64\$(ProjectName).pdb"
-</Command>
+      <Command>copy /Y "$(TargetDir)$(ProjectName).dll" "..\Assets\SK.Plugins\SK.Libretro\Unity\Plugins\$(ProjectName).dll"
+copy /Y "$(TargetDir)$(ProjectName).pdb" "..\Assets\SK.Plugins\SK.Libretro\Unity\Plugins\$(ProjectName).pdb"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
