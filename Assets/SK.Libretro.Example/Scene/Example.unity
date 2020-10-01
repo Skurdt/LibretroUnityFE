@@ -1449,6 +1449,7 @@ MonoBehaviour:
   _audioMinDistance: 2
   _audioMaxDistance: 10
   _videoFilterMode: 0
+  _correctAspectRatio: 0
 --- !u!54 &1424017730
 Rigidbody:
   m_ObjectHideFlags: 0

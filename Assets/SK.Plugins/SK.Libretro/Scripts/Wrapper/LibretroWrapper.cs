@@ -1,4 +1,4 @@
-/* MIT License
+﻿/* MIT License
 
  * Copyright (c) 2020 Skurdt
  *
@@ -24,7 +24,6 @@ using SK.Libretro.Utilities;
 using System;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using static SK.Libretro.LibretroDelegates;
 using static SK.Libretro.LibretroEnums;
 using static SK.Libretro.LibretroStructs;
@@ -137,8 +136,10 @@ namespace SK.Libretro
         #endregion
 
         internal retro_frame_time_callback FrameTimeInterface;
-        internal retro_frame_time_callback_t FrameTimeInterfaceCallback;
+        internal retro_frame_time_callback_t FrameTimeInterfaceCallback = null;
+
         private long _frameTimeLast = 0;
+
         public unsafe LibretroWrapper(LibretroTargetPlatform targetPlatform, string baseDirectory = null)
         {
             TargetPlatform = targetPlatform;

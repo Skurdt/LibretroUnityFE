@@ -25,4 +25,6 @@ Material:
     - _Metallic: 0.5
     - _Rotation: 0
     - _Smoothness: 0.65
-    m_Colors: []
+    m_Colors:
+    - _UVOffset: {r: 0, g: 0, b: 0, a: 0}
+    - _UVTiling: {r: 1, g: 1, b: 0, a: 0}
