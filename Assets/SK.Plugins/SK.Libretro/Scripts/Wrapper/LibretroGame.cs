@@ -32,6 +32,8 @@ namespace SK.Libretro
     public sealed class LibretroGame
     {
         public double VideoFps => SystemAVInfo.timing.fps;
+        public int VideoWidth => (int)SystemAVInfo.geometry.max_width;
+        public int VideoHeight => (int)SystemAVInfo.geometry.max_height;
 
         internal string Name { get; private set; }
         internal bool Running { get; private set; }

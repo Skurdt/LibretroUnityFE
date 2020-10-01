@@ -89,7 +89,7 @@ namespace SK.Libretro
                 case retro_environment.RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:                       return SetInputDescriptors();
                 case retro_environment.RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK:                       return ENVIRONMENT_NOT_IMPLEMENTED();
                 case retro_environment.RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:                  return ENVIRONMENT_NOT_IMPLEMENTED();
-                case retro_environment.RETRO_ENVIRONMENT_SET_HW_RENDER:                               return ENVIRONMENT_NOT_IMPLEMENTED();
+                case retro_environment.RETRO_ENVIRONMENT_SET_HW_RENDER:                               return SetHwRender();
                 case retro_environment.RETRO_ENVIRONMENT_SET_VARIABLES:                               return SetVariables();
                 case retro_environment.RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:                         return SetSupportNoGame();
                 case retro_environment.RETRO_ENVIRONMENT_SET_FRAME_TIME_CALLBACK:                     return SetFrameTimeCallback();
@@ -459,6 +459,30 @@ namespace SK.Libretro
                 }
 
                 _wrapper.Game.HasInputDescriptors = true;
+
+                return true;
+            }
+
+            bool SetHwRender()
+            {
+                if (data == null)
+                {
+                    return false;
+                }
+
+                retro_hw_render_callback* inCallback = (retro_hw_render_callback*)data;
+
+                if (inCallback->context_type != retro_hw_context_type.RETRO_HW_CONTEXT_OPENGL && inCallback->context_type != retro_hw_context_type.RETRO_HW_CONTEXT_OPENGL_CORE)
+                {
+                    return false;
+                }
+
+                inCallback->get_current_framebuffer = Marshal.GetFunctionPointerForDelegate<retro_hw_get_current_framebuffer_t>(LibretroPlugin.GetCurrentFramebuffer);
+                inCallback->get_proc_address        = Marshal.GetFunctionPointerForDelegate<retro_hw_get_proc_address_t>(LibretroPlugin.GetHwProcAddress);
+
+                _wrapper.HwRenderInterface = Marshal.PtrToStructure<retro_hw_render_callback>(new IntPtr(data));
+
+                _wrapper.Core.HwAccelerated = true;
 
                 return true;
             }

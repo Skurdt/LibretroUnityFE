@@ -27,7 +27,7 @@ using static SK.Libretro.LibretroConstants;
 
 namespace SK.Libretro
 {
-    internal static class LibretroStructs
+    public static class LibretroStructs
     {
 #pragma warning disable IDE1006 // Naming Styles
         public struct retro_vfs_file_handle

@@ -28,14 +28,30 @@ namespace SK.Libretro
     {
         public IGraphicsProcessor Processor { get; internal set; }
 
+        private readonly LibretroCore _core;
         private readonly LibretroGame _game;
 
-        internal LibretroVideo(LibretroGame game) => _game = game;
+        internal LibretroVideo(LibretroCore core, LibretroGame game)
+        {
+            _core = core;
+            _game = game;
+        }
 
         internal unsafe void Callback(void* data, uint width, uint height, uint pitch)
         {
-            if (data == null || Processor == null)
+            if (Processor == null)
             {
+                return;
+            }
+
+            if (_core.HwAccelerated)
+            {
+                return;
+            }
+
+            if (data == null)
+            {
+                // TODO(Tom): Send previous dupped frame ?
                 return;
             }
 

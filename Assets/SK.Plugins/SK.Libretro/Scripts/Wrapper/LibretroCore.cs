@@ -39,14 +39,15 @@ namespace SK.Libretro
         internal retro_set_audio_sample_batch_t retro_set_audio_sample_batch;
         internal retro_set_input_poll_t retro_set_input_poll;
         internal retro_set_input_state_t retro_set_input_state;
-        internal retro_init_t retro_init;
+
+        public retro_init_t retro_init;
         internal retro_deinit_t retro_deinit;
         internal retro_api_version_t retro_api_version;
         internal retro_get_system_info_t retro_get_system_info;
         internal retro_get_system_av_info_t retro_get_system_av_info;
         internal retro_set_controller_port_device_t retro_set_controller_port_device;
         internal retro_reset_t retro_reset;
-        internal retro_run_t retro_run;
+        public retro_run_t retro_run;
         internal retro_serialize_size_t retro_serialize_size;
         internal retro_serialize_t retro_serialize;
         internal retro_unserialize_t retro_unserialize;
@@ -73,6 +74,8 @@ namespace SK.Libretro
 
         public int Rotation { get; internal set; }
 
+        public bool HwAccelerated { get; internal set; }
+
         internal int PerformanceLevel;
         internal bool SupportNoGame;
 
@@ -81,7 +84,6 @@ namespace SK.Libretro
         internal retro_controller_info[] ControllerPorts;
 
         private DllModule _dll;
-
         private readonly LibretroWrapper _wrapper;
         private readonly List<IntPtr> _unsafeStrings = new List<IntPtr>();
 
@@ -176,10 +178,10 @@ namespace SK.Libretro
             try
             {
                 //FIXME(Tom): This sometimes crash (mostly on cores using lico)
-                if (Initialized)
-                {
-                    retro_deinit();
-                }
+                //if (Initialized)
+                //{
+                //    retro_deinit();
+                //}
 
                 if (_dll != null)
                 {

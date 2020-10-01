@@ -33,7 +33,8 @@ namespace SK.Libretro.Unity
     {
         public System.Action<Texture2D> OnTextureRecreated;
 
-        public Texture2D Texture { get; private set; } = new Texture2D(8, 8, TextureFormat.BGRA32, false) { filterMode = FilterMode.Point };
+        public Texture2D Texture { get; private set; }
+
         public FilterMode VideoFilterMode
         {
             get => _filterMode;
@@ -44,7 +45,19 @@ namespace SK.Libretro.Unity
             }
         }
 
-        private FilterMode _filterMode = FilterMode.Point;
+        private FilterMode _filterMode;
+        private readonly TextureFormat _textureFormat;
+
+        public GraphicsProcessor(int width, int height, TextureFormat textureFormat, FilterMode filterMode = FilterMode.Point)
+        {
+            _textureFormat = textureFormat;
+            _filterMode    = filterMode;
+
+            Texture = new Texture2D(width, height, textureFormat, false)
+            {
+                filterMode = filterMode
+            };
+        }
 
         public unsafe void ProcessFrame0RGB1555(ushort* data, int width, int height, int pitch)
         {
@@ -98,9 +111,9 @@ namespace SK.Libretro.Unity
         {
             if (Texture.width != width || Texture.height != height || Texture.filterMode != VideoFilterMode)
             {
-                Texture = new Texture2D(width, height, TextureFormat.BGRA32, false)
+                Texture = new Texture2D(width, height, _textureFormat, false)
                 {
-                    filterMode = VideoFilterMode
+                    filterMode = _filterMode
                 };
 
                 OnTextureRecreated?.Invoke(Texture);

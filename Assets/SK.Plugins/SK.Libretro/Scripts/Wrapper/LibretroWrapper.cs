@@ -24,6 +24,7 @@ using SK.Libretro.Utilities;
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using static SK.Libretro.LibretroDelegates;
 using static SK.Libretro.LibretroEnums;
 using static SK.Libretro.LibretroStructs;
@@ -138,7 +139,11 @@ namespace SK.Libretro
         internal retro_frame_time_callback FrameTimeInterface;
         internal retro_frame_time_callback_t FrameTimeInterfaceCallback = null;
 
+        public retro_hw_render_callback HwRenderInterface;
+
         private long _frameTimeLast = 0;
+
+        private LibretroPlugin.InteropInterface _interopInterface;
 
         public unsafe LibretroWrapper(LibretroTargetPlatform targetPlatform, string baseDirectory = null)
         {
@@ -181,7 +186,7 @@ namespace SK.Libretro
             Game = new LibretroGame();
 
             Environment = new LibretroEnvironment(this);
-            Video       = new LibretroVideo(Game);
+            Video       = new LibretroVideo(Core, Game);
             Audio       = new LibretroAudio();
             Input       = new LibretroInput();
 
@@ -207,6 +212,17 @@ namespace SK.Libretro
             if (!Game.Start(Core, gameDirectory, gameName))
             {
                 return false;
+            }
+
+            if (Core.HwAccelerated)
+            {
+                _interopInterface = new LibretroPlugin.InteropInterface
+                {
+                    context_reset = HwRenderInterface.context_reset,
+                    context_destroy = HwRenderInterface.context_destroy,
+                    retro_run = Marshal.GetFunctionPointerForDelegate(Core.retro_run)
+                };
+                LibretroPlugin.SetupInteropInterface(ref _interopInterface);
             }
 
             return true;
@@ -243,7 +259,10 @@ namespace SK.Libretro
                 return;
             }
 
-            Core.retro_run();
+            if (!Core.HwAccelerated)
+            {
+                Core.retro_run();
+            }
         }
 
         public void ActivateGraphics(IGraphicsProcessor graphicsProcessor) => Video.Processor = graphicsProcessor;

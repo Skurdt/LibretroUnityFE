@@ -42,7 +42,7 @@ namespace SK.Examples.Player
         private const float EXTRA_GRAVITY      = 20f;
 
         private CharacterController _characterController = null;
-        private Camera _camera                           = null;
+        public Camera _camera                           = null;
         private float _lookHorizontal                    = 0f;
         private float _lookVertical                      = 0f;
         private Vector3 _moveVelocity                    = Vector3.zero;

@@ -22,7 +22,7 @@
 
 namespace SK.Libretro
 {
-    internal static class LibretroConstants
+    public static class LibretroConstants
     {
 #pragma warning disable IDE1006 // Naming Styles
         public const int RETRO_API_VERSION = 1;

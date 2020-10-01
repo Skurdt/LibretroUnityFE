@@ -22,7 +22,7 @@
 
 namespace SK.Libretro
 {
-    internal static class LibretroEnums
+    public static class LibretroEnums
     {
 #pragma warning disable IDE1006 // Naming Styles
         public enum retro_language

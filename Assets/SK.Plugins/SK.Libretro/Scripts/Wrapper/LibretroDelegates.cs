@@ -28,7 +28,7 @@ using static SK.Libretro.LibretroStructs;
 
 namespace SK.Libretro
 {
-    internal static class LibretroDelegates
+    public static class LibretroDelegates
     {
         #region Dynamically loaded function delegates
         // RETRO_API void retro_set_environment(retro_environment_t);

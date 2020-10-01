@@ -55,11 +55,6 @@ namespace SK.Examples.Player
         private void Update()
         {
             _stateController.Update(Time.deltaTime);
-
-            if (Keyboard.current.escapeKey.wasPressedThisFrame)
-            {
-                Utils.ExitApp();
-            }
         }
 
         private void OnGUI()
