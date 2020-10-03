@@ -79,10 +79,17 @@ namespace SK.Libretro.Unity
 
         public bool JoypadButton(int port, int button) => _controls.ContainsKey(port) && _controls[port].JoypadButtons[button];
 
-        public float MouseDelta(int port, int axis) => _controls.ContainsKey(port) ? (axis == 0 ? _controls[port].MousePositionDelta.x : -_controls[port].MousePositionDelta.y) : 0f;
-        public float MouseWheelDelta(int port, int axis) => _controls.ContainsKey(port) ? (axis == 0 ? _controls[port].MouseWheelDelta.y : _controls[port].MouseWheelDelta.x) : 0f;
+        public float MouseDeltaX(int port)             => _controls.ContainsKey(port) ?  _controls[port].MousePositionDelta.x : 0f;
+        public float MouseDeltaY(int port)             => _controls.ContainsKey(port) ? -_controls[port].MousePositionDelta.y : 0f;
+        public float MouseWheelDeltaX(int port)        => _controls.ContainsKey(port) ?  _controls[port].MouseWheelDelta.x    : 0f;
+        public float MouseWheelDeltaY(int port)        => _controls.ContainsKey(port) ?  _controls[port].MouseWheelDelta.y    : 0f;
         public bool MouseButton(int port, int button) => _controls.ContainsKey(port) && _controls[port].MouseButtons[button];
 
         public bool KeyboardKey(int port, int key) => _controls.ContainsKey(port) && Input.GetKey((KeyCode)key);
+
+        public float AnalogLeftValueX(int port)  => _controls.ContainsKey(port) ?  _controls[port].AnalogLeft.x  : 0f;
+        public float AnalogLeftValueY(int port)  => _controls.ContainsKey(port) ? -_controls[port].AnalogLeft.y  : 0f;
+        public float AnalogRightValueX(int port) => _controls.ContainsKey(port) ?  _controls[port].AnalogRight.x : 0f;
+        public float AnalogRightValueY(int port) => _controls.ContainsKey(port) ? -_controls[port].AnalogRight.y : 0f;
     }
 }

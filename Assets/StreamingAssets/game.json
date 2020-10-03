@@ -1,8 +1,8 @@
 {
     "UseConfig": true,
     "Game": {
-        "Core": "mupen64plus_next",
-        "Directory": "D:/__Roms",
-        "Name": "Super Mario 64 (USA)"
+        "Core": "mame2003_plus",
+        "Directory": "D:/__Roms/mame2003-plus",
+        "Name": "1942"
     }
 }

@@ -3,7 +3,7 @@
         {
             "CoreName": "mame2003_plus",
             "Options": [
-                "mame2003-plus_analog;digital;analog|digital;",
+                "mame2003-plus_analog;analog;analog|digital;",
                 "mame2003-plus_art_resolution;1;1|2;",
                 "mame2003-plus_brightness;1.0;1.0|0.2|0.3|0.4|0.5|0.6|0.7|0.8|0.9|1.1|1.2|1.3|1.4|1.5|1.6|1.7|1.8|1.9|2.0;",
                 "mame2003-plus_cheat_input_ports;disabled;disabled|enabled;",

@@ -26,8 +26,17 @@ namespace SK.Libretro
     {
         bool JoypadButton(int port, int button);
 
-        float MouseDelta(int port, int axis);
-        float MouseWheelDelta(int port, int axis);
+        float MouseDeltaX(int port);
+        float MouseDeltaY(int port);
+        float MouseWheelDeltaX(int port);
+        float MouseWheelDeltaY(int port);
         bool MouseButton(int port, int button);
+
+        bool KeyboardKey(int port, int key);
+
+        float AnalogLeftValueX(int port);
+        float AnalogLeftValueY(int port);
+        float AnalogRightValueX(int port);
+        float AnalogRightValueY(int port);
     }
 }

@@ -54,7 +54,7 @@ namespace SK.Libretro
                 case retro_environment.RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE:                         return GetVariableUpdate();
                 case retro_environment.RETRO_ENVIRONMENT_GET_LIBRETRO_PATH:                           return GetLibretroPath();
                 case retro_environment.RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE:                        return ENVIRONMENT_NOT_IMPLEMENTED();
-                case retro_environment.RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES:               return ENVIRONMENT_NOT_IMPLEMENTED();
+                case retro_environment.RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES:               return GetInputDeviceCapabilities();
                 case retro_environment.RETRO_ENVIRONMENT_GET_SENSOR_INTERFACE:                        return ENVIRONMENT_NOT_IMPLEMENTED();
                 case retro_environment.RETRO_ENVIRONMENT_GET_CAMERA_INTERFACE:                        return ENVIRONMENT_NOT_IMPLEMENTED();
                 case retro_environment.RETRO_ENVIRONMENT_GET_LOG_INTERFACE:                           return GetLogInterface();
@@ -223,6 +223,15 @@ namespace SK.Libretro
                     *(char**)data = _wrapper.Core.GetUnsafeString(path);
                 }
                 Log.Info($"-> LibretroPath: {path}", "RETRO_ENVIRONMENT_GET_LIBRETRO_PATH");
+                return true;
+            }
+
+            bool GetInputDeviceCapabilities()
+            {
+                if (data != null)
+                {
+                    *(ulong*)data = (1 << (int)retro_device.RETRO_DEVICE_JOYPAD) | (1 << (int)retro_device.RETRO_DEVICE_ANALOG);
+                }
                 return true;
             }
 

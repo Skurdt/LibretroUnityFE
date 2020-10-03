@@ -29,6 +29,22 @@ namespace SK.Libretro.Unity
                     ""interactions"": """"
                 },
                 {
+                    ""name"": ""AnalogLeft"",
+                    ""type"": ""Value"",
+                    ""id"": ""37eaa882-3108-46cb-9d25-c58cbc04245c"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""AnalogRight"",
+                    ""type"": ""Value"",
+                    ""id"": ""13b7bb8d-03e0-4bab-90ed-96c8fba076ff"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
                     ""name"": ""JoypadStartButton"",
                     ""type"": ""Value"",
                     ""id"": ""9c24f261-5878-4731-84f6-c78c63030707"",
@@ -503,7 +519,7 @@ namespace SK.Libretro.Unity
                 },
                 {
                     ""name"": """",
-                    ""id"": ""99f154ac-4827-4a36-9bb4-8fb6b50dcd67"",
+                    ""id"": ""5cfcdd89-8029-4685-be31-6ac573f9275d"",
                     ""path"": ""<Gamepad>/leftStick"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -599,6 +615,138 @@ namespace SK.Libretro.Unity
                     ""action"": ""MouseWheelDelta"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""TGFH"",
+                    ""id"": ""7b59c6fe-66e4-4b4c-b546-e3c710323dac"",
+                    ""path"": ""2DVector(mode=1)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AnalogLeft"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""01cb1cb5-36de-4db2-acd9-b3504973d1d8"",
+                    ""path"": ""<Keyboard>/t"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""AnalogLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""e9636449-87e7-4664-aa38-1fd9b51f9fb4"",
+                    ""path"": ""<Keyboard>/g"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""AnalogLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""396619bf-f71c-4fc8-990c-66b71d0b9e2a"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""AnalogLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""306ac0e0-de3f-40de-ab6f-44a73157307b"",
+                    ""path"": ""<Keyboard>/h"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""AnalogLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d61bc526-6350-4903-9427-f6a576f1e9a4"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""AnalogLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""IKJL"",
+                    ""id"": ""e95e7196-0734-475d-ae26-f7b0c6aa1582"",
+                    ""path"": ""2DVector(mode=1)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AnalogRight"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""cf8ebc26-77fa-499b-a4ea-e5e5218eb32d"",
+                    ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""AnalogRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""3f569a55-dab6-47d6-97ef-c28dedfd468a"",
+                    ""path"": ""<Keyboard>/k"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""AnalogRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""60cf206a-56f5-419c-91aa-f56afe63057e"",
+                    ""path"": ""<Keyboard>/j"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""AnalogRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""994a6d7d-5036-4f03-a20a-47821f7b1326"",
+                    ""path"": ""<Keyboard>/l"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""AnalogRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3179612d-a9f1-4d05-883e-64bf98cd238e"",
+                    ""path"": ""<Gamepad>/rightStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""AnalogRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -636,6 +784,8 @@ namespace SK.Libretro.Unity
             // All
             m_All = asset.FindActionMap("All", throwIfNotFound: true);
             m_All_JoypadDirections = m_All.FindAction("JoypadDirections", throwIfNotFound: true);
+            m_All_AnalogLeft = m_All.FindAction("AnalogLeft", throwIfNotFound: true);
+            m_All_AnalogRight = m_All.FindAction("AnalogRight", throwIfNotFound: true);
             m_All_JoypadStartButton = m_All.FindAction("JoypadStartButton", throwIfNotFound: true);
             m_All_JoypadSelectButton = m_All.FindAction("JoypadSelectButton", throwIfNotFound: true);
             m_All_JoypadAButton = m_All.FindAction("JoypadAButton", throwIfNotFound: true);
@@ -705,6 +855,8 @@ namespace SK.Libretro.Unity
         private readonly InputActionMap m_All;
         private IAllActions m_AllActionsCallbackInterface;
         private readonly InputAction m_All_JoypadDirections;
+        private readonly InputAction m_All_AnalogLeft;
+        private readonly InputAction m_All_AnalogRight;
         private readonly InputAction m_All_JoypadStartButton;
         private readonly InputAction m_All_JoypadSelectButton;
         private readonly InputAction m_All_JoypadAButton;
@@ -729,6 +881,8 @@ namespace SK.Libretro.Unity
             private @Controls m_Wrapper;
             public AllActions(@Controls wrapper) { m_Wrapper = wrapper; }
             public InputAction @JoypadDirections => m_Wrapper.m_All_JoypadDirections;
+            public InputAction @AnalogLeft => m_Wrapper.m_All_AnalogLeft;
+            public InputAction @AnalogRight => m_Wrapper.m_All_AnalogRight;
             public InputAction @JoypadStartButton => m_Wrapper.m_All_JoypadStartButton;
             public InputAction @JoypadSelectButton => m_Wrapper.m_All_JoypadSelectButton;
             public InputAction @JoypadAButton => m_Wrapper.m_All_JoypadAButton;
@@ -760,6 +914,12 @@ namespace SK.Libretro.Unity
                     @JoypadDirections.started -= m_Wrapper.m_AllActionsCallbackInterface.OnJoypadDirections;
                     @JoypadDirections.performed -= m_Wrapper.m_AllActionsCallbackInterface.OnJoypadDirections;
                     @JoypadDirections.canceled -= m_Wrapper.m_AllActionsCallbackInterface.OnJoypadDirections;
+                    @AnalogLeft.started -= m_Wrapper.m_AllActionsCallbackInterface.OnAnalogLeft;
+                    @AnalogLeft.performed -= m_Wrapper.m_AllActionsCallbackInterface.OnAnalogLeft;
+                    @AnalogLeft.canceled -= m_Wrapper.m_AllActionsCallbackInterface.OnAnalogLeft;
+                    @AnalogRight.started -= m_Wrapper.m_AllActionsCallbackInterface.OnAnalogRight;
+                    @AnalogRight.performed -= m_Wrapper.m_AllActionsCallbackInterface.OnAnalogRight;
+                    @AnalogRight.canceled -= m_Wrapper.m_AllActionsCallbackInterface.OnAnalogRight;
                     @JoypadStartButton.started -= m_Wrapper.m_AllActionsCallbackInterface.OnJoypadStartButton;
                     @JoypadStartButton.performed -= m_Wrapper.m_AllActionsCallbackInterface.OnJoypadStartButton;
                     @JoypadStartButton.canceled -= m_Wrapper.m_AllActionsCallbackInterface.OnJoypadStartButton;
@@ -824,6 +984,12 @@ namespace SK.Libretro.Unity
                     @JoypadDirections.started += instance.OnJoypadDirections;
                     @JoypadDirections.performed += instance.OnJoypadDirections;
                     @JoypadDirections.canceled += instance.OnJoypadDirections;
+                    @AnalogLeft.started += instance.OnAnalogLeft;
+                    @AnalogLeft.performed += instance.OnAnalogLeft;
+                    @AnalogLeft.canceled += instance.OnAnalogLeft;
+                    @AnalogRight.started += instance.OnAnalogRight;
+                    @AnalogRight.performed += instance.OnAnalogRight;
+                    @AnalogRight.canceled += instance.OnAnalogRight;
                     @JoypadStartButton.started += instance.OnJoypadStartButton;
                     @JoypadStartButton.performed += instance.OnJoypadStartButton;
                     @JoypadStartButton.canceled += instance.OnJoypadStartButton;
@@ -906,6 +1072,8 @@ namespace SK.Libretro.Unity
         public interface IAllActions
         {
             void OnJoypadDirections(InputAction.CallbackContext context);
+            void OnAnalogLeft(InputAction.CallbackContext context);
+            void OnAnalogRight(InputAction.CallbackContext context);
             void OnJoypadStartButton(InputAction.CallbackContext context);
             void OnJoypadSelectButton(InputAction.CallbackContext context);
             void OnJoypadAButton(InputAction.CallbackContext context);

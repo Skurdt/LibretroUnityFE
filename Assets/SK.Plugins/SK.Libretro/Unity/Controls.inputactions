@@ -14,6 +14,22 @@
                     "interactions": ""
                 },
                 {
+                    "name": "AnalogLeft",
+                    "type": "Value",
+                    "id": "37eaa882-3108-46cb-9d25-c58cbc04245c",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "AnalogRight",
+                    "type": "Value",
+                    "id": "13b7bb8d-03e0-4bab-90ed-96c8fba076ff",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
                     "name": "JoypadStartButton",
                     "type": "Value",
                     "id": "9c24f261-5878-4731-84f6-c78c63030707",
@@ -488,7 +504,7 @@
                 },
                 {
                     "name": "",
-                    "id": "99f154ac-4827-4a36-9bb4-8fb6b50dcd67",
+                    "id": "5cfcdd89-8029-4685-be31-6ac573f9275d",
                     "path": "<Gamepad>/leftStick",
                     "interactions": "",
                     "processors": "",
@@ -582,6 +598,138 @@
                     "processors": "",
                     "groups": "Keyboard & Mouse",
                     "action": "MouseWheelDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "TGFH",
+                    "id": "7b59c6fe-66e4-4b4c-b546-e3c710323dac",
+                    "path": "2DVector(mode=1)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AnalogLeft",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "01cb1cb5-36de-4db2-acd9-b3504973d1d8",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "AnalogLeft",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "e9636449-87e7-4664-aa38-1fd9b51f9fb4",
+                    "path": "<Keyboard>/g",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "AnalogLeft",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "396619bf-f71c-4fc8-990c-66b71d0b9e2a",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "AnalogLeft",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "306ac0e0-de3f-40de-ab6f-44a73157307b",
+                    "path": "<Keyboard>/h",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "AnalogLeft",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "d61bc526-6350-4903-9427-f6a576f1e9a4",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "AnalogLeft",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "IKJL",
+                    "id": "e95e7196-0734-475d-ae26-f7b0c6aa1582",
+                    "path": "2DVector(mode=1)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AnalogRight",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "cf8ebc26-77fa-499b-a4ea-e5e5218eb32d",
+                    "path": "<Keyboard>/i",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "AnalogRight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "3f569a55-dab6-47d6-97ef-c28dedfd468a",
+                    "path": "<Keyboard>/k",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "AnalogRight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "60cf206a-56f5-419c-91aa-f56afe63057e",
+                    "path": "<Keyboard>/j",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "AnalogRight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "994a6d7d-5036-4f03-a20a-47821f7b1326",
+                    "path": "<Keyboard>/l",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "AnalogRight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "3179612d-a9f1-4d05-883e-64bf98cd238e",
+                    "path": "<Gamepad>/rightStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "AnalogRight",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

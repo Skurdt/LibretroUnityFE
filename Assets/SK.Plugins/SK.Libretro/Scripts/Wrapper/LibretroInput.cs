@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using UnityEngine;
+using Unity.Mathematics;
 using static SK.Libretro.LibretroConstants;
 using static SK.Libretro.LibretroEnums;
 
@@ -123,113 +123,90 @@ namespace SK.Libretro
         {
         }
 
-        internal short StateCallback(uint port, retro_device device, uint _/*index*/, uint id)
+        internal short StateCallback(uint port, retro_device device, uint index, uint id)
         {
-            short result = 0;
-
             if (Processor != null)
             {
                 switch (device)
                 {
-                    case retro_device.RETRO_DEVICE_JOYPAD:
-                    {
-                        if (id < (int)retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_END)
-                        {
-                            result = ProcessJoypadDeviceState((int)port, (int)id);
-                        }
-                    }
-                    break;
-                    case retro_device.RETRO_DEVICE_MOUSE:
-                    {
-                        if (id < (int)retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_END)
-                        {
-                            result = ProcessMouseDeviceState((int)port, (retro_device_id_mouse)id);
-                        }
-                    }
-                    break;
-                    case retro_device.RETRO_DEVICE_KEYBOARD:
-                    {
-                        result = BoolToShort(id < (int)retro_key.RETROK_OEM_102 && Input.GetKey((KeyCode)id));
-                    }
-                    break;
+                    case retro_device.RETRO_DEVICE_JOYPAD:   return ProcessJoypadDeviceState((int)port, (int)id);
+                    case retro_device.RETRO_DEVICE_MOUSE:    return ProcessMouseDeviceState((int)port, (retro_device_id_mouse)id);
+                    case retro_device.RETRO_DEVICE_KEYBOARD: return ProcessKeyboardDeviceState((int)port, (int)id);
+                    case retro_device.RETRO_DEVICE_ANALOG:   return ProcessAnalogDeviceState((int)port, (retro_device_index_analog)index, (retro_device_id_analog)id);
                     case retro_device.RETRO_DEVICE_LIGHTGUN:
-                        break;
-                    case retro_device.RETRO_DEVICE_ANALOG:
-                        break;
                     case retro_device.RETRO_DEVICE_POINTER:
-                        break;
                     default:
                         break;
                 }
             }
 
-            return result;
+            return 0;
         }
 
-        private short ProcessJoypadDeviceState(int port, int button) => BoolToShort(Processor.JoypadButton(port, button));
+        private short ProcessJoypadDeviceState(int port, int button) => BoolToShort(button < (int)retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_END && Processor.JoypadButton(port, button));
 
         private short ProcessMouseDeviceState(int port, retro_device_id_mouse command)
         {
-            short result = 0;
-
-            switch (command)
+            if (command < retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_END)
             {
-                case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_X:
+                switch (command)
                 {
-                    result = FloatToShort(Processor.MouseDelta(port, 0));
+                    case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_X:               return FloatToShort(Processor.MouseDeltaX(port));
+                    case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_Y:               return FloatToShort(Processor.MouseDeltaY(port));
+                    case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_LEFT:            return BoolToShort(Processor.MouseButton(port, 0));
+                    case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_RIGHT:           return BoolToShort(Processor.MouseButton(port, 1));
+                    case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_WHEELUP:
+                    case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_WHEELDOWN:       return FloatToShort(Processor.MouseWheelDeltaY(port));
+                    case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_MIDDLE:          return BoolToShort(Processor.MouseButton(port, 2));
+                    case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_HORIZ_WHEELUP:
+                    case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_HORIZ_WHEELDOWN: return FloatToShort(Processor.MouseWheelDeltaX(port));
+                    case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_BUTTON_4:        return BoolToShort(Processor.MouseButton(port, 3));
+                    case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_BUTTON_5:        return BoolToShort(Processor.MouseButton(port, 4));
+                    default:
+                        break;
+                }
+            }
+
+            return 0;
+        }
+
+        private short ProcessKeyboardDeviceState(int port, int key) => BoolToShort(key < (int)retro_key.RETROK_OEM_102 && Processor.KeyboardKey(port, key));
+
+        private short ProcessAnalogDeviceState(int port, retro_device_index_analog index, retro_device_id_analog axis)
+        {
+            switch (index)
+            {
+                case retro_device_index_analog.RETRO_DEVICE_INDEX_ANALOG_LEFT:
+                {
+                    switch (axis)
+                    {
+                        case retro_device_id_analog.RETRO_DEVICE_ID_ANALOG_X: return FloatToShort(Processor.AnalogLeftValueX(port) * 0x8000);
+                        case retro_device_id_analog.RETRO_DEVICE_ID_ANALOG_Y: return FloatToShort(Processor.AnalogLeftValueY(port) * 0x8000);
+                        default:
+                            break;
+                    }
                 }
                 break;
-                case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_Y:
+                case retro_device_index_analog.RETRO_DEVICE_INDEX_ANALOG_RIGHT:
                 {
-                    result = FloatToShort(Processor.MouseDelta(port, 1));
+                    switch (axis)
+                    {
+                        case retro_device_id_analog.RETRO_DEVICE_ID_ANALOG_X: return FloatToShort(Processor.AnalogRightValueX(port) * 0x8000);
+                        case retro_device_id_analog.RETRO_DEVICE_ID_ANALOG_Y: return FloatToShort(Processor.AnalogRightValueY(port) * 0x8000);
+                        default:
+                            break;
+                    }
                 }
                 break;
-                case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_LEFT:
-                {
-                    result = BoolToShort(Processor.MouseButton(port, 0));
-                }
-                break;
-                case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_RIGHT:
-                {
-                    result = BoolToShort(Processor.MouseButton(port, 1));
-                }
-                break;
-                case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_WHEELUP:
-                case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_WHEELDOWN:
-                {
-                    result = FloatToShort(Processor.MouseWheelDelta(port, 0));
-                }
-                break;
-                case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_MIDDLE:
-                {
-                    result = BoolToShort(Processor.MouseButton(port, 2));
-                }
-                break;
-                case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_HORIZ_WHEELUP:
-                case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_HORIZ_WHEELDOWN:
-                {
-                    result = FloatToShort(Processor.MouseWheelDelta(port, 1));
-                }
-                break;
-                case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_BUTTON_4:
-                {
-                    result = BoolToShort(Processor.MouseButton(port, 3));
-                }
-                break;
-                case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_BUTTON_5:
-                {
-                    result = BoolToShort(Processor.MouseButton(port, 4));
-                }
-                break;
+                case retro_device_index_analog.RETRO_DEVICE_INDEX_ANALOG_BUTTON:
                 default:
                     break;
             }
 
-            return result;
+            return 0;
         }
 
-        private static short BoolToShort(bool boolValue) => (short)(boolValue ? 1 : 0);
-
-        private static short FloatToShort(float floatValue) => (short)Mathf.Clamp(Mathf.Round(floatValue), short.MinValue, short.MaxValue);
+        private static short BoolToShort(bool boolValue)    => (short)(boolValue ? 1 : 0);
+        private static short FloatToShort(float floatValue) => (short)math.clamp(math.round(floatValue), short.MinValue, short.MaxValue);
     }
 }
