@@ -31,32 +31,28 @@ namespace SK.Libretro.Unity
 {
     public class GraphicsProcessor : IGraphicsProcessor
     {
-        public System.Action<Texture2D> OnTextureRecreated;
+        public System.Action<Texture> OnTextureRecreated;
 
-        public Texture2D Texture { get; private set; }
+        public Texture2D TextureSW { get; private set; }
+        public RenderTexture TextureHW { get; private set; }
 
-        public FilterMode VideoFilterMode
+        public GraphicsProcessor(int width, int height, bool hwRender, FilterMode filterMode = FilterMode.Point)
         {
-            get => _filterMode;
-            set
+            if (hwRender)
             {
-                _filterMode = value;
-                CreateTexture(Texture.width, Texture.height);
+                TextureHW = new RenderTexture(width, height, 24, UnityEngine.Experimental.Rendering.GraphicsFormat.R8G8B8_UNorm)
+                {
+                    filterMode = filterMode
+                };
+                _ = TextureHW.Create();
             }
-        }
-
-        private FilterMode _filterMode;
-        private readonly TextureFormat _textureFormat;
-
-        public GraphicsProcessor(int width, int height, TextureFormat textureFormat, FilterMode filterMode = FilterMode.Point)
-        {
-            _textureFormat = textureFormat;
-            _filterMode    = filterMode;
-
-            Texture = new Texture2D(width, height, textureFormat, false)
+            else
             {
-                filterMode = filterMode
-            };
+                TextureSW = new Texture2D(width, height, TextureFormat.BGRA32, false)
+                {
+                    filterMode = filterMode
+                };
+            }
         }
 
         public unsafe void ProcessFrame0RGB1555(ushort* data, int width, int height, int pitch)
@@ -69,10 +65,10 @@ namespace SK.Libretro.Unity
                 Width       = width,
                 Height      = height,
                 PitchPixels = pitch / sizeof(ushort),
-                TextureData = Texture.GetRawTextureData<uint>()
+                TextureData = TextureSW.GetRawTextureData<uint>()
             }.Schedule().Complete();
 
-            Texture.Apply();
+            TextureSW.Apply();
         }
 
         public unsafe void ProcessFrameXRGB8888(uint* data, int width, int height, int pitch)
@@ -85,10 +81,10 @@ namespace SK.Libretro.Unity
                 Width       = width,
                 Height      = height,
                 PitchPixels = pitch / sizeof(uint),
-                TextureData = Texture.GetRawTextureData<uint>()
+                TextureData = TextureSW.GetRawTextureData<uint>()
             }.Schedule().Complete();
 
-            Texture.Apply();
+            TextureSW.Apply();
         }
 
         public unsafe void ProcessFrameRGB565(ushort* data, int width, int height, int pitch)
@@ -101,22 +97,22 @@ namespace SK.Libretro.Unity
                 Width       = width,
                 Height      = height,
                 PitchPixels = pitch / sizeof(ushort),
-                TextureData = Texture.GetRawTextureData<uint>()
+                TextureData = TextureSW.GetRawTextureData<uint>()
             }.Schedule().Complete();
 
-            Texture.Apply();
+            TextureSW.Apply();
         }
 
         private void CreateTexture(int width, int height)
         {
-            if (Texture.width != width || Texture.height != height || Texture.filterMode != VideoFilterMode)
+            if (TextureSW.width != width || TextureSW.height != height)
             {
-                Texture = new Texture2D(width, height, _textureFormat, false)
+                TextureSW = new Texture2D(width, height, TextureFormat.BGRA32, false)
                 {
-                    filterMode = _filterMode
+                    filterMode = FilterMode.Point
                 };
 
-                OnTextureRecreated?.Invoke(Texture);
+                OnTextureRecreated?.Invoke(TextureSW);
             }
         }
 

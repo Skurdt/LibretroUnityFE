@@ -50,19 +50,21 @@ namespace SK.Examples
     [StructLayout(LayoutKind.Sequential)]
     public struct InitContextData
     {
-        public IntPtr Handle;
+        public IntPtr TextureHandle;
+        public IntPtr RenderBufferHandle;
         public int Width;
         public int Height;
-        [MarshalAs(UnmanagedType.U1)] public bool Depth;
-        [MarshalAs(UnmanagedType.U1)] public bool Stencil;
+        public bool Depth;
+        public bool Stencil;
 
-        public InitContextData(Texture texture, ref retro_hw_render_callback cb)
+        public InitContextData(RenderTexture texture, ref retro_hw_render_callback cb)
         {
-            Handle  = texture.GetNativeTexturePtr();
-            Width   = texture.width;
-            Height  = texture.height;
-            Depth   = cb.depth;
-            Stencil = cb.stencil;
+            TextureHandle      = texture.GetNativeTexturePtr();
+            RenderBufferHandle = texture.GetNativeDepthBufferPtr();
+            Width              = texture.width;
+            Height             = texture.height;
+            Depth              = cb.depth;
+            Stencil            = cb.stencil;
         }
     }
 
@@ -137,8 +139,7 @@ namespace SK.Examples
         [SerializeField, Range(0f, 1f)] private float _audioMaxVolume = 1f;
         [SerializeField] private float _audioMinDistance              = 2f;
         [SerializeField] private float _audioMaxDistance              = 10f;
-        [SerializeField] private FilterMode _videoFilterMode          = FilterMode.Point;
-        [SerializeField] private bool _digitalDirectionsAsAnalog           = false;
+        [SerializeField] private bool _digitalDirectionsAsAnalog      = false;
 
         private Player.Controls _player;
 
@@ -191,8 +192,6 @@ namespace SK.Examples
             {
                 _co = StartCoroutine(CoUpdate());
             }
-
-            GraphicsSetFilterMode(_videoFilterMode);
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
             if (!AudioVolumeControlledByDistance || Wrapper == null || Wrapper.Audio == null || !(Wrapper.Audio.Processor is Libretro.NAudio.AudioProcessor audioProcessor))
@@ -304,7 +303,7 @@ namespace SK.Examples
             }
 
             TextureFormat textureFormat = Wrapper.Core.HwAccelerated ? TextureFormat.RGB24 : TextureFormat.BGRA32;
-            Libretro.Unity.GraphicsProcessor unityGraphics = new Libretro.Unity.GraphicsProcessor(Wrapper.Game.VideoWidth, Wrapper.Game.VideoHeight, textureFormat)
+            Libretro.Unity.GraphicsProcessor unityGraphics = new Libretro.Unity.GraphicsProcessor(Wrapper.Game.VideoWidth, Wrapper.Game.VideoHeight, Wrapper.Core.HwAccelerated)
             {
                 OnTextureRecreated = GraphicsSetTextureCallback
             };
@@ -313,7 +312,7 @@ namespace SK.Examples
 
             if (Wrapper.Core.HwAccelerated && SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLCore)
             {
-                InitContextData initContextData = new InitContextData(unityGraphics.Texture, ref Wrapper.HwRenderInterface);
+                InitContextData initContextData = new InitContextData(unityGraphics.TextureHW, ref Wrapper.HwRenderInterface);
                 CommandBuffer cb = new CommandBuffer();
                 unsafe
                 {
@@ -321,7 +320,7 @@ namespace SK.Examples
                 }
                 Graphics.ExecuteCommandBuffer(cb);
 
-                GraphicsSetTextureCallback(unityGraphics.Texture);
+                GraphicsSetTextureCallback(unityGraphics.TextureHW);
 
                 _retroRunCommandBuffer = new CommandBuffer();
                 _contextInitialized = true;
@@ -403,15 +402,7 @@ namespace SK.Examples
             _inputEnabled = false;
         }
 
-        private void GraphicsSetFilterMode(FilterMode filterMode)
-        {
-            if (Wrapper?.Video.Processor is Libretro.Unity.GraphicsProcessor unityGraphics && unityGraphics.Texture != null)
-            {
-                unityGraphics.VideoFilterMode = filterMode;
-            }
-        }
-
-        private void GraphicsSetTextureCallback(Texture2D texture)
+        private void GraphicsSetTextureCallback(Texture texture)
         {
             if (_rendererComponent == null || texture == null)
             {

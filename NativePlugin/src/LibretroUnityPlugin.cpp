@@ -2,6 +2,7 @@
 #include "RenderAPI.hpp"
 
 #include <cassert>
+#include <mutex>
 
 typedef void (*retro_hw_context_reset_t)();
 typedef void (*retro_run_t)();
@@ -22,7 +23,8 @@ static struct InteropInterface
 
 struct InitContextData
 {
-	void* texture;
+	void* textureHandle;
+	void* renderbufferHandle;
 	int width;
 	int height;
 	bool depth;
@@ -30,6 +32,8 @@ struct InitContextData
 };
 
 static RenderAPI* g_CurrentAPI = nullptr;
+static bool g_FramebufferInitialized      = false;
+static std::mutex g_Lock;
 
 extern "C" UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API SetupInteropInterface(InteropInterface* interopInterface)
 {
@@ -51,29 +55,41 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID, void* data)
 	if (!g_CurrentAPI)
 		return;
 
+	std::lock_guard<std::mutex> guard(g_Lock);
+
 	switch (eventID)
 	{
 	case 0:
 	{
-		if (!data)
-			return;
-		InitContextData* initData = (InitContextData*)data;
-		g_CurrentAPI->InitFramebuffer(initData->texture, initData->width, initData->height, initData->depth, initData->stencil);
-		if (g_InteropInterface->context_reset)
-			g_InteropInterface->context_reset();
+		if (data)
+		{
+			InitContextData* initData = (InitContextData*)data;
+			if (g_CurrentAPI->InitFramebuffer(initData->textureHandle, initData->renderbufferHandle, initData->width, initData->height, initData->depth, initData->stencil))
+			{
+				if (g_InteropInterface->context_reset)
+					g_InteropInterface->context_reset();
+				g_FramebufferInitialized = true;
+			}
+		}
 	}
 	break;
 	case 1:
 	{
-		if (g_InteropInterface->context_destroy)
-			g_InteropInterface->context_destroy();
-		g_CurrentAPI->DeinitFramebuffer();
+		if (g_FramebufferInitialized)
+		{
+			if (g_InteropInterface->context_destroy)
+				g_InteropInterface->context_destroy();
+			g_CurrentAPI->DeinitFramebuffer();
+			g_FramebufferInitialized = false;
+		}
 	}
 	break;
 	case 2:
-		if (g_InteropInterface->retro_run)
+	{
+		if (g_FramebufferInitialized && g_InteropInterface->retro_run)
 			g_InteropInterface->retro_run();
-		break;
+	}
+	break;
 	default:
 		break;
 	}

@@ -93,7 +93,6 @@ copy /Y "$(TargetDir)$(ProjectName).pdb" "..\Assets\SK.Plugins\SK.Libretro\Unity
     <ClCompile Include="src\LibretroUnityPlugin.cpp" />
     <ClCompile Include="src\RenderAPI.cpp" />
     <ClCompile Include="src\RenderAPI_OpenGLCoreES.cpp" />
-    <ClCompile Include="src\RenderAPI_Vulkan.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\PlatformBase.hpp" />

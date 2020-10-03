@@ -13,9 +13,7 @@
 #elif UNITY_OSX
 #	include <OpenGL/gl3.h>
 #elif UNITY_WIN
-// On Windows, use glad to initialize and load OpenGL Core functions. In principle any other
-// library (like GLEW, GLFW etc.) can be used; here we use gl3w since it's simple and
-// straightforward.
+// On Windows, use a library to initialize and load OpenGL Core functions.
 #	include "glad/glad.c"
 #elif UNITY_LINUX
 #	define GL_GLEXT_PROTOTYPES
@@ -35,7 +33,7 @@ public:
 	virtual unsigned int GetCurrentFramebuffer() override;
 	virtual void* GetHwProcAddress(const char* sym) override;
 
-	virtual void InitFramebuffer(void* texture, int width, int height, bool depth, bool stencil) override;
+	virtual bool InitFramebuffer(void* textureHandle, void* renderbufferHandle, int width, int height, bool depth, bool stencil) override;
 	virtual void DeinitFramebuffer() override;
 
 private:
@@ -44,7 +42,6 @@ private:
 private:
 	UnityGfxRenderer m_APIType = UnityGfxRenderer::kUnityGfxRendererNull;
 	GLuint m_Framebuffer       = 0;
-	GLuint m_RenderBuffer      = 0;
 };
 
 RenderAPI* CreateRenderAPI_OpenGLCoreES(UnityGfxRenderer apiType)
@@ -79,40 +76,38 @@ void* RenderAPI_OpenGLCoreES::GetHwProcAddress(const char* sym)
 	return gladGetProcAddressPtr(sym);
 }
 
-void RenderAPI_OpenGLCoreES::InitFramebuffer(void* texture, int width, int height, bool depth, bool stencil)
+bool RenderAPI_OpenGLCoreES::InitFramebuffer(void* textureHandle, void* renderbufferHandle, int width, int height, bool depth, bool stencil)
 {
 	DeinitFramebuffer();
 
-	if (depth)
-	{
-		glGenRenderbuffers(1, &m_RenderBuffer);
-		glBindRenderbuffer(GL_RENDERBUFFER, m_RenderBuffer);
-		glRenderbufferStorage(GL_RENDERBUFFER, stencil ? GL_DEPTH24_STENCIL8 : GL_DEPTH_COMPONENT24, width, height);
-		glBindRenderbuffer(GL_RENDERBUFFER, 0);
-	}
-
 	glGenFramebuffers(1, &m_Framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, static_cast<GLuint>(reinterpret_cast<size_t>(texture)), 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, static_cast<GLuint>(reinterpret_cast<size_t>(textureHandle)), 0);
 	if (depth)
-	{
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, stencil ? GL_DEPTH_STENCIL_ATTACHMENT : GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_RenderBuffer);
-	}
-	assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, stencil ? GL_DEPTH_STENCIL_ATTACHMENT : GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, static_cast<GLuint>(reinterpret_cast<size_t>(renderbufferHandle)));
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+	{
+		GLbitfield clearBits = GL_COLOR_BUFFER_BIT;
+		if (depth)
+			clearBits |= GL_DEPTH_BUFFER_BIT;
+		if (stencil)
+			clearBits |= GL_STENCIL_BUFFER_BIT;
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(clearBits);
+		glViewport(0, 0, width, height);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		return true;
+	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	DeinitFramebuffer();
+	return false;
 }
 
 void RenderAPI_OpenGLCoreES::DeinitFramebuffer()
 {
-	if (m_RenderBuffer)
-	{
-		glDeleteRenderbuffers(1, &m_RenderBuffer);
-		m_RenderBuffer = 0;
-	}
-
 	if (m_Framebuffer)
 	{
 		glDeleteFramebuffers(1, &m_Framebuffer);

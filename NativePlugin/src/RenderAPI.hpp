@@ -16,7 +16,7 @@ public:
 	virtual unsigned int GetCurrentFramebuffer() = 0;
 	virtual void* GetHwProcAddress(const char* sym) = 0;
 
-	virtual void InitFramebuffer(void* texture, int width, int height, bool depth, bool stencil) = 0;
+	virtual bool InitFramebuffer(void* textureHandle, void* renderbufferHandle, int width, int height, bool depth, bool stencil) = 0;
 	virtual void DeinitFramebuffer() = 0;
 };
 

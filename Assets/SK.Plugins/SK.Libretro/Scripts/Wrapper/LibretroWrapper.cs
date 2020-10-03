@@ -190,12 +190,12 @@ namespace SK.Libretro
             Audio       = new LibretroAudio();
             Input       = new LibretroInput();
 
-            EnvironmentCallback       = Environment.Callback;
-            VideoRefreshCallback      = Video.Callback;
-            AudioSampleCallback       = Audio.SampleCallback;
-            AudioSampleBatchCallback  = Audio.SampleBatchCallback;
-            InputPollCallback         = Input.PollCallback;
-            InputStateCallback        = Input.StateCallback;
+            EnvironmentCallback      = Environment.Callback;
+            VideoRefreshCallback     = Video.Callback;
+            AudioSampleCallback      = Audio.SampleCallback;
+            AudioSampleBatchCallback = Audio.SampleBatchCallback;
+            InputPollCallback        = Input.PollCallback;
+            InputStateCallback       = Input.StateCallback;
 
             LogPrintfCallback = LibretroLog.RetroLogPrintf;
         }
@@ -223,9 +223,9 @@ namespace SK.Libretro
             {
                 _interopInterface = new LibretroPlugin.InteropInterface
                 {
-                    context_reset = HwRenderInterface.context_reset,
+                    context_reset   = HwRenderInterface.context_reset,
                     context_destroy = HwRenderInterface.context_destroy,
-                    retro_run = Marshal.GetFunctionPointerForDelegate(Core.retro_run)
+                    retro_run       = Marshal.GetFunctionPointerForDelegate(Core.retro_run)
                 };
                 LibretroPlugin.SetupInteropInterface(ref _interopInterface);
             }
