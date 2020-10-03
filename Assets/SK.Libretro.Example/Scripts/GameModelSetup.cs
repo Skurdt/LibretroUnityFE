@@ -185,12 +185,16 @@ namespace SK.Examples
 
             if (haveKeyboard && Keyboard.current.escapeKey.wasPressedThisFrame)
             {
+                if (_co != null)
+                {
+                    StopCoroutine(_co);
+                }
+
                 StopGame();
             }
 
             if (_co == null && Wrapper != null && _gameRunning)
             {
-
                 _co = StartCoroutine(CoUpdate());
             }
 

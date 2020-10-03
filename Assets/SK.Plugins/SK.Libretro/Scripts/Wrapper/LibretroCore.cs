@@ -178,10 +178,10 @@ namespace SK.Libretro
             try
             {
                 //FIXME(Tom): This sometimes crash (mostly on cores using libco)
-                //if (Initialized)
-                //{
-                //    retro_deinit();
-                //}
+                if (Initialized && !HwAccelerated)
+                {
+                    retro_deinit();
+                }
 
                 if (_dll != null)
                 {
