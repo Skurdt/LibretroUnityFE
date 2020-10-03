@@ -7,3 +7,5 @@ The goal is to have this fully integrated within the [3DArcade](http://3darcade.
 Currently supports most non-gl cores, including mame, fbneo, mednafen, others...
 
 Support for OpenGL based cores is WIP. mupen64plus-next is currently playable, using the default core options, but still has some crash issues as well as graphical glitches in some games.
+
+- Super Mario 64 running inside of a windows build: https://youtu.be/euec6832wNA
