@@ -504,17 +504,6 @@
                 },
                 {
                     "name": "",
-                    "id": "5cfcdd89-8029-4685-be31-6ac573f9275d",
-                    "path": "<Gamepad>/leftStick",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "JoypadDirections",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "3107eda7-625c-4653-a7a5-faa061d03dd4",
                     "path": "<Gamepad>/dpad",
                     "interactions": "",

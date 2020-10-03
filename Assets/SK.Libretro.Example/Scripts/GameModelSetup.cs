@@ -41,9 +41,9 @@ namespace SK.Examples
     }
 
     [Serializable]
-    public struct GameConfigFile
+    public struct ConfigFile
     {
-        public bool UseConfig;
+        public bool DigitalInputAsAnalog;
         public Game Game;
     }
 
@@ -138,6 +138,7 @@ namespace SK.Examples
         [SerializeField] private float _audioMinDistance              = 2f;
         [SerializeField] private float _audioMaxDistance              = 10f;
         [SerializeField] private FilterMode _videoFilterMode          = FilterMode.Point;
+        [SerializeField] private bool _digitalDirectionsAsAnalog           = false;
 
         private Player.Controls _player;
 
@@ -164,12 +165,8 @@ namespace SK.Examples
 
         private void Start()
         {
-            string text        = File.ReadAllText(Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "game.json")));
-            GameConfigFile cfg = JsonUtility.FromJson<GameConfigFile>(text);
-            if (cfg.UseConfig)
-            {
-                Game = cfg.Game;
-            }
+            LoadConfig();
+            _gameRunning = StartGame();
         }
 
         private void OnDisable() => StopGame();
@@ -177,11 +174,6 @@ namespace SK.Examples
         private void Update()
         {
             bool haveKeyboard = Keyboard.current != null;
-
-            if (!_gameRunning && haveKeyboard && Keyboard.current.digit1Key.wasPressedThisFrame)
-            {
-                _gameRunning = StartGame();
-            }
 
             if (haveKeyboard && Keyboard.current.escapeKey.wasPressedThisFrame)
             {
@@ -191,6 +183,8 @@ namespace SK.Examples
                 }
 
                 StopGame();
+
+                Utils.ExitApp();
             }
 
             if (_co == null && Wrapper != null && _gameRunning)
@@ -394,7 +388,12 @@ namespace SK.Examples
 
         private void ActivateInput()
         {
-            Wrapper?.ActivateInput(FindObjectOfType<PlayerInputManager>().GetComponent<Libretro.IInputProcessor>());
+            Libretro.IInputProcessor processor = FindObjectOfType<PlayerInputManager>().GetComponent<Libretro.IInputProcessor>();
+            if (processor != null)
+            {
+                processor.DigitalDirectionsAsAnalog = _digitalDirectionsAsAnalog;
+                Wrapper?.ActivateInput(processor);
+            }
             _inputEnabled = true;
         }
 
@@ -438,17 +437,22 @@ namespace SK.Examples
 
 #if UNITY_EDITOR
         [ContextMenu("Load configuration")]
-        public void EditorLoadConfig()
+#endif
+        private void LoadConfig()
         {
-            string text = File.ReadAllText(Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "game.json")));
-            Game        = JsonUtility.FromJson<GameConfigFile>(text).Game;
+            string text = File.ReadAllText(Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "config.json")));
+            ConfigFile cfg = JsonUtility.FromJson<ConfigFile>(text);
+
+            Game = cfg.Game;
+            _digitalDirectionsAsAnalog = cfg.DigitalInputAsAnalog;
         }
 
+#if UNITY_EDITOR
         [ContextMenu("Save configuration")]
-        public void EditorSaveConfig()
+        private void EditorSaveConfig()
         {
-            string json = JsonUtility.ToJson(new GameConfigFile { UseConfig = true, Game = Game }, true);
-            File.WriteAllText(Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "game.json")), json);
+            string json = JsonUtility.ToJson(new ConfigFile { DigitalInputAsAnalog = _digitalDirectionsAsAnalog, Game = Game }, true);
+            File.WriteAllText(Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "config.json")), json);
         }
 #endif
     }

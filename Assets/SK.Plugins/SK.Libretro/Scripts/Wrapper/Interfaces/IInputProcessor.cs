@@ -24,6 +24,8 @@ namespace SK.Libretro
 {
     public interface IInputProcessor
     {
+        bool DigitalDirectionsAsAnalog { get; set; }
+
         bool JoypadButton(int port, int button);
 
         float MouseDeltaX(int port);

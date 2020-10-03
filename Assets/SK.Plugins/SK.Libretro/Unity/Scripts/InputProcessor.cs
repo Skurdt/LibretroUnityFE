@@ -30,6 +30,8 @@ namespace SK.Libretro.Unity
     [RequireComponent(typeof(PlayerInput))]
     public class InputProcessor : MonoBehaviour
     {
+        public bool DigitalDirectionsAsAnalog { get; set; }
+
         private const int NUM_MOUSE_BUTTONS = 5;
 
         public readonly bool[] JoypadButtons = new bool[System.Enum.GetNames(typeof(retro_device_id_joypad)).Length];
@@ -56,10 +58,13 @@ namespace SK.Libretro.Unity
             JoypadButtons[(int)retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_LEFT]  = vec.x <= -0.2f;
             JoypadButtons[(int)retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_RIGHT] = vec.x >=  0.2f;
 
-            AnalogLeft = vec;
+            if (DigitalDirectionsAsAnalog)
+            {
+                AnalogLeft = vec;
+            }
         }
 
-        private void OnAnalogLeft(InputValue value) => AnalogLeft = value.Get<Vector2>();
+        private void OnAnalogLeft(InputValue value)  => AnalogLeft  = value.Get<Vector2>();
         private void OnAnalogRight(InputValue value) => AnalogRight = value.Get<Vector2>();
 
         private void OnJoypadStartButton(InputValue value)  => JoypadButtons[(int)retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_START]  = value.isPressed;
