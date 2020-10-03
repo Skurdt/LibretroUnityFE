@@ -330,7 +330,8 @@ namespace SK.Libretro
                     _wrapper.Core.Rotation = (int)*(uint*)data * 90;
                 }
                 Log.Info($"<- Rotation: {_wrapper.Core.Rotation}", "RETRO_ENVIRONMENT_SET_ROTATION");
-                return true;
+                // return true;
+                return false;
             }
 
             // TODO(Tom): Do I need something from this?
