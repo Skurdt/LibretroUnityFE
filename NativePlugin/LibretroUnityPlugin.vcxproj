@@ -55,7 +55,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Program Files\Unity\Hub\Editor\2019.4.11f1\Editor\Data\PluginAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.2.148.1\Include;C:\Program Files\Unity\Hub\Editor\2019.4.11f1\Editor\Data\PluginAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>26812</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -75,7 +75,7 @@ copy /Y "$(TargetDir)$(ProjectName).pdb" "..\Assets\SK.Plugins\SK.Libretro\Unity
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Program Files\Unity\Hub\Editor\2019.4.11f1\Editor\Data\PluginAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.2.148.1\Include;C:\Program Files\Unity\Hub\Editor\2019.4.11f1\Editor\Data\PluginAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>26812</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -91,6 +91,13 @@ copy /Y "$(TargetDir)$(ProjectName).pdb" "..\Assets\SK.Plugins\SK.Libretro\Unity
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\LibretroUnityPlugin.cpp" />
+    <ClCompile Include="src\RenderAPI.cpp" />
+    <ClCompile Include="src\RenderAPI_OpenGLCoreES.cpp" />
+    <ClCompile Include="src\RenderAPI_Vulkan.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\PlatformBase.hpp" />
+    <ClInclude Include="src\RenderAPI.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -177,7 +177,7 @@ namespace SK.Libretro
         {
             try
             {
-                //FIXME(Tom): This sometimes crash (mostly on cores using lico)
+                //FIXME(Tom): This sometimes crash (mostly on cores using libco)
                 //if (Initialized)
                 //{
                 //    retro_deinit();
@@ -187,7 +187,7 @@ namespace SK.Libretro
                 {
                     _dll.Free();
 
-                    string dllPath = FileSystem.GetAbsolutePath($"{LibretroWrapper.TempDirectory}/{_dll.Name}.{_dll.Extension}");
+                    string dllPath = FileSystem.GetAbsolutePath(Path.Combine(LibretroWrapper.TempDirectory, $"{_dll.Name}.{_dll.Extension}"));
                     if (File.Exists(dllPath))
                     {
                         File.Delete(dllPath);

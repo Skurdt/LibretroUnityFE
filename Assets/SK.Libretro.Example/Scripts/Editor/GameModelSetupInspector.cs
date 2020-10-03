@@ -39,52 +39,49 @@ namespace SK.Examples.Common
         {
             base.OnInspectorGUI();
 
-            if (ModelSetupScript.Game != null)
+            GUILayout.Space(8f);
+
+            _ = EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Core", GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
             {
-                GUILayout.Space(8f);
+                ShowSelectCoreWindow();
+            }
+            ModelSetupScript.Game.Core = EditorGUILayout.TextField(ModelSetupScript.Game.Core);
+            EditorGUILayout.EndHorizontal();
 
+            _ = EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Directory", GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
+            {
+                ShowSelectRomDirectoryDialog();
+            }
+            ModelSetupScript.Game.Directory = EditorGUILayout.TextField(ModelSetupScript.Game.Directory);
+            EditorGUILayout.EndHorizontal();
+
+            _ = EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Rom", GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
+            {
+                ShowSelectRomDialog();
+            }
+            ModelSetupScript.Game.Name = EditorGUILayout.TextField(ModelSetupScript.Game.Name);
+            EditorGUILayout.EndHorizontal();
+
+            GUILayout.Space(8f);
+
+            if (!string.IsNullOrEmpty(ModelSetupScript.Game.Core))
+            {
                 _ = EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button("Core", GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
+                if (!EditorApplication.isPlaying)
                 {
-                    ShowSelectCoreWindow();
-                }
-                ModelSetupScript.Game.Core = EditorGUILayout.TextField(ModelSetupScript.Game.Core);
-                EditorGUILayout.EndHorizontal();
-
-                _ = EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button("Directory", GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
-                {
-                    ShowSelectRomDirectoryDialog();
-                }
-                ModelSetupScript.Game.Directory = EditorGUILayout.TextField(ModelSetupScript.Game.Directory);
-                EditorGUILayout.EndHorizontal();
-
-                _ = EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button("Rom", GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
-                {
-                    ShowSelectRomDialog();
-                }
-                ModelSetupScript.Game.Name = EditorGUILayout.TextField(ModelSetupScript.Game.Name);
-                EditorGUILayout.EndHorizontal();
-
-                GUILayout.Space(8f);
-
-                if (!string.IsNullOrEmpty(ModelSetupScript.Game.Core))
-                {
-                    _ = EditorGUILayout.BeginHorizontal();
-                    if (!EditorApplication.isPlaying)
+                    if (GUILayout.Button("Start", GUILayout.Height(EditorGUIUtility.singleLineHeight)))
                     {
-                        if (GUILayout.Button("Start", GUILayout.Height(EditorGUIUtility.singleLineHeight)))
-                        {
-                            _ = EditorApplication.ExecuteMenuItem("Edit/Play");
-                        }
+                        _ = EditorApplication.ExecuteMenuItem("Edit/Play");
                     }
-                    EditorGUILayout.EndHorizontal();
                 }
-                else
-                {
-                    EditorGUILayout.HelpBox("No core selected!", MessageType.Error);
-                }
+                EditorGUILayout.EndHorizontal();
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("No core selected!", MessageType.Error);
             }
         }
 

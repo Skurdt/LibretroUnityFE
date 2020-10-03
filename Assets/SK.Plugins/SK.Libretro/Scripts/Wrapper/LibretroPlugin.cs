@@ -40,9 +40,6 @@ namespace SK.Libretro
         public static extern void SetupInteropInterface(ref InteropInterface interopInterface);
 
         [DllImport("LibretroUnityPlugin", CallingConvention = CallingConvention.StdCall)]
-        public static extern void SendTexture(IntPtr texture, int width, int height);
-
-        [DllImport("LibretroUnityPlugin", CallingConvention = CallingConvention.StdCall)]
         public static extern uint GetCurrentFramebuffer();
 
         [DllImport("LibretroUnityPlugin", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]

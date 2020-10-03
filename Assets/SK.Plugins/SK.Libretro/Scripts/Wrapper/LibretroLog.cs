@@ -53,9 +53,9 @@ namespace SK.Libretro
             {
                 argumentsToPush = GetFormatArgumentCount(format);
             }
-            catch (NotImplementedException e)
+            catch (NotImplementedException /*e*/)
             {
-                Log.Warning(e.Message);
+                //Log.Warning(e.Message);
                 return;
             }
 

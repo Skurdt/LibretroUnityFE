@@ -20,35 +20,56 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using SK.Libretro;
+using System;
 using System.Collections;
 using System.IO;
-using System.Threading;
+using System.Runtime.InteropServices;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
+using static SK.Libretro.LibretroStructs;
 
 namespace SK.Examples
 {
-    [System.Serializable]
-    public class Game
+    [Serializable]
+    public struct Game
     {
-        public string Core      = "mame2003_plus";
-        public string Directory = "D:/mame2003-plus/roms";
-        public string Name      = "pacman";
+        public string Core;
+        public string Directory;
+        public string Name;
     }
 
-    [System.Serializable]
-    public class GameConfigFile
+    [Serializable]
+    public struct GameConfigFile
     {
         public bool UseConfig;
         public Game Game;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct InitContextData
+    {
+        public IntPtr Handle;
+        public int Width;
+        public int Height;
+        [MarshalAs(UnmanagedType.U1)] public bool Depth;
+        [MarshalAs(UnmanagedType.U1)] public bool Stencil;
+
+        public InitContextData(Texture texture, ref retro_hw_render_callback cb)
+        {
+            Handle  = texture.GetNativeTexturePtr();
+            Width   = texture.width;
+            Height  = texture.height;
+            Depth   = cb.depth;
+            Stencil = cb.stencil;
+        }
+    }
+
     [SelectionBase]
     public class GameModelSetup : MonoBehaviour
     {
-        public LibretroWrapper Wrapper { get; private set; }
+        public Libretro.LibretroWrapper Wrapper { get; private set; }
 
         public bool VideoEnabled
         {
@@ -117,7 +138,6 @@ namespace SK.Examples
         [SerializeField] private float _audioMinDistance              = 2f;
         [SerializeField] private float _audioMaxDistance              = 10f;
         [SerializeField] private FilterMode _videoFilterMode          = FilterMode.Point;
-        [SerializeField] private bool _correctAspectRatio             = false;
 
         private Player.Controls _player;
 
@@ -134,25 +154,11 @@ namespace SK.Examples
         private double _accumulatedTime                          = 0.0;
         private int _nLoops                                      = 0;
 
-        private bool _gameStarted = false;
+        private Coroutine _co;
+        private bool _gameRunning = false;
 
-        [ContextMenu("Load configuration")]
-        public void EditorLoadConfig()
-        {
-            string text        = File.ReadAllText(Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "game.json")));
-            GameConfigFile cfg = JsonUtility.FromJson<GameConfigFile>(text);
-            if (cfg != null)
-            {
-                Game = cfg.Game;
-            }
-        }
-
-        [ContextMenu("Save configuration")]
-        public void EditorSaveConfig()
-        {
-            string json = JsonUtility.ToJson(new GameConfigFile { UseConfig = true, Game = Game }, true);
-            File.WriteAllText(Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "game.json")), json);
-        }
+        private bool _contextInitialized             = false;
+        private CommandBuffer _retroRunCommandBuffer = null;
 
         private void Awake() => _player = FindObjectOfType<Player.Controls>();
 
@@ -160,7 +166,7 @@ namespace SK.Examples
         {
             string text        = File.ReadAllText(Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "game.json")));
             GameConfigFile cfg = JsonUtility.FromJson<GameConfigFile>(text);
-            if (cfg != null && cfg.UseConfig)
+            if (cfg.UseConfig)
             {
                 Game = cfg.Game;
             }
@@ -170,75 +176,43 @@ namespace SK.Examples
 
         private void Update()
         {
-            if (!_gameStarted && Keyboard.current != null && Keyboard.current.digit1Key.wasPressedThisFrame)
+            bool haveKeyboard = Keyboard.current != null;
+
+            if (!_gameRunning && haveKeyboard && Keyboard.current.digit1Key.wasPressedThisFrame)
             {
-                if (StartGame())
-                {
-                    _ = StartCoroutine(CoUpdate());
-                }
-                _gameStarted = true;
+                _gameRunning = StartGame();
             }
 
-            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+            if (haveKeyboard && Keyboard.current.escapeKey.wasPressedThisFrame)
             {
-                Utils.ExitApp();
+                StopGame();
             }
-        }
 
-        private IEnumerator CoUpdate()
-        {
-            while (Wrapper != null)
+            if (_co == null && Wrapper != null && _gameRunning)
             {
-                if (Wrapper.Core.HwAccelerated)
-                {
-                    yield return new WaitForEndOfFrame();
-                }
 
-                Wrapper.FrameTimeUpdate();
+                _co = StartCoroutine(CoUpdate());
+            }
 
-                _targetFrameTime = 1.0 / Wrapper.Game.VideoFps / _timeScale;
-                _accumulatedTime += _stopwatch.Elapsed.TotalSeconds;
-                _stopwatch.Restart();
-                _nLoops = 0;
-
-                while (_accumulatedTime >= _targetFrameTime && _nLoops < _maxSkipFrames)
-                {
-                    if (Wrapper.Core.HwAccelerated)
-                    {
-                        GL.IssuePluginEvent(LibretroPlugin.GetRenderEventFunc(), 2);
-                    }
-                    else
-                    {
-                        Wrapper.Update();
-                    }
-                    _accumulatedTime -= _targetFrameTime;
-                    ++_nLoops;
-                    yield return null;
-                }
-
-                GraphicsSetFilterMode(_videoFilterMode);
+            GraphicsSetFilterMode(_videoFilterMode);
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-                if (AudioVolumeControlledByDistance && Wrapper.Audio.Processor is Libretro.NAudio.AudioProcessor NAudioAudio)
-                {
-                    float distance = Vector3.Distance(transform.position, _player.transform.position);
-                    if (distance > 0f)
-                    {
-                        float volume = math.clamp(math.pow((distance - _audioMaxDistance) / (_audioMinDistance - _audioMaxDistance), 2f), 0f, _audioMaxVolume);
-                        NAudioAudio.SetVolume(volume);
-                    }
-                }
-#endif
+            if (!AudioVolumeControlledByDistance || Wrapper == null || Wrapper.Audio == null || !(Wrapper.Audio.Processor is Libretro.NAudio.AudioProcessor audioProcessor))
+            {
+                return;
             }
+
+            float distance = Vector3.Distance(transform.position, _player.transform.position);
+            if (distance > 0f)
+            {
+                float volume = math.clamp(math.pow((distance - _audioMaxDistance) / (_audioMinDistance - _audioMaxDistance), 2f), 0f, _audioMaxVolume);
+                audioProcessor.SetVolume(volume);
+            }
+#endif
         }
 
         private bool StartGame()
         {
-            if (Game == null || string.IsNullOrEmpty(Game.Core))
-            {
-                return false;
-            }
-
             if (transform.childCount == 0)
             {
                 return false;
@@ -256,8 +230,7 @@ namespace SK.Examples
                 return false;
             }
 
-            Wrapper = new LibretroWrapper((LibretroTargetPlatform)Application.platform, $"{Application.streamingAssetsPath}/libretro~");
-
+            Wrapper = new Libretro.LibretroWrapper((Libretro.LibretroTargetPlatform)Application.platform, $"{Application.streamingAssetsPath}/libretro~");
             if (!Wrapper.StartGame(Game.Core, Game.Directory, Game.Name))
             {
                 StopGame();
@@ -265,32 +238,64 @@ namespace SK.Examples
             }
 
             ActivateGraphics();
-
-            if (Wrapper.Core.HwAccelerated && Wrapper.Video.Processor is Libretro.Unity.GraphicsProcessor unityGraphics && SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.OpenGLCore)
-            {
-                LibretroPlugin.SendTexture(unityGraphics.Texture.GetNativeTexturePtr(), unityGraphics.Texture.width, unityGraphics.Texture.height);
-                GL.IssuePluginEvent(LibretroPlugin.GetRenderEventFunc(), 0);
-                Thread.Sleep(200);
-                unityGraphics.OnTextureRecreated(unityGraphics.Texture);
-            }
-
             ActivateAudio();
+
+            _accumulatedTime = 0;
+            _stopwatch.Restart();
 
             return true;
         }
 
         private void StopGame()
         {
+            DeactivateGraphics();
+
             Wrapper?.StopGame();
             Wrapper = null;
+            _gameRunning = false;
         }
 
-        private void GraphicsSetFilterMode(FilterMode filterMode)
+        private IEnumerator CoUpdate()
         {
-            if (Wrapper?.Video.Processor is Libretro.Unity.GraphicsProcessor unityGraphics && unityGraphics.Texture != null)
+            if (Wrapper.Core.HwAccelerated)
             {
-                unityGraphics.VideoFilterMode = filterMode;
+                if (!_contextInitialized)
+                {
+                    yield break;
+                }
+
+                _retroRunCommandBuffer.Clear();
             }
+
+            Wrapper.FrameTimeUpdate();
+
+            _targetFrameTime  = 1.0 / Wrapper.Game.VideoFps / _timeScale;
+            _accumulatedTime += _stopwatch.Elapsed.TotalSeconds;
+            _nLoops           = 0;
+            _stopwatch.Restart();
+
+            while (_accumulatedTime >= _targetFrameTime && _nLoops < _maxSkipFrames)
+            {
+                if (Wrapper.Core.HwAccelerated)
+                {
+                    _retroRunCommandBuffer.IssuePluginEvent(Libretro.LibretroPlugin.GetRenderEventFunc(), 2);
+                }
+                else
+                {
+                    Wrapper.Update();
+                }
+                _accumulatedTime -= _targetFrameTime;
+                ++_nLoops;
+                yield return null;
+            }
+
+            if (Wrapper.Core.HwAccelerated)
+            {
+                yield return new WaitForEndOfFrame();
+                Graphics.ExecuteCommandBuffer(_retroRunCommandBuffer);
+            }
+
+            _co = null;
         }
 
         private void ActivateGraphics()
@@ -300,20 +305,51 @@ namespace SK.Examples
                 return;
             }
 
-            TextureFormat textureFormat = Wrapper.Core.HwAccelerated ? TextureFormat.RGBA32 : TextureFormat.BGRA32;
+            TextureFormat textureFormat = Wrapper.Core.HwAccelerated ? TextureFormat.RGB24 : TextureFormat.BGRA32;
             Libretro.Unity.GraphicsProcessor unityGraphics = new Libretro.Unity.GraphicsProcessor(Wrapper.Game.VideoWidth, Wrapper.Game.VideoHeight, textureFormat)
             {
                 OnTextureRecreated = GraphicsSetTextureCallback
             };
 
             Wrapper.ActivateGraphics(unityGraphics);
+
+            if (Wrapper.Core.HwAccelerated && SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLCore)
+            {
+                InitContextData initContextData = new InitContextData(unityGraphics.Texture, ref Wrapper.HwRenderInterface);
+                CommandBuffer cb = new CommandBuffer();
+                unsafe
+                {
+                    cb.IssuePluginEventAndData(Libretro.LibretroPlugin.GetRenderEventFunc(), 0, (IntPtr)(&initContextData));
+                }
+                Graphics.ExecuteCommandBuffer(cb);
+
+                GraphicsSetTextureCallback(unityGraphics.Texture);
+
+                _retroRunCommandBuffer = new CommandBuffer();
+                _contextInitialized = true;
+            }
+
             _graphicsEnabled = true;
         }
 
         private void DeactivateGraphics()
         {
-            Wrapper?.DeactivateGraphics();
             _graphicsEnabled = false;
+
+            if (Wrapper == null)
+            {
+                return;
+            }
+
+            if (Wrapper.Core.HwAccelerated && _contextInitialized)
+            {
+                CommandBuffer cb = new CommandBuffer();
+                cb.IssuePluginEvent(Libretro.LibretroPlugin.GetRenderEventFunc(), 1);
+                Graphics.ExecuteCommandBuffer(cb);
+                _contextInitialized = false;
+            }
+
+            Wrapper.DeactivateGraphics();
         }
 
         private void ActivateAudio()
@@ -354,7 +390,7 @@ namespace SK.Examples
 
         private void ActivateInput()
         {
-            Wrapper?.ActivateInput(FindObjectOfType<PlayerInputManager>().GetComponent<IInputProcessor>());
+            Wrapper?.ActivateInput(FindObjectOfType<PlayerInputManager>().GetComponent<Libretro.IInputProcessor>());
             _inputEnabled = true;
         }
 
@@ -364,50 +400,52 @@ namespace SK.Examples
             _inputEnabled = false;
         }
 
+        private void GraphicsSetFilterMode(FilterMode filterMode)
+        {
+            if (Wrapper?.Video.Processor is Libretro.Unity.GraphicsProcessor unityGraphics && unityGraphics.Texture != null)
+            {
+                unityGraphics.VideoFilterMode = filterMode;
+            }
+        }
+
         private void GraphicsSetTextureCallback(Texture2D texture)
         {
-            if (_rendererComponent != null && texture != null)
+            if (_rendererComponent == null || texture == null)
             {
-                Vector2 tiling;
-                Vector2 offset;
-                if (_correctAspectRatio)
-                {
-                    if (texture.width >= texture.height)
-                    {
-                        tiling = new Vector2(1f, (float)texture.width / texture.height);
-                        offset = new Vector2(0f, (tiling.y - 1f) / -2f);
-                    }
-                    else
-                    {
-                        tiling = new Vector2((float)texture.height / texture.width, 1f);
-                        offset = new Vector2((tiling.x - 1f) / -2f, 0f);
-                    }
-                }
-                else
-                {
-                    tiling = Vector2.one;
-                    offset = Vector2.zero;
-                }
-
-                MaterialPropertyBlock block = new MaterialPropertyBlock();
-                _rendererComponent.GetPropertyBlock(block);
-                block.SetTexture("_Texture", texture);
-                block.SetVector("_UVTiling", tiling);
-                block.SetVector("_UVOffset", offset);
-                block.SetInt("_Rotation", Wrapper.Core.Rotation);
-                block.SetFloat("_Intensity", 1.1f);
-                _rendererComponent.SetPropertyBlock(block);
+                return;
             }
+
+            MaterialPropertyBlock block = new MaterialPropertyBlock();
+            _rendererComponent.GetPropertyBlock(block);
+            block.SetTexture("_MainTex", texture);
+            block.SetColor("_Color", Color.white);
+            _rendererComponent.SetPropertyBlock(block);
         }
 
         private void AudioSetVolume(float volume)
         {
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            if (Wrapper.Audio.Processor != null && Wrapper.Audio.Processor is Libretro.NAudio.AudioProcessor NAudioAudio)
+            if (Wrapper != null && Wrapper.Audio != null && Wrapper.Audio.Processor is Libretro.NAudio.AudioProcessor audioProcessor)
             {
-                NAudioAudio.SetVolume(math.clamp(volume, 0f, _audioMaxVolume));
+                audioProcessor.SetVolume(math.clamp(volume, 0f, _audioMaxVolume));
             }
 #endif
         }
+
+#if UNITY_EDITOR
+        [ContextMenu("Load configuration")]
+        public void EditorLoadConfig()
+        {
+            string text = File.ReadAllText(Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "game.json")));
+            Game        = JsonUtility.FromJson<GameConfigFile>(text).Game;
+        }
+
+        [ContextMenu("Save configuration")]
+        public void EditorSaveConfig()
+        {
+            string json = JsonUtility.ToJson(new GameConfigFile { UseConfig = true, Game = Game }, true);
+            File.WriteAllText(Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "game.json")), json);
+        }
+#endif
     }
 }

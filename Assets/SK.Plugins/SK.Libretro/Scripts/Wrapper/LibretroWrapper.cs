@@ -202,6 +202,11 @@ namespace SK.Libretro
 
         public bool StartGame(string coreName, string gameDirectory, string gameName)
         {
+            if (string.IsNullOrEmpty(coreName))
+            {
+                return false;
+            }
+
             LoadCoreOptionsFile();
 
             if (!Core.Start(coreName))
@@ -254,15 +259,12 @@ namespace SK.Libretro
 
         public void Update()
         {
-            if (!Game.Running || !Core.Initialized)
+            if (!Game.Running || !Core.Initialized || Core.HwAccelerated)
             {
                 return;
             }
 
-            if (!Core.HwAccelerated)
-            {
-                Core.retro_run();
-            }
+            Core.retro_run();
         }
 
         public void ActivateGraphics(IGraphicsProcessor graphicsProcessor) => Video.Processor = graphicsProcessor;
