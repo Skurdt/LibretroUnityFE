@@ -25,7 +25,7 @@ using System.Runtime.InteropServices;
 
 namespace SK.Libretro
 {
-    public class LibretroPlugin
+    internal sealed class LibretroPlugin
     {
         [StructLayout(LayoutKind.Sequential)]
         public struct InteropInterface
@@ -40,7 +40,7 @@ namespace SK.Libretro
         public static extern void SetupInteropInterface(ref InteropInterface interopInterface);
 
         [DllImport("LibretroUnityPlugin", CallingConvention = CallingConvention.StdCall)]
-        public static extern uint GetCurrentFramebuffer();
+        public static extern UIntPtr GetCurrentFramebuffer();
 
         [DllImport("LibretroUnityPlugin", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         public static extern IntPtr GetHwProcAddress([MarshalAs(UnmanagedType.LPStr)] string sym);

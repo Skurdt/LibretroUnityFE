@@ -21,20 +21,18 @@
  * SOFTWARE. */
 
 using SK.Libretro.Utilities;
+using SK.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using static SK.Libretro.LibretroConstants;
-using static SK.Libretro.LibretroDelegates;
-using static SK.Libretro.LibretroEnums;
-using static SK.Libretro.LibretroStructs;
+using static SK.Libretro.LibretroHeader;
 
 namespace SK.Libretro
 {
     internal sealed class LibretroEnvironment
     {
-        internal bool UpdateVariables = false;
+        public bool UpdateVariables = false;
 
         private readonly LibretroWrapper _wrapper;
 
@@ -120,7 +118,7 @@ namespace SK.Libretro
 
                 default:
                 {
-                    Log.Error($"Environment unknown: {cmd}", "LibretroEnvironment.Callback");
+                    Logger.LogError($"Environment unknown: {cmd}", "LibretroEnvironment.Callback");
                     return false;
                 }
             }
@@ -130,7 +128,7 @@ namespace SK.Libretro
              */
             bool ENVIRONMENT_NOT_IMPLEMENTED(bool defaultReturns = false)
             {
-                Log.Error("Environment not implemented!", cmd.ToString());
+                Logger.LogError("Environment not implemented!", cmd.ToString());
                 return defaultReturns;
             }
 
@@ -141,35 +139,27 @@ namespace SK.Libretro
             bool GetOverscan()
             {
                 if (data != null)
-                {
                     *(bool*)data = _wrapper.OptionCropOverscan;
-                }
-                Log.Info($"-> Crop Overscan: {_wrapper.OptionCropOverscan}", "RETRO_ENVIRONMENT_GET_OVERSCAN");
+                Logger.LogInfo($"-> Crop Overscan: {_wrapper.OptionCropOverscan}", $"{cmd}");
                 return true;
             }
 
             bool GetCanDupe()
             {
                 if (data != null)
-                {
                     *(bool*)data = true;
-                }
-                Log.Info("-> CanDupe: true", "RETRO_ENVIRONMENT_GET_CAN_DUPE");
+                Logger.LogInfo("-> CanDupe: true", $"{cmd}");
                 return true;
             }
 
             bool GetSystemDirectory()
             {
-                string path = FileSystem.GetAbsolutePath(Path.Combine(LibretroWrapper.SystemDirectory, _wrapper.Core.CoreName));
+                string path = FileSystem.GetAbsolutePath(Path.Combine(LibretroWrapper.SystemDirectory, _wrapper.Core.Name));
                 if (!Directory.Exists(path))
-                {
                     _ = Directory.CreateDirectory(path);
-                }
                 if (data != null)
-                {
-                    *(char**)data = _wrapper.Core.GetUnsafeString(path);
-                }
-                Log.Info($"-> SystemDirectory: {path}", "RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY");
+                    *(char**)data = _wrapper.GetUnsafeString(path);
+                Logger.LogInfo($"-> SystemDirectory: {path}", $"{cmd}");
                 return true;
             }
 
@@ -177,27 +167,27 @@ namespace SK.Libretro
             {
                 if (data == null)
                 {
-                    Log.Warning($"Variable data is null.", "RETRO_ENVIRONMENT_GET_VARIABLE");
+                    Logger.LogWarning($"Variable data is null.", $"{cmd}");
                     return false;
                 }
 
                 retro_variable* outVariable = (retro_variable*)data;
-                string key                  = StringUtils.CharsToString(outVariable->key);
+                string key                  = UnsafeStringUtils.CharsToString(outVariable->key);
 
                 if (_wrapper.Core.CoreOptions == null)
                 {
-                    Log.Warning($"Core didn't set its options. Requested key: {key}", "RETRO_ENVIRONMENT_GET_VARIABLE");
+                    Logger.LogWarning($"Core didn't set its options. Requested key: {key}", $"{cmd}");
                     return false;
                 }
 
                 string coreOption = _wrapper.Core.CoreOptions.Options.Find(x => x.StartsWith(key, StringComparison.OrdinalIgnoreCase));
                 if (coreOption == null)
                 {
-                    Log.Warning($"Core option '{key}' not found.", "RETRO_ENVIRONMENT_GET_VARIABLE");
+                    Logger.LogWarning($"Core option '{key}' not found.", $"{cmd}");
                     return false;
                 }
 
-                outVariable->value = _wrapper.Core.GetUnsafeString(coreOption.Split(';')[1]);
+                outVariable->value = _wrapper.GetUnsafeString(coreOption.Split(';')[1]);
                 return true;
             }
 
@@ -213,84 +203,64 @@ namespace SK.Libretro
 
             bool GetLibretroPath()
             {
-                string path = FileSystem.GetAbsolutePath(Path.Combine(LibretroWrapper.CoresDirectory, _wrapper.Core.CoreName));
+                string path = FileSystem.GetAbsolutePath(Path.Combine(LibretroWrapper.CoresDirectory, _wrapper.Core.Name));
                 if (!Directory.Exists(path))
-                {
                     _ = Directory.CreateDirectory(path);
-                }
                 if (data != null)
-                {
-                    *(char**)data = _wrapper.Core.GetUnsafeString(path);
-                }
-                Log.Info($"-> LibretroPath: {path}", "RETRO_ENVIRONMENT_GET_LIBRETRO_PATH");
+                    *(char**)data = _wrapper.GetUnsafeString(path);
+                Logger.LogInfo($"-> LibretroPath: {path}", $"{cmd}");
                 return true;
             }
 
             bool GetInputDeviceCapabilities()
             {
                 if (data != null)
-                {
-                    *(ulong*)data = (1 << (int)retro_device.RETRO_DEVICE_JOYPAD) | (1 << (int)retro_device.RETRO_DEVICE_ANALOG);
-                }
+                    *(ulong*)data = (1 << (int)RETRO_DEVICE_JOYPAD) | (1 << (int)RETRO_DEVICE_ANALOG);
                 return true;
             }
 
             bool GetLogInterface()
             {
                 if (data != null)
-                {
                     ((retro_log_callback*)data)->log = Marshal.GetFunctionPointerForDelegate<retro_log_printf_t>(LibretroLog.RetroLogPrintf);
-                }
                 return true;
             }
 
             bool GetCoreAssetsDirectory()
             {
-                string path = FileSystem.GetAbsolutePath(Path.Combine(LibretroWrapper.CoreAssetsDirectory, _wrapper.Core.CoreName));
+                string path = FileSystem.GetAbsolutePath(Path.Combine(LibretroWrapper.CoreAssetsDirectory, _wrapper.Core.Name));
                 if (!Directory.Exists(path))
-                {
                     _ = Directory.CreateDirectory(path);
-                }
                 if (data != null)
-                {
-                    *(char**)data = _wrapper.Core.GetUnsafeString(path);
-                }
-                Log.Info($"-> CoreAssetsDirectory: {path}", "RETRO_ENVIRONMENT_GET_CORE_ASSETS_DIRECTORY");
+                    *(char**)data = _wrapper.GetUnsafeString(path);
+                Logger.LogInfo($"-> CoreAssetsDirectory: {path}", $"{cmd}");
                 return true;
             }
 
             bool GetSaveDirectory()
             {
-                string path = FileSystem.GetAbsolutePath(Path.Combine(LibretroWrapper.SavesDirectory, _wrapper.Core.CoreName));
+                string path = FileSystem.GetAbsolutePath(Path.Combine(LibretroWrapper.SavesDirectory, _wrapper.Core.Name));
                 if (!Directory.Exists(path))
-                {
                     _ = Directory.CreateDirectory(path);
-                }
                 if (data != null)
-                {
-                    *(char**)data = _wrapper.Core.GetUnsafeString(path);
-                }
-                Log.Info($"-> SaveDirectory: {path}", "RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY");
+                    *(char**)data = _wrapper.GetUnsafeString(path);
+                Logger.LogInfo($"-> SaveDirectory: {path}", $"{cmd}");
                 return true;
             }
 
             bool GetUsername()
             {
                 if (data != null)
-                {
-                    *(char**)data = _wrapper.Core.GetUnsafeString(_wrapper.OptionUserName);
-                }
-                Log.Info($"-> UserName: {_wrapper.OptionUserName}", "RETRO_ENVIRONMENT_GET_USERNAME");
+                    *(char**)data = _wrapper.GetUnsafeString(_wrapper.OptionUserName);
+                Logger.LogInfo($"-> UserName: {_wrapper.OptionUserName}", $"{cmd}");
                 return true;
             }
 
             bool GetLanguage()
             {
                 if (data != null)
-                {
-                    *(char**)data = _wrapper.Core.GetUnsafeString(_wrapper.OptionLanguage.ToString());
-                }
-                Log.Info($"-> Language: {_wrapper.OptionLanguage}", "RETRO_ENVIRONMENT_GET_LANGUAGE");
+                    *(char**)data = _wrapper.GetUnsafeString(_wrapper.OptionLanguage.ToString());
+                Logger.LogInfo($"-> Language: {_wrapper.OptionLanguage}", $"{cmd}");
                 return true;
             }
 
@@ -309,19 +279,15 @@ namespace SK.Libretro
             bool GetInputBitmasks()
             {
                 if (data != null)
-                {
                     *(bool*)data = false;
-                }
-                Log.Info("-> Input Bitmasks: False", "RETRO_ENVIRONMENT_GET_INPUT_BITMASKS");
+                Logger.LogInfo("-> Input Bitmasks: False", $"{cmd}");
                 return false;
             }
 
             bool GetCoreOptionsVersion()
             {
                 if (data != null)
-                {
                     *(uint*)data = RETRO_API_VERSION;
-                }
                 return true;
             }
             #endregion
@@ -335,10 +301,8 @@ namespace SK.Libretro
                 // Values: 0,  1,   2,   3
                 // Result: 0, 90, 180, 270 degrees
                 if (data != null)
-                {
                     _wrapper.Core.Rotation = (int)*(uint*)data * 90;
-                }
-                Log.Info($"<- Rotation: {_wrapper.Core.Rotation}", "RETRO_ENVIRONMENT_SET_ROTATION");
+                Logger.LogInfo($"<- Rotation: {_wrapper.Core.Rotation}", $"{cmd}");
                 // return true;
                 return false;
             }
@@ -347,28 +311,22 @@ namespace SK.Libretro
             bool SetMessage()
             {
                 if (data != null)
-                {
-                    Log.Warning($"<- Message: {StringUtils.CharsToString(((retro_message*)data)->msg)}", "RETRO_ENVIRONMENT_SET_MESSAGE");
-                }
+                    Logger.LogWarning($"<- Message: {UnsafeStringUtils.CharsToString(((retro_message*)data)->msg)}", $"{cmd}");
                 return true;
             }
 
             bool SetPerformanceLevel()
             {
                 if (data != null)
-                {
                     _wrapper.Core.PerformanceLevel = *(int*)data;
-                }
-                Log.Info($"<- PerformanceLevel: {_wrapper.Core.PerformanceLevel}", "RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL");
+                Logger.LogInfo($"<- PerformanceLevel: {_wrapper.Core.PerformanceLevel}", $"{cmd}");
                 return true;
             }
 
             bool SetPixelFormat()
             {
                 if (data == null)
-                {
                     return false;
-                }
 
                 retro_pixel_format* inPixelFormat = (retro_pixel_format*)data;
                 switch (*inPixelFormat)
@@ -378,7 +336,7 @@ namespace SK.Libretro
                     case retro_pixel_format.RETRO_PIXEL_FORMAT_RGB565:
                     {
                         _wrapper.Game.PixelFormat = *inPixelFormat;
-                        Log.Info($"<- PixelFormat: {_wrapper.Game.PixelFormat}", "RETRO_ENVIRONMENT_SET_PIXEL_FORMAT");
+                        Logger.LogInfo($"<- PixelFormat: {_wrapper.Game.PixelFormat}", $"{cmd}");
                         return true;
                     }
                 }
@@ -389,9 +347,7 @@ namespace SK.Libretro
             bool SetInputDescriptors()
             {
                 if (data == null)
-                {
                     return true;
-                }
 
                 retro_input_descriptor* inInputDescriptors = (retro_input_descriptor*)data;
                 uint id;
@@ -399,40 +355,33 @@ namespace SK.Libretro
                 {
                     uint port = inInputDescriptors->port;
                     if (port >= LibretroInput.MAX_USERS)
-                    {
                         continue;
-                    }
 
-                    retro_device device = (retro_device)inInputDescriptors->device;
-                    if (device != retro_device.RETRO_DEVICE_JOYPAD && device != retro_device.RETRO_DEVICE_ANALOG)
-                    {
+                    uint device = inInputDescriptors->device;
+                    if (device != RETRO_DEVICE_JOYPAD && device != RETRO_DEVICE_ANALOG)
                         continue;
-                    }
 
                     id = inInputDescriptors->id;
                     if (id >= LibretroInput.FIRST_CUSTOM_BIND)
-                    {
                         continue;
-                    }
 
-                    string descText = StringUtils.CharsToString(inInputDescriptors->desc);
-                    retro_device_index_analog index = (retro_device_index_analog)inInputDescriptors->index;
-                    if (device == retro_device.RETRO_DEVICE_ANALOG)
+                    string descText = UnsafeStringUtils.CharsToString(inInputDescriptors->desc);
+                    uint index = inInputDescriptors->index;
+                    if (device == RETRO_DEVICE_ANALOG)
                     {
-                        retro_device_id_analog idAnalog = (retro_device_id_analog)id;
-                        switch (idAnalog)
+                        switch (id)
                         {
-                            case retro_device_id_analog.RETRO_DEVICE_ID_ANALOG_X:
+                            case RETRO_DEVICE_ID_ANALOG_X:
                             {
                                 switch (index)
                                 {
-                                    case retro_device_index_analog.RETRO_DEVICE_INDEX_ANALOG_LEFT:
+                                    case RETRO_DEVICE_INDEX_ANALOG_LEFT:
                                     {
                                         _wrapper.Game.ButtonDescriptions[port, (int)LibretroInput.CustomBinds.ANALOG_LEFT_X_PLUS] = descText;
                                         _wrapper.Game.ButtonDescriptions[port, (int)LibretroInput.CustomBinds.ANALOG_LEFT_X_MINUS] = descText;
                                     }
                                     break;
-                                    case retro_device_index_analog.RETRO_DEVICE_INDEX_ANALOG_RIGHT:
+                                    case RETRO_DEVICE_INDEX_ANALOG_RIGHT:
                                     {
                                         _wrapper.Game.ButtonDescriptions[port, (int)LibretroInput.CustomBinds.ANALOG_RIGHT_X_PLUS] = descText;
                                         _wrapper.Game.ButtonDescriptions[port, (int)LibretroInput.CustomBinds.ANALOG_RIGHT_X_MINUS] = descText;
@@ -441,17 +390,17 @@ namespace SK.Libretro
                                 }
                             }
                             break;
-                            case retro_device_id_analog.RETRO_DEVICE_ID_ANALOG_Y:
+                            case RETRO_DEVICE_ID_ANALOG_Y:
                             {
                                 switch (index)
                                 {
-                                    case retro_device_index_analog.RETRO_DEVICE_INDEX_ANALOG_LEFT:
+                                    case RETRO_DEVICE_INDEX_ANALOG_LEFT:
                                     {
                                         _wrapper.Game.ButtonDescriptions[port, (int)LibretroInput.CustomBinds.ANALOG_LEFT_Y_PLUS] = descText;
                                         _wrapper.Game.ButtonDescriptions[port, (int)LibretroInput.CustomBinds.ANALOG_LEFT_Y_MINUS] = descText;
                                     }
                                     break;
-                                    case retro_device_index_analog.RETRO_DEVICE_INDEX_ANALOG_RIGHT:
+                                    case RETRO_DEVICE_INDEX_ANALOG_RIGHT:
                                     {
                                         _wrapper.Game.ButtonDescriptions[port, (int)LibretroInput.CustomBinds.ANALOG_RIGHT_Y_PLUS] = descText;
                                         _wrapper.Game.ButtonDescriptions[port, (int)LibretroInput.CustomBinds.ANALOG_RIGHT_Y_MINUS] = descText;
@@ -463,9 +412,7 @@ namespace SK.Libretro
                         }
                     }
                     else
-                    {
                         _wrapper.Game.ButtonDescriptions[port, id] = descText;
-                    }
                 }
 
                 _wrapper.Game.HasInputDescriptors = true;
@@ -476,21 +423,17 @@ namespace SK.Libretro
             bool SetHwRender()
             {
                 if (data == null)
-                {
                     return false;
-                }
 
                 retro_hw_render_callback* inCallback = (retro_hw_render_callback*)data;
 
                 if (inCallback->context_type != retro_hw_context_type.RETRO_HW_CONTEXT_OPENGL && inCallback->context_type != retro_hw_context_type.RETRO_HW_CONTEXT_OPENGL_CORE)
-                {
                     return false;
-                }
 
                 inCallback->get_current_framebuffer = Marshal.GetFunctionPointerForDelegate<retro_hw_get_current_framebuffer_t>(LibretroPlugin.GetCurrentFramebuffer);
                 inCallback->get_proc_address        = Marshal.GetFunctionPointerForDelegate<retro_hw_get_proc_address_t>(LibretroPlugin.GetHwProcAddress);
 
-                _wrapper.HwRenderInterface = Marshal.PtrToStructure<retro_hw_render_callback>(new IntPtr(data));
+                _wrapper.HwRenderInterface = Marshal.PtrToStructure<retro_hw_render_callback>((IntPtr)data);
 
                 _wrapper.Core.HwAccelerated = true;
 
@@ -500,28 +443,26 @@ namespace SK.Libretro
             bool SetVariables()
             {
                 if (data == null)
-                {
                     return true;
-                }
 
                 try
                 {
                     retro_variable* inVariable = (retro_variable*)data;
 
-                    _wrapper.Core.CoreOptions = LibretroWrapper.CoreOptionsList.Cores.Find(x => x.CoreName.Equals(_wrapper.Core.CoreName, StringComparison.OrdinalIgnoreCase));
+                    _wrapper.Core.CoreOptions = LibretroWrapper.CoreOptionsList.Cores.Find(x => x.CoreName.Equals(_wrapper.Core.Name, StringComparison.OrdinalIgnoreCase));
                     if (_wrapper.Core.CoreOptions == null)
                     {
-                        _wrapper.Core.CoreOptions = new LibretroCoreOptions { CoreName = _wrapper.Core.CoreName };
+                        _wrapper.Core.CoreOptions = new LibretroCoreOptions { CoreName = _wrapper.Core.Name };
                         LibretroWrapper.CoreOptionsList.Cores.Add(_wrapper.Core.CoreOptions);
                     }
 
                     while (inVariable->key != null)
                     {
-                        string key        = StringUtils.CharsToString(inVariable->key);
+                        string key        = UnsafeStringUtils.CharsToString(inVariable->key);
                         string coreOption = _wrapper.Core.CoreOptions.Options.Find(x => x.StartsWith(key, StringComparison.OrdinalIgnoreCase));
                         if (coreOption == null)
                         {
-                            string inValue                = StringUtils.CharsToString(inVariable->value);
+                            string inValue                = UnsafeStringUtils.CharsToString(inVariable->value);
                             string[] descriptionAndValues = inValue.Split(';');
                             string[] possibleValues       = descriptionAndValues[1].Trim().Split('|');
                             string defaultValue           = possibleValues[0];
@@ -534,7 +475,7 @@ namespace SK.Libretro
                 }
                 catch (Exception e)
                 {
-                    Log.Exception(e);
+                    Logger.LogException(e);
                 }
 
                 LibretroWrapper.SaveCoreOptionsFile();
@@ -545,58 +486,46 @@ namespace SK.Libretro
             bool SetSupportNoGame()
             {
                 if (data != null)
-                {
                     _wrapper.Core.SupportNoGame = *(bool*)data;
-                }
                 return true;
             }
 
             bool SetFrameTimeCallback()
             {
                 if (data != null)
-                {
-                    _wrapper.FrameTimeInterface         = Marshal.PtrToStructure<retro_frame_time_callback>((IntPtr)data);
-                    _wrapper.FrameTimeInterfaceCallback = Marshal.GetDelegateForFunctionPointer<retro_frame_time_callback_t>(_wrapper.FrameTimeInterface.callback);
-
-                }
+                    _wrapper.FrameTimeInterface = *(retro_frame_time_callback*)data;
                 return true;
             }
 
             bool SetSystemAvInfo()
             {
                 if (data != null)
-                {
                     _wrapper.Game.SystemAVInfo = *(retro_system_av_info*)data;
-                }
                 return true;
             }
 
             bool SetControllerInfo()
             {
                 if (data == null)
-                {
                     return true;
-                }
 
                 retro_controller_info* inControllerInfo = (retro_controller_info*)data;
 
                 int numPorts;
                 for (numPorts = 0; inControllerInfo[numPorts].types != null; ++numPorts)
                 {
-                    Log.Info($"# Controller port: {numPorts + 1}", "RETRO_ENVIRONMENT_SET_CONTROLLER_INFO");
+                    Logger.LogInfo($"# Controller port: {numPorts + 1}", $"{cmd}");
                     for (int j = 0; j < inControllerInfo[numPorts].num_types; ++j)
                     {
-                        string desc = StringUtils.CharsToString(inControllerInfo[numPorts].types[j].desc);
+                        string desc = UnsafeStringUtils.CharsToString(inControllerInfo[numPorts].types[j].desc);
                         uint id     = inControllerInfo[numPorts].types[j].id;
-                        Log.Info($"    {desc} (ID: {id})", "RETRO_ENVIRONMENT_SET_CONTROLLER_INFO");
+                        Logger.LogInfo($"    {desc} (ID: {id})", $"{cmd}");
                     }
                 }
 
                 _wrapper.Core.ControllerPorts = new retro_controller_info[numPorts];
                 for (int j = 0; j < numPorts; ++j)
-                {
                     _wrapper.Core.ControllerPorts[j] = inControllerInfo[j];
-                }
 
                 return true;
             }
@@ -624,29 +553,22 @@ namespace SK.Libretro
             bool SetCoreOptionsIntl()
             {
                 if (data == null)
-                {
                     return false;
-                }
                 retro_core_options_intl inOptionsIntl = Marshal.PtrToStructure<retro_core_options_intl>((IntPtr)data);
                 return SetCoreOptionsInternal(inOptionsIntl.us.ToInt64());
             }
 
-            bool Shutdown()
-            {
-                return true;
-            }
+            bool Shutdown() => true;
             #endregion
         }
 
         private unsafe bool SetCoreOptionsInternal(long data)
         {
-            LibretroCore core = _wrapper.Core;
-
-            core.CoreOptions = LibretroWrapper.CoreOptionsList.Cores.Find(x => x.CoreName.Equals(core.CoreName, StringComparison.OrdinalIgnoreCase));
-            if (core.CoreOptions == null)
+            _wrapper.Core.CoreOptions = LibretroWrapper.CoreOptionsList.Cores.Find(x => x.CoreName.Equals(_wrapper.Core.Name, StringComparison.OrdinalIgnoreCase));
+            if (_wrapper.Core.CoreOptions == null)
             {
-                core.CoreOptions = new LibretroCoreOptions { CoreName = core.CoreName };
-                LibretroWrapper.CoreOptionsList.Cores.Add(core.CoreOptions);
+                _wrapper.Core.CoreOptions = new LibretroCoreOptions { CoreName = _wrapper.Core.Name };
+                LibretroWrapper.CoreOptionsList.Cores.Add(_wrapper.Core.CoreOptions);
             }
 
             for (int i = 0; i < RETRO_NUM_CORE_OPTION_VALUES_MAX; ++i)
@@ -654,45 +576,36 @@ namespace SK.Libretro
                 IntPtr ins = new IntPtr(data + (i * Marshal.SizeOf<retro_core_option_definition>()));
                 retro_core_option_definition defs = Marshal.PtrToStructure<retro_core_option_definition>(ins);
                 if (defs.key == null)
-                {
                     break;
-                }
 
-                string key = StringUtils.CharsToString(defs.key);
+                string key = UnsafeStringUtils.CharsToString(defs.key);
 
-                string coreOption = core.CoreOptions.Options.Find(x => x.StartsWith(key, StringComparison.OrdinalIgnoreCase));
-                if (coreOption == null)
+                string coreOption = _wrapper.Core.CoreOptions.Options.Find(x => x.StartsWith(key, StringComparison.OrdinalIgnoreCase));
+                if (coreOption != null)
+                    continue;
+
+                string defaultValue = UnsafeStringUtils.CharsToString(defs.default_value);
+
+                List<string> possibleValues = new List<string>();
+                for (int j = 0; j < defs.values.Length; j++)
                 {
-                    string defaultValue = StringUtils.CharsToString(defs.default_value);
-
-                    List<string> possibleValues = new List<string>();
-                    for (int j = 0; j < defs.values.Length; j++)
-                    {
-                        retro_core_option_value val = defs.values[j];
-                        if (val.value != null)
-                        {
-                            possibleValues.Add(StringUtils.CharsToString(val.value));
-                        }
-                    }
-
-                    string value = string.Empty;
-                    if (!string.IsNullOrEmpty(defaultValue))
-                    {
-                        value = defaultValue;
-                    }
-                    else if (possibleValues.Count > 0)
-                    {
-                        value = possibleValues[0];
-                    }
-
-                    coreOption = $"{key};{value};{string.Join("|", possibleValues)}";
-
-                    core.CoreOptions.Options.Add(coreOption);
+                    retro_core_option_value val = defs.values[j];
+                    if (val.value != null)
+                        possibleValues.Add(UnsafeStringUtils.CharsToString(val.value));
                 }
+
+                string value = "";
+                if (!string.IsNullOrEmpty(defaultValue))
+                    value = defaultValue;
+                else if (possibleValues.Count > 0)
+                    value = possibleValues[0];
+
+                coreOption = $"{key};{value};{string.Join("|", possibleValues)}";
+
+                _wrapper.Core.CoreOptions.Options.Add(coreOption);
             }
 
             LibretroWrapper.SaveCoreOptionsFile();
-
             return true;
         }
     }

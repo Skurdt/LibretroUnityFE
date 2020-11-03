@@ -22,7 +22,7 @@
 
 namespace SK.Libretro
 {
-    public interface IAudioProcessor
+    internal interface IAudioProcessor
     {
         void Init(int sampleRate);
         void DeInit();

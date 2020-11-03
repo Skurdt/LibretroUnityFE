@@ -27,7 +27,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 #endif
 using System.Text.RegularExpressions;
-using static SK.Libretro.LibretroEnums;
+using static SK.Libretro.LibretroHeader;
 
 namespace SK.Libretro
 {
@@ -43,12 +43,9 @@ namespace SK.Libretro
         public static void RetroLogPrintf(retro_log_level level, string format, IntPtr arg1, IntPtr arg2, IntPtr arg3, IntPtr arg4, IntPtr arg5, IntPtr arg6, IntPtr arg7, IntPtr arg8, IntPtr arg9, IntPtr arg10, IntPtr arg11, IntPtr arg12)
         {
             if (level < LibretroWrapper.LogLevel)
-            {
                 return;
-            }
 
             int argumentsToPush;
-
             try
             {
                 argumentsToPush = GetFormatArgumentCount(format);
@@ -61,7 +58,7 @@ namespace SK.Libretro
 
             if (argumentsToPush > 12)
             {
-                Log.Warning($"Too many arguments ({argumentsToPush}) supplied to retroLogCallback", LOG_PRINTF_CALLER);
+                Logger.LogWarning($"Too many arguments ({argumentsToPush}) supplied to retroLogCallback", LOG_PRINTF_CALLER);
                 return;
             }
 
@@ -70,16 +67,16 @@ namespace SK.Libretro
             switch (level)
             {
                 case retro_log_level.RETRO_LOG_DEBUG:
-                    Log.Info(formattedString, LOG_PRINTF_CALLER);
+                    Logger.LogInfo(formattedString, LOG_PRINTF_CALLER);
                     break;
                 case retro_log_level.RETRO_LOG_INFO:
-                    Log.Info(formattedString, LOG_PRINTF_CALLER);
+                    Logger.LogInfo(formattedString, LOG_PRINTF_CALLER);
                     break;
                 case retro_log_level.RETRO_LOG_WARN:
-                    Log.Warning(formattedString, LOG_PRINTF_CALLER);
+                    Logger.LogWarning(formattedString, LOG_PRINTF_CALLER);
                     break;
                 case retro_log_level.RETRO_LOG_ERROR:
-                    Log.Error(formattedString, LOG_PRINTF_CALLER);
+                    Logger.LogError(formattedString, LOG_PRINTF_CALLER);
                     break;
             }
         }
@@ -98,16 +95,12 @@ namespace SK.Libretro
                     case "x":
                     case "s":
                     case "u":
-                    {
                         argumentsToPush += 1;
-                    }
-                    break;
+                        break;
                     case "f":
                     case "m":
-                    {
                         argumentsToPush += 2;
-                    }
-                    break;
+                        break;
                     default:
                         throw new NotImplementedException($"Placeholder '{match.Value}' not implemented");
                 }

@@ -25,7 +25,7 @@ using System.IO;
 
 namespace SK.Libretro.Utilities
 {
-    public static class FileSystem
+    internal static class FileSystem
     {
         public static bool FileExists(string path) => File.Exists(path);
 
@@ -40,7 +40,7 @@ namespace SK.Libretro.Utilities
             }
             catch (Exception e)
             {
-                Log.Exception(e, "FileSystem.CreateFile");
+                Logger.LogException(e, "FileSystem.CreateFile");
             }
 
             return false;
@@ -55,7 +55,7 @@ namespace SK.Libretro.Utilities
             }
             catch (Exception e)
             {
-                Log.Exception(e, "FileSystem.DeleteFile");
+                Logger.LogException(e, "FileSystem.DeleteFile");
             }
 
             return false;
@@ -64,20 +64,16 @@ namespace SK.Libretro.Utilities
         public static string GetAbsolutePath(string path)
         {
             if (string.IsNullOrEmpty(path))
-            {
                 return path;
-            }
 
             try
             {
                 if (path.StartsWith("@", StringComparison.OrdinalIgnoreCase))
-                {
                     return Path.GetFullPath(Path.Combine(UnityEngine.Application.streamingAssetsPath, path.Remove(0, 1)));
-                }
             }
             catch (Exception e)
             {
-                Log.Exception(e, "FileSystem.GetAbsolutePath");
+                Logger.LogException(e, "FileSystem.GetAbsolutePath");
             }
 
             return Path.GetFullPath(path);
@@ -86,22 +82,18 @@ namespace SK.Libretro.Utilities
         public static string GetRelativePath(string path)
         {
             if (string.IsNullOrEmpty(path))
-            {
                 return path;
-            }
 
             try
             {
                 string fullPath = GetAbsolutePath(path);
                 string formattedStreamingAssetsPath = UnityEngine.Application.streamingAssetsPath.Replace('/', Path.DirectorySeparatorChar);
                 if (fullPath.Contains(formattedStreamingAssetsPath))
-                {
-                    return $"@{fullPath.Replace($"{formattedStreamingAssetsPath}", string.Empty).Remove(0, 1)}";
-                }
+                    return $"@{fullPath.Replace($"{formattedStreamingAssetsPath}", "").Remove(0, 1)}";
             }
             catch (Exception e)
             {
-                Log.Exception(e, "FileSystem.GetRelativePath");
+                Logger.LogException(e, "FileSystem.GetRelativePath");
             }
 
             return path;
@@ -115,7 +107,7 @@ namespace SK.Libretro.Utilities
             }
             catch (Exception e)
             {
-                Log.Exception(e, "FileSystem.GetFilesInDirectory");
+                Logger.LogException(e, "FileSystem.GetFilesInDirectory");
             }
 
             return null;
@@ -131,7 +123,7 @@ namespace SK.Libretro.Utilities
             }
             catch (Exception e)
             {
-                Log.Exception(e, $"FileSystem.SerializeToJson<{typeof(T).Name}>");
+                Logger.LogException(e, $"FileSystem.SerializeToJson<{typeof(T).Name}>");
             }
 
             return false;
@@ -146,7 +138,7 @@ namespace SK.Libretro.Utilities
             }
             catch (Exception e)
             {
-                Log.Exception(e, $"FileSystem.DeserializeFromJson<{typeof(T).Name}>");
+                Logger.LogException(e, $"FileSystem.DeserializeFromJson<{typeof(T).Name}>");
             }
 
             return null;

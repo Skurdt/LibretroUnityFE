@@ -22,9 +22,9 @@
 
 namespace SK.Libretro
 {
-    public interface IInputProcessor
+    internal interface IInputProcessor
     {
-        bool DigitalDirectionsAsAnalog { get; set; }
+        bool AnalogDirectionsToDigital { get; set; }
 
         bool JoypadButton(int port, int button);
 

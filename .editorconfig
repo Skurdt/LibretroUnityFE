@@ -69,14 +69,14 @@ csharp_style_var_for_built_in_types = false:suggestion
 csharp_style_var_when_type_is_apparent = false:suggestion
 
 # Expression-bodied members
-csharp_style_expression_bodied_accessors = true:silent
-csharp_style_expression_bodied_constructors = false:silent
-csharp_style_expression_bodied_indexers = true:silent
-csharp_style_expression_bodied_lambdas = true:silent
-csharp_style_expression_bodied_local_functions = true:silent
-csharp_style_expression_bodied_methods = false:silent
-csharp_style_expression_bodied_operators = false:silent
-csharp_style_expression_bodied_properties = true:silent
+csharp_style_expression_bodied_accessors = true:suggestion
+csharp_style_expression_bodied_constructors = true:suggestion
+csharp_style_expression_bodied_indexers = true:suggestion
+csharp_style_expression_bodied_lambdas = true:suggestion
+csharp_style_expression_bodied_local_functions = true:suggestion
+csharp_style_expression_bodied_methods = true:suggestion
+csharp_style_expression_bodied_operators = true:suggestion
+csharp_style_expression_bodied_properties = true:suggestion
 
 # Pattern matching preferences
 csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
@@ -91,7 +91,7 @@ csharp_prefer_static_local_function = false:suggestion
 csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:silent
 
 # Code-block preferences
-csharp_prefer_braces = true:suggestion
+csharp_prefer_braces = false:suggestion
 csharp_prefer_simple_using_statement = false:suggestion
 
 # Expression-level preferences

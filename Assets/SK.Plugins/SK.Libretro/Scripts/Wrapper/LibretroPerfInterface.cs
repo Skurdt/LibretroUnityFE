@@ -20,7 +20,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using static SK.Libretro.LibretroStructs;
+using SK.Libretro.Utilities;
+using static SK.Libretro.LibretroHeader;
 
 namespace SK.Libretro
 {
@@ -28,28 +29,28 @@ namespace SK.Libretro
     {
         public long GetTimeUsec()
         {
-            Utilities.Log.Warning("RetroPerfGetTimeUsec");
+            Logger.LogWarning("RetroPerfGetTimeUsec");
             return 0;
         }
 
         public ulong GetCounter()
         {
-            Utilities.Log.Warning("RetroPerfGetCounter");
+            Logger.LogWarning("RetroPerfGetCounter");
             return 0;
         }
 
         public ulong GetCPUFeatures()
         {
-            Utilities.Log.Warning("RetroGetCPUFeatures");
+            Logger.LogWarning("RetroGetCPUFeatures");
             return 0;
         }
 
-        public void Log() => Utilities.Log.Warning("RetroPerfLog");
+        public void Log() => Logger.LogWarning("RetroPerfLog");
 
-        public void Register(ref retro_perf_counter _/*counter*/) => Utilities.Log.Warning("RetroPerfRegister");
+        public void Register(ref retro_perf_counter _/*counter*/) => Logger.LogWarning("RetroPerfRegister");
 
-        public void RetroPerfStart(ref retro_perf_counter _/*counter*/) => Utilities.Log.Warning("RetroPerfStart");
+        public void RetroPerfStart(ref retro_perf_counter _/*counter*/) => Logger.LogWarning("RetroPerfStart");
 
-        public void RetroPerfStop(ref retro_perf_counter _/*counter*/) => Utilities.Log.Warning("RetroPerfStop");
+        public void RetroPerfStop(ref retro_perf_counter _/*counter*/) => Logger.LogWarning("RetroPerfStop");
     }
 }

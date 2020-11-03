@@ -463,8 +463,8 @@ namespace SK.Libretro.Unity
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""WASD"",
-                    ""id"": ""a86c4a94-0270-4007-a825-dfb4278da3b0"",
+                    ""name"": ""TGFH"",
+                    ""id"": ""7b59c6fe-66e4-4b4c-b546-e3c710323dac"",
                     ""path"": ""2DVector(mode=1)"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -475,8 +475,8 @@ namespace SK.Libretro.Unity
                 },
                 {
                     ""name"": ""up"",
-                    ""id"": ""d066947d-869b-4ef5-b12b-d8171c6afe14"",
-                    ""path"": ""<Keyboard>/w"",
+                    ""id"": ""01cb1cb5-36de-4db2-acd9-b3504973d1d8"",
+                    ""path"": ""<Keyboard>/t"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard & Mouse"",
@@ -486,8 +486,8 @@ namespace SK.Libretro.Unity
                 },
                 {
                     ""name"": ""down"",
-                    ""id"": ""daf19ca1-8e59-4594-82a0-bd296f51d482"",
-                    ""path"": ""<Keyboard>/s"",
+                    ""id"": ""e9636449-87e7-4664-aa38-1fd9b51f9fb4"",
+                    ""path"": ""<Keyboard>/g"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard & Mouse"",
@@ -497,8 +497,8 @@ namespace SK.Libretro.Unity
                 },
                 {
                     ""name"": ""left"",
-                    ""id"": ""b518a295-89a9-4b8a-8179-5561175b5bf8"",
-                    ""path"": ""<Keyboard>/a"",
+                    ""id"": ""396619bf-f71c-4fc8-990c-66b71d0b9e2a"",
+                    ""path"": ""<Keyboard>/f"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard & Mouse"",
@@ -508,8 +508,8 @@ namespace SK.Libretro.Unity
                 },
                 {
                     ""name"": ""right"",
-                    ""id"": ""a6bdebb2-50ff-429c-9cef-81bbe52b8e8a"",
-                    ""path"": ""<Keyboard>/d"",
+                    ""id"": ""306ac0e0-de3f-40de-ab6f-44a73157307b"",
+                    ""path"": ""<Keyboard>/h"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard & Mouse"",
@@ -606,8 +606,8 @@ namespace SK.Libretro.Unity
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""TGFH"",
-                    ""id"": ""7b59c6fe-66e4-4b4c-b546-e3c710323dac"",
+                    ""name"": ""WASD"",
+                    ""id"": ""a86c4a94-0270-4007-a825-dfb4278da3b0"",
                     ""path"": ""2DVector(mode=1)"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -618,8 +618,8 @@ namespace SK.Libretro.Unity
                 },
                 {
                     ""name"": ""up"",
-                    ""id"": ""01cb1cb5-36de-4db2-acd9-b3504973d1d8"",
-                    ""path"": ""<Keyboard>/t"",
+                    ""id"": ""d066947d-869b-4ef5-b12b-d8171c6afe14"",
+                    ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard & Mouse"",
@@ -629,8 +629,8 @@ namespace SK.Libretro.Unity
                 },
                 {
                     ""name"": ""down"",
-                    ""id"": ""e9636449-87e7-4664-aa38-1fd9b51f9fb4"",
-                    ""path"": ""<Keyboard>/g"",
+                    ""id"": ""daf19ca1-8e59-4594-82a0-bd296f51d482"",
+                    ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard & Mouse"",
@@ -640,8 +640,8 @@ namespace SK.Libretro.Unity
                 },
                 {
                     ""name"": ""left"",
-                    ""id"": ""396619bf-f71c-4fc8-990c-66b71d0b9e2a"",
-                    ""path"": ""<Keyboard>/f"",
+                    ""id"": ""b518a295-89a9-4b8a-8179-5561175b5bf8"",
+                    ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard & Mouse"",
@@ -651,8 +651,8 @@ namespace SK.Libretro.Unity
                 },
                 {
                     ""name"": ""right"",
-                    ""id"": ""306ac0e0-de3f-40de-ab6f-44a73157307b"",
-                    ""path"": ""<Keyboard>/h"",
+                    ""id"": ""a6bdebb2-50ff-429c-9cef-81bbe52b8e8a"",
+                    ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard & Mouse"",

@@ -33,17 +33,17 @@ using System.Net;
 using UnityEditor;
 using UnityEngine;
 
-namespace SK.LibretroEditor
+namespace SK.Libretro.Unity.EditorOnly
 {
     public sealed class LibretroManagerWindow : EditorWindow
     {
         [Serializable]
         public sealed class Core
         {
-            public string FullName    = string.Empty;
-            public string DisplayName = string.Empty;
-            public string CurrentDate = string.Empty;
-            public string LatestDate  = string.Empty;
+            public string FullName    = "";
+            public string DisplayName = "";
+            public string CurrentDate = "";
+            public string LatestDate  = "";
             public bool Available     = false;
 
             public bool Latest => CurrentDate.Equals(LatestDate, StringComparison.OrdinalIgnoreCase);
@@ -53,11 +53,30 @@ namespace SK.LibretroEditor
         public sealed class CoreList
         {
             public List<Core> Cores = new List<Core>();
-
-            public void Add(Core core) => Cores.Add(core);
         }
 
-        private static readonly string _buildbotUrl       = $"https://buildbot.libretro.com/nightly/{CurrentPlatform()}/x86_64/latest/";
+        private static string CurrentPlatform
+        {
+            get
+            {
+                switch (Application.platform)
+                {
+                    case RuntimePlatform.LinuxEditor:
+                        return "linux";
+                    case RuntimePlatform.OSXEditor:
+                        return "apple/osx";
+                    case RuntimePlatform.WindowsEditor:
+                        return "windows";
+                    default:
+                    {
+                        Debug.LogError($"[LibretroManagerWindow] Invalid/unsupported platform detected: {Application.platform}");
+                        return null;
+                    }
+                }
+            }
+        }
+
+        private static readonly string _buildbotUrl       = $"https://buildbot.libretro.com/nightly/{CurrentPlatform}/x86_64/latest/";
         private static readonly string _libretroDirectory = Path.Combine(Application.streamingAssetsPath, "libretro~");
         private static readonly string _coresDirectory    = Path.Combine(_libretroDirectory, "cores");
         private static readonly string _coresStatusFile   = Path.Combine(_libretroDirectory, "cores.json");
@@ -71,25 +90,20 @@ namespace SK.LibretroEditor
         [MenuItem("Libretro/Manage Cores"), SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Unity Editor")]
         private static void ShowWindow()
         {
+            if (CurrentPlatform == null)
+                return;
+
             if (!Directory.Exists(_libretroDirectory))
-            {
                 _ = Directory.CreateDirectory(_libretroDirectory);
-            }
 
             if (!Directory.Exists(_coresDirectory))
-            {
                 _ = Directory.CreateDirectory(_coresDirectory);
-            }
 
             if (File.Exists(_coresStatusFile))
-            {
                 _coreList = FileSystem.DeserializeFromJson<CoreList>(_coresStatusFile);
-            }
 
             if (_coreList == null)
-            {
                 _coreList = new CoreList();
-            }
 
             Refresh();
 
@@ -100,9 +114,7 @@ namespace SK.LibretroEditor
         {
             GUILayout.Space(16f);
             if (GUILayout.Button("Refresh", GUILayout.Height(EditorGUIUtility.singleLineHeight * 2f)))
-            {
                 Refresh();
-            }
 
             GUILayout.Space(8f);
             _scrollPos = GUILayout.BeginScrollView(_scrollPos);
@@ -156,30 +168,15 @@ namespace SK.LibretroEditor
             GUILayout.EndScrollView();
         }
 
-        private static string CurrentPlatform()
-        {
-            switch (Application.platform)
-            {
-                case RuntimePlatform.LinuxEditor:
-                {
-                    return "linux";
-                }
-                default:
-                {
-                    return "windows";
-                }
-            }
-        }
-
         private static void Refresh()
         {
             foreach (Core core in _coreList.Cores)
             {
-                bool fileExists = File.Exists(Path.GetFullPath(Path.Combine(_coresDirectory, core.FullName.Replace(".zip", string.Empty))));
+                bool fileExists = File.Exists(Path.GetFullPath(Path.Combine(_coresDirectory, core.FullName.Replace(".zip", ""))));
                 if (!fileExists)
                 {
-                    core.CurrentDate = string.Empty;
-                    core.LatestDate  = string.Empty;
+                    core.CurrentDate = "";
+                    core.LatestDate  = "";
                     core.Available   = false;
                 }
             }
@@ -192,18 +189,14 @@ namespace SK.LibretroEditor
             {
                 HtmlNodeCollection tdNodes = trNode.ChildNodes;
                 if (tdNodes.Count < 3)
-                {
                     continue;
-                }
 
                 string fileName = tdNodes[1].InnerText;
                 if (!fileName.Contains("_libretro"))
-                {
                     continue;
-                }
 
                 string lastModified = tdNodes[2].InnerText;
-                bool available      = File.Exists(Path.GetFullPath(Path.Combine(_coresDirectory, fileName.Replace(".zip", string.Empty))));
+                bool available      = File.Exists(Path.GetFullPath(Path.Combine(_coresDirectory, fileName.Replace(".zip", ""))));
                 Core found          = _coreList.Cores.Find(x => x.FullName.Equals(fileName, StringComparison.OrdinalIgnoreCase));
                 if (found != null)
                 {
@@ -212,7 +205,7 @@ namespace SK.LibretroEditor
                 }
                 else
                 {
-                    _coreList.Add(new Core
+                    _coreList.Cores.Add(new Core
                     {
                         FullName    = fileName,
                         DisplayName = fileName.Substring(0, fileName.IndexOf('.')),
@@ -232,9 +225,7 @@ namespace SK.LibretroEditor
                 string fileName = Path.GetFileName(url);
                 string filePath = Path.GetFullPath(Path.Combine(_coresDirectory, fileName));
                 if (File.Exists(filePath))
-                {
                     File.Delete(filePath);
-                }
                 webClient.DownloadFile(url, filePath);
                 Debug.Log($"Downloaded {Path.GetFileNameWithoutExtension(fileName)}");
                 return filePath;
@@ -244,9 +235,7 @@ namespace SK.LibretroEditor
         private static void ExtractFile(string zipPath)
         {
             if (!File.Exists(zipPath))
-            {
                 return;
-            }
 
             try
             {
@@ -256,10 +245,7 @@ namespace SK.LibretroEditor
                     {
                         string destinationPath = Path.GetFullPath(Path.Combine(_coresDirectory, entry.FullName));
                         if (File.Exists(destinationPath))
-                        {
                             File.Delete(destinationPath);
-                        }
-
                         entry.ExtractToFile(destinationPath);
                     }
                 }

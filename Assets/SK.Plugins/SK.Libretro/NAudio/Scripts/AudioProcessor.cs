@@ -23,13 +23,12 @@
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using SK.Libretro.Utilities;
 using System;
 using Unity.Mathematics;
 
 namespace SK.Libretro.NAudio
 {
-    public class AudioProcessor : IAudioProcessor
+    internal sealed class AudioProcessor : IAudioProcessor
     {
         private const int AUDIO_BUFFER_SIZE = 65536;
 
@@ -65,27 +64,24 @@ namespace SK.Libretro.NAudio
             }
             catch (Exception e)
             {
-                Log.Exception(e);
+                Utilities.Logger.LogException(e);
             }
         }
 
         public void DeInit()
         {
             if (_audioDevice == null)
-            {
                 return;
-            }
 
             _audioDevice.Stop();
             _audioDevice.Dispose();
+            _bufferedWaveProvider.ClearBuffer();
         }
 
         public void ProcessSamples(float[] samples)
         {
             if (_bufferedWaveProvider == null)
-            {
                 return;
-            }
 
             byte[] byteBuffer = new byte[samples.Length * sizeof(float)];
             Buffer.BlockCopy(samples, 0, byteBuffer, 0, byteBuffer.Length);
@@ -94,12 +90,8 @@ namespace SK.Libretro.NAudio
 
         public void SetVolume(float volume)
         {
-            if (_volumeProvider == null)
-            {
-                return;
-            }
-
-            _volumeProvider.Volume = math.clamp(volume, 0f, 1f);
+            if (_volumeProvider != null)
+                _volumeProvider.Volume = math.clamp(volume, 0f, 1f);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿/* MIT License
+/* MIT License
 
  * Copyright (c) 2020 Skurdt
  *
@@ -21,43 +21,43 @@
  * SOFTWARE. */
 
 using SK.Libretro.Utilities;
+using SK.Utilities;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using static SK.Libretro.LibretroDelegates;
-using static SK.Libretro.LibretroEnums;
-using static SK.Libretro.LibretroStructs;
+using static SK.Libretro.LibretroHeader;
 
 namespace SK.Libretro
 {
-    public sealed class LibretroWrapper
+    internal sealed class LibretroWrapper
     {
         public enum Language
         {
-            English             = 0,
-            Japanese            = 1,
-            French              = 2,
-            Spanish             = 3,
-            German              = 4,
-            Italian             = 5,
-            Dutch               = 6,
-            Portuguese_brazil   = 7,
-            Portuguese_portugal = 8,
-            Russian             = 9,
-            Korean              = 10,
-            Chinese_traditional = 11,
-            Chinese_simplified  = 12,
-            Esperanto           = 13,
-            Polish              = 14,
-            Vietnamese          = 15,
-            Arabic              = 16,
-            Greek               = 17,
-            Turkish             = 18,
-            Slovak              = 19,
-            Persian             = 20,
-            Hebrew              = 21,
-            Asturian            = 22
+            English,
+            Japanese,
+            French,
+            Spanish,
+            German,
+            Italian,
+            Dutch,
+            Portuguese_brazil,
+            Portuguese_portugal,
+            Russian,
+            Korean,
+            Chinese_traditional,
+            Chinese_simplified,
+            Esperanto,
+            Polish,
+            Vietnamese,
+            Arabic,
+            Greek,
+            Turkish,
+            Slovak,
+            Persian,
+            Hebrew,
+            Asturian
         }
 
         public bool OptionCropOverscan
@@ -99,59 +99,62 @@ namespace SK.Libretro
             }
         }
 
-        public readonly LibretroVideo Video;
+        public bool HwRenderHasDepth => HwRenderInterface.depth;
+
+        public bool HwRenderHasStencil => HwRenderInterface.stencil;
+
+        public readonly LibretroGraphics Graphics;
         public readonly LibretroAudio Audio;
         public readonly LibretroInput Input;
 
         public readonly LibretroCore Core;
         public readonly LibretroGame Game;
 
-        internal static readonly retro_log_level LogLevel = retro_log_level.RETRO_LOG_WARN;
+        public static readonly retro_log_level LogLevel = retro_log_level.RETRO_LOG_WARN;
 
-        internal static string MainDirectory;
-        internal static string CoresDirectory;
-        internal static string SystemDirectory;
-        internal static string CoreAssetsDirectory;
-        internal static string SavesDirectory;
-        internal static string TempDirectory;
-        internal static string CoreOptionsFile;
+        public static string MainDirectory;
+        public static string CoresDirectory;
+        public static string SystemDirectory;
+        public static string CoreAssetsDirectory;
+        public static string SavesDirectory;
+        public static string TempDirectory;
+        public static string CoreOptionsFile;
 
-        internal static LibretroCoreOptionsList CoreOptionsList;
+        public static LibretroCoreOptionsList CoreOptionsList;
 
-        internal readonly LibretroTargetPlatform TargetPlatform;
+        public readonly LibretroTargetPlatform TargetPlatform;
 
-        internal readonly LibretroEnvironment Environment;
+        public readonly LibretroEnvironment Environment;
 
         private string _optionUserName   = "LibretroUnityFE's Awesome User";
         private Language _optionLanguage = Language.English;
         private bool _optionCropOverscan = true;
 
-        #region GC pinned delegates
-        internal readonly retro_environment_t EnvironmentCallback;
-        internal readonly retro_video_refresh_t VideoRefreshCallback;
-        internal readonly retro_audio_sample_t AudioSampleCallback;
-        internal readonly retro_audio_sample_batch_t AudioSampleBatchCallback;
-        internal readonly retro_input_poll_t InputPollCallback;
-        internal readonly retro_input_state_t InputStateCallback;
-        internal readonly retro_log_printf_t LogPrintfCallback;
-        #endregion
+        public readonly retro_environment_t EnvironmentCallback;
+        public readonly retro_video_refresh_t VideoRefreshCallback;
+        public readonly retro_audio_sample_t AudioSampleCallback;
+        public readonly retro_audio_sample_batch_t AudioSampleBatchCallback;
+        public readonly retro_input_poll_t InputPollCallback;
+        public readonly retro_input_state_t InputStateCallback;
+        public readonly retro_log_printf_t LogPrintfCallback;
 
-        internal retro_frame_time_callback FrameTimeInterface;
-        internal retro_frame_time_callback_t FrameTimeInterfaceCallback = null;
+        public retro_frame_time_callback FrameTimeInterface;
+        public retro_frame_time_callback_t FrameTimeInterfaceCallback = null;
 
         public retro_hw_render_callback HwRenderInterface;
 
-        private long _frameTimeLast = 0;
+        private readonly List<IntPtr> _unsafePointers = new List<IntPtr>();
 
         private LibretroPlugin.InteropInterface _interopInterface;
+        private long _frameTimeLast = 0;
 
-        public unsafe LibretroWrapper(LibretroTargetPlatform targetPlatform, string baseDirectory = null)
+        public LibretroWrapper(LibretroTargetPlatform targetPlatform, string baseDirectory = null)
         {
             TargetPlatform = targetPlatform;
 
             if (MainDirectory == null)
             {
-                MainDirectory       = !string.IsNullOrEmpty(baseDirectory) ? baseDirectory : "libretro~";
+                MainDirectory       = !string.IsNullOrEmpty(baseDirectory) ? baseDirectory : "libretro";
                 CoresDirectory      = $"{MainDirectory}/cores";
                 SystemDirectory     = $"{MainDirectory}/system";
                 CoreAssetsDirectory = $"{MainDirectory}/core_assets";
@@ -161,41 +164,38 @@ namespace SK.Libretro
 
                 string dir = FileSystem.GetAbsolutePath(MainDirectory);
                 if (!Directory.Exists(dir))
-                {
                     _ = Directory.CreateDirectory(dir);
-                }
 
                 dir = FileSystem.GetAbsolutePath(CoresDirectory);
                 if (!Directory.Exists(dir))
-                {
                     _ = Directory.CreateDirectory(dir);
-                }
 
                 dir = Path.GetFullPath(TempDirectory);
                 if (Directory.Exists(dir))
                 {
                     string[] fileNames = Directory.GetFiles(dir, "*.*", SearchOption.AllDirectories);
                     foreach (string fileName in fileNames)
-                    {
                         _ = FileSystem.DeleteFile(fileName);
-                    }
                 }
             }
 
             Core = new LibretroCore(this);
-            Game = new LibretroGame();
+            Game = new LibretroGame(this);
 
             Environment = new LibretroEnvironment(this);
-            Video       = new LibretroVideo(Core, Game);
-            Audio       = new LibretroAudio();
+            Graphics    = new LibretroGraphics(this);
+            Audio       = new LibretroAudio(this);
             Input       = new LibretroInput();
 
-            EnvironmentCallback      = Environment.Callback;
-            VideoRefreshCallback     = Video.Callback;
-            AudioSampleCallback      = Audio.SampleCallback;
-            AudioSampleBatchCallback = Audio.SampleBatchCallback;
-            InputPollCallback        = Input.PollCallback;
-            InputStateCallback       = Input.StateCallback;
+            unsafe
+            {
+                EnvironmentCallback      = Environment.Callback;
+                VideoRefreshCallback     = Graphics.Callback;
+                AudioSampleCallback      = Audio.SampleCallback;
+                AudioSampleBatchCallback = Audio.SampleBatchCallback;
+                InputPollCallback        = Input.PollCallback;
+                InputStateCallback       = Input.StateCallback;
+            }
 
             LogPrintfCallback = LibretroLog.RetroLogPrintf;
         }
@@ -203,21 +203,18 @@ namespace SK.Libretro
         public bool StartGame(string coreName, string gameDirectory, string gameName)
         {
             if (string.IsNullOrEmpty(coreName))
-            {
                 return false;
-            }
 
             LoadCoreOptionsFile();
 
             if (!Core.Start(coreName))
-            {
                 return false;
-            }
 
-            if (!Game.Start(Core, gameDirectory, gameName))
-            {
+            if (FrameTimeInterface.callback != IntPtr.Zero)
+                FrameTimeInterfaceCallback = Marshal.GetDelegateForFunctionPointer<retro_frame_time_callback_t>(FrameTimeInterface.callback);
+
+            if (!Game.Start(gameDirectory, gameName))
                 return false;
-            }
 
             if (Core.HwAccelerated)
             {
@@ -230,56 +227,163 @@ namespace SK.Libretro
                 LibretroPlugin.SetupInteropInterface(ref _interopInterface);
             }
 
+            FrameTimeRestart();
+
             return true;
         }
 
         public void StopGame()
         {
-            Audio.Processor?.DeInit();
+            DeactivateAudio();
+            DeactivateGraphics();
 
             Game.Stop();
             Core.Stop();
+
+            FreeUnsafePointers();
         }
+
+        public void FrameTimeRestart() => _frameTimeLast = System.Diagnostics.Stopwatch.GetTimestamp();
 
         public void FrameTimeUpdate()
         {
-            if (FrameTimeInterface.callback != IntPtr.Zero)
-            {
-                long current = System.Diagnostics.Stopwatch.GetTimestamp();
-                long delta   = current - _frameTimeLast;
+            if (FrameTimeInterfaceCallback == null)
+                return;
 
-                if (_frameTimeLast <= 0)
-                {
-                    delta = FrameTimeInterface.reference;
-                }
-                _frameTimeLast = current;
-                FrameTimeInterfaceCallback(delta * 1000);
-            }
+            long current = System.Diagnostics.Stopwatch.GetTimestamp();
+            long delta = current - _frameTimeLast;
+
+            if (_frameTimeLast <= 0)
+                delta = FrameTimeInterface.reference;
+            _frameTimeLast = current;
+            FrameTimeInterfaceCallback(delta * 1000);
         }
+
+        public class SaveStateData
+        {
+            public byte[] Data;
+            public ulong Size;
+        }
+
+        private const int MAX_STATES_COUNT = 1024;
+        private readonly List<SaveStateData> _states = new List<SaveStateData>(MAX_STATES_COUNT);
+
+        internal bool DoRewind = false;
 
         public void Update()
         {
             if (!Game.Running || !Core.Initialized || Core.HwAccelerated)
-            {
                 return;
+
+            if (DoRewind && _states.Count > 0)
+            {
+                LoadState(_states[_states.Count - 1]);
+                _states.RemoveAt(_states.Count - 1);
+            }
+            else
+            {
+                if (_states.Count >= MAX_STATES_COUNT)
+                    _states.RemoveAt(0);
+                _states.Add(SaveState());
             }
 
             Core.retro_run();
         }
 
-        public void ActivateGraphics(IGraphicsProcessor graphicsProcessor) => Video.Processor = graphicsProcessor;
+        public unsafe bool SaveState(int index, out string outPath)
+        {
+            outPath = null;
 
-        public void DeactivateGraphics() => Video.Processor = null;
+            ulong size = Core.retro_serialize_size();
+            if (size <= 0)
+                return false;
+
+            byte[] data = new byte[size];
+            fixed (byte* p = data)
+            {
+                bool result = Core.retro_serialize(p, size);
+                if (result)
+                {
+                    string coreDirectory = Path.Combine(SavesDirectory, Core.Name);
+                    if (!Directory.Exists(coreDirectory))
+                        _ = Directory.CreateDirectory(coreDirectory);
+
+                    string gameDirectory = Game.Name != null ? Path.Combine(coreDirectory, Path.GetFileNameWithoutExtension(Game.Name)) : null;
+                    if (gameDirectory != null && !Directory.Exists(gameDirectory))
+                        _ = Directory.CreateDirectory(gameDirectory);
+
+                    outPath = Path.GetFullPath(gameDirectory != null ? Path.Combine(gameDirectory, $"save_{index}.state") : Path.Combine(coreDirectory, $"save_{index}.state"));
+                    File.WriteAllBytes(outPath, data);
+                }
+                return true;
+            }
+        }
+
+        private unsafe SaveStateData SaveState()
+        {
+            ulong size = Core.retro_serialize_size();
+            if (size <= 0)
+                return null;
+
+            byte[] data = new byte[size];
+            fixed (byte* p = data)
+            {
+                return Core.retro_serialize(p, size) ? new SaveStateData { Size = size, Data = data } : null;
+            }
+        }
+
+        public unsafe bool LoadState(int index)
+        {
+            string coreDirectory = Path.Combine(SavesDirectory, Core.Name);
+            if (!Directory.Exists(coreDirectory))
+                return false;
+
+            string gameDirectory = Game.Name != null ? Path.Combine(coreDirectory, Path.GetFileNameWithoutExtension(Game.Name)) : null;
+            if (gameDirectory != null && !Directory.Exists(gameDirectory))
+                return false;
+
+            string savePath = gameDirectory != null ? Path.Combine(gameDirectory, $"save_{index}.state") : Path.Combine(coreDirectory, $"save_{index}.state");
+
+            if (!File.Exists(savePath))
+                return false;
+
+            ulong size = Core.retro_serialize_size();
+            if (size <= 0)
+                return false;
+
+            byte[] data = File.ReadAllBytes(savePath);
+            fixed (byte* p = data)
+            {
+                // FIXME: This returns false, not sure why
+                _ = Core.retro_unserialize(p, size);
+            }
+
+            return true;
+        }
+
+        private unsafe void LoadState(SaveStateData saveStateData)
+        {
+            fixed (byte* p = saveStateData.Data)
+                _ = Core.retro_unserialize(p, saveStateData.Size);
+        }
+
+        public void ActivateGraphics(IGraphicsProcessor graphicsProcessor) => Graphics.Processor = graphicsProcessor;
+
+        public void DeactivateGraphics()
+        {
+            Graphics.Processor?.DeInit();
+            Graphics.Processor = null;
+        }
 
         public void ActivateAudio(IAudioProcessor audioProcessor)
         {
             Audio.Processor = audioProcessor;
-            Audio.Processor?.Init((int)Game.SystemAVInfo.timing.sample_rate);
+            Audio.Init();
         }
 
         public void DeactivateAudio()
         {
-            Audio.Processor?.DeInit();
+            Audio.DeInit();
             Audio.Processor = null;
         }
 
@@ -287,28 +391,35 @@ namespace SK.Libretro
 
         public void DeactivateInput() => Input.Processor = null;
 
-        internal static void LoadCoreOptionsFile()
+        public static void LoadCoreOptionsFile()
         {
             CoreOptionsList = FileSystem.DeserializeFromJson<LibretroCoreOptionsList>(CoreOptionsFile);
             if (CoreOptionsList == null)
-            {
                 CoreOptionsList = new LibretroCoreOptionsList();
-            }
         }
 
-        internal static void SaveCoreOptionsFile()
+        public static void SaveCoreOptionsFile()
         {
             if (CoreOptionsList == null || CoreOptionsList.Cores.Count == 0)
-            {
                 return;
-            }
 
             CoreOptionsList.Cores = CoreOptionsList.Cores.OrderBy(x => x.CoreName).ToList();
             for (int i = 0; i < CoreOptionsList.Cores.Count; ++i)
-            {
                 CoreOptionsList.Cores[i].Options.Sort();
-            }
             _ = FileSystem.SerializeToJson(CoreOptionsList, CoreOptionsFile);
+        }
+
+        public unsafe char* GetUnsafeString(string source)
+        {
+            char* result = UnsafeStringUtils.StringToChars(source, out IntPtr ptr);
+            _unsafePointers.Add(ptr);
+            return result;
+        }
+
+        private void FreeUnsafePointers()
+        {
+            for (int i = 0; i < _unsafePointers.Count; ++i)
+                Marshal.FreeHGlobal(_unsafePointers[i]);
         }
     }
 }

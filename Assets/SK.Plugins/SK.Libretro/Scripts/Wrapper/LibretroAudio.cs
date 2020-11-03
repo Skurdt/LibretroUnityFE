@@ -20,32 +20,54 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+using System;
+
 namespace SK.Libretro
 {
-    public sealed class LibretroAudio
+    internal sealed class LibretroAudio
     {
-        public IAudioProcessor Processor { get; internal set; }
+        public IAudioProcessor Processor;
 
         private const float AUDIO_GAIN = 1f;
 
-        internal void SampleCallback(short left, short right)
+        private readonly LibretroWrapper _wrapper;
+
+        public LibretroAudio(LibretroWrapper wrapper) => _wrapper = wrapper;
+
+        public void Init() => Processor?.Init(Convert.ToInt32(_wrapper.Game.SystemAVInfo.timing.sample_rate));
+
+        public void DeInit() => Processor?.DeInit();
+
+        public void SampleCallback(short left, short right)
         {
-            if (Processor != null)
+            if (Processor == null)
+                return;
+
+            float gain          = AUDIO_GAIN / 0x8000;
+            float[] floatBuffer = new float[]
             {
-                float[] floatBuffer = Utilities.AudioConversion.ConvertShortToFloat(left, right, AUDIO_GAIN);
-                Processor.ProcessSamples(floatBuffer);
-            }
+                left  * gain,
+                right * gain
+            };
+
+            Processor.ProcessSamples(floatBuffer);
         }
 
-        internal unsafe uint SampleBatchCallback(short* data, uint frames)
+        public unsafe ulong SampleBatchCallback(short* data, ulong frames)
         {
             if (Processor != null)
             {
-                float[] floatBuffer = Utilities.AudioConversion.ConvertShortToFloat(data, frames * 2, AUDIO_GAIN);
+                float gain          = AUDIO_GAIN / 0x8000;
+                uint numSamples     = Convert.ToUInt32(frames) * 2;
+                float[] floatBuffer = new float[numSamples];
+
+                for (int i = 0; i < numSamples; ++i)
+                    floatBuffer[i] = data[i] * gain;
+
                 Processor.ProcessSamples(floatBuffer);
-                return frames;
             }
-            return 0;
+
+            return frames;
         }
     }
 }

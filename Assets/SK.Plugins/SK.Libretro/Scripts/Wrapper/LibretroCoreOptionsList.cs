@@ -26,7 +26,7 @@ using System.Collections.Generic;
 namespace SK.Libretro
 {
     [Serializable]
-    public class LibretroCoreOptionsList
+    internal sealed class LibretroCoreOptionsList
     {
         public List<LibretroCoreOptions> Cores = new List<LibretroCoreOptions>();
     }
