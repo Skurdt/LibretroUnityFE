@@ -331,9 +331,7 @@ namespace SK.Libretro.Unity
                 SetTexture(_hwRenderer.Texture);
             }
             else
-            {
                 graphicsProcessor = new GraphicsProcessorSoftware(_wrapper.Game.VideoWidth, _wrapper.Game.VideoHeight, SetTexture);
-            }
 
             _wrapper.ActivateGraphics(graphicsProcessor);
         }

@@ -24,17 +24,17 @@ namespace SK.Examples
 {
     internal sealed class GameModelSetupInteractive : GameModelSetup
     {
-        public bool Running => _libretro != null && _libretro.Running;
+        public bool Running => Libretro != null && Libretro.Running;
 
-        public void Rewind(bool rewind) => _libretro.Rewind(rewind);
+        public void Rewind(bool rewind) => Libretro.Rewind(rewind);
 
         public bool InputEnabled
         {
-            get => _libretro != null && _libretro.InputEnabled;
+            get => Libretro != null && Libretro.InputEnabled;
             set
             {
-                if (_libretro != null)
-                    _libretro.InputEnabled = value;
+                if (Libretro != null)
+                    Libretro.InputEnabled = value;
             }
         }
     }

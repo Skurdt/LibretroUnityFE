@@ -22,7 +22,7 @@
 
 using UnityEngine;
 
-namespace SK.UnityUtilities
+namespace SK.Utilities.Unity
 {
     public static class CursorUtils
     {

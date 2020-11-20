@@ -29,18 +29,15 @@ namespace SK.Examples
     {
         protected override void OnUpdate()
         {
-            if (_libretro == null || !_libretro.Running)
-                return;
-
             if (Keyboard.current == null)
                 return;
 
             if (Keyboard.current.pKey.wasPressedThisFrame)
             {
-                if (_libretro.Running)
-                    _libretro.Pause();
+                if (Libretro.Running)
+                    Libretro.Pause();
                 else
-                    _libretro.Resume();
+                    Libretro.Resume();
             }
 
             if (Keyboard.current.f5Key.wasPressedThisFrame && SaveState(0))
@@ -61,7 +58,7 @@ namespace SK.Examples
             if (Keyboard.current.f12Key.wasPressedThisFrame && LoadState(3))
                 Debug.Log("State loaded from slot 3");
 
-            _libretro.Rewind(Keyboard.current.backspaceKey.isPressed);
+            Libretro.Rewind(Keyboard.current.backspaceKey.isPressed);
         }
     }
 }

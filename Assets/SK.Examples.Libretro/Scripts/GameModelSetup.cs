@@ -21,7 +21,7 @@
  * SOFTWARE. */
 
 using SK.Libretro.Unity;
-using SK.UnityUtilities;
+using SK.Utilities.Unity;
 using System;
 using System.IO;
 using UnityEngine;
@@ -32,8 +32,17 @@ namespace SK.Examples
     [SelectionBase, DisallowMultipleComponent]
     internal abstract class GameModelSetup : MonoBehaviour
     {
+        [SerializeField] private bool _analogDirectionsToDigital = false;
+
+        public string CoreName { get; set; }
+        public string GameDirectory { get; set; }
+        public string GameName { get; set; }
+
+        protected Transform Viewer { get; private set; } = null;
+        protected LibretroBridge Libretro { get; private set; } = null;
+
         [Serializable]
-        private struct ContentSettings
+        private struct ConfigFileContent
         {
             public string Core;
             public string Directory;
@@ -41,16 +50,9 @@ namespace SK.Examples
             public bool AnalogDirectionsToDigital;
         }
 
-        [SerializeField] private bool _analogDirectionsToDigital = false;
+        private static readonly string _configFilePath = Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "config.json"));
 
-        public string CoreName { get; set; }
-        public string GameDirectory { get; set; }
-        public string GameName { get; set; }
-
-        protected Transform _viewer        = null;
-        protected LibretroBridge _libretro = null;
-
-        private void Awake() => _viewer = Camera.main.transform;
+        private void Awake() => Viewer = Camera.main.transform;
 
         private void Start()
         {
@@ -67,9 +69,12 @@ namespace SK.Examples
                 return;
             }
 
+            if (Libretro == null || !Libretro.Running)
+                return;
+
             OnUpdate();
 
-            _libretro?.Update();
+            Libretro?.Update();
         }
 
         private void OnEnable() => Application.focusChanged += OnApplicationFocusChanged;
@@ -80,19 +85,17 @@ namespace SK.Examples
             StopGame();
         }
 
+        public void Pause() => Libretro?.Pause();
+
+        public void Resume() => Libretro?.Resume();
+
+        public bool SaveState(int index, bool saveScreenshot = true) => Libretro != null && Libretro.SaveState(index, saveScreenshot);
+
+        public bool LoadState(int index) => Libretro != null && Libretro.LoadState(index);
+
         protected virtual void OnUpdate()
         {
         }
-
-        public void Pause() => _libretro?.Pause();
-
-        public void Resume() => _libretro?.Resume();
-
-        public bool SaveState(int index, bool saveScreenshot = true) => _libretro != null && _libretro.SaveState(index, saveScreenshot);
-
-        public bool LoadState(int index) => _libretro != null && _libretro.LoadState(index);
-
-        private static readonly string _configFilePath = Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "config.json"));
 
         protected void StartGame()
         {
@@ -119,8 +122,8 @@ namespace SK.Examples
             {
                 AnalogDirectionsToDigital = _analogDirectionsToDigital
             };
-            _libretro = new LibretroBridge(screen, _viewer, settings);
-            if (!_libretro.Start(CoreName, GameDirectory, GameName))
+            Libretro = new LibretroBridge(screen, Viewer, settings);
+            if (!Libretro.Start(CoreName, GameDirectory, GameName))
             {
                 StopGame();
                 return;
@@ -129,12 +132,20 @@ namespace SK.Examples
 
         protected void StopGame()
         {
-            _libretro?.Stop();
-            _libretro = null;
+            Libretro?.Stop();
+            Libretro = null;
+        }
+
+        private void OnApplicationFocusChanged(bool focus)
+        {
+            if (!focus)
+                Libretro?.Pause();
+            else
+                Libretro?.Resume();
         }
 
         [ContextMenu("Load configuration")]
-        protected void LoadConfig()
+        public void LoadConfig()
         {
             if (!File.Exists(_configFilePath))
                 return;
@@ -143,33 +154,25 @@ namespace SK.Examples
             if (string.IsNullOrEmpty(json))
                 return;
 
-            ContentSettings game     = JsonUtility.FromJson<ContentSettings>(json);
-            CoreName      = game.Core;
-            GameDirectory = game.Directory;
-            GameName      = game.Name;
+            ConfigFileContent game     = JsonUtility.FromJson<ConfigFileContent>(json);
+            CoreName                   = game.Core;
+            GameDirectory              = game.Directory;
+            GameName                   = game.Name;
             _analogDirectionsToDigital = game.AnalogDirectionsToDigital;
         }
 
         [ContextMenu("Save configuration")]
-        protected void SaveConfig()
+        public void SaveConfig()
         {
-            ContentSettings game = new ContentSettings
+            ConfigFileContent game = new ConfigFileContent
             {
-                Core      = CoreName,
-                Directory = GameDirectory,
-                Name      = GameName,
+                Core                      = CoreName,
+                Directory                 = GameDirectory,
+                Name                      = GameName,
                 AnalogDirectionsToDigital = _analogDirectionsToDigital
             };
             string json = JsonUtility.ToJson(game, true);
             File.WriteAllText(_configFilePath, json);
-        }
-
-        private void OnApplicationFocusChanged(bool focus)
-        {
-            if (!focus)
-                _libretro?.Pause();
-            else
-                _libretro?.Resume();
         }
     }
 }

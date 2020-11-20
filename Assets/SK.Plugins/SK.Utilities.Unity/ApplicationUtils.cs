@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-namespace SK.UnityUtilities
+namespace SK.Utilities.Unity
 {
     public static class ApplicationUtils
     {

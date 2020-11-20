@@ -27,18 +27,30 @@ using UnityEngine;
 
 namespace SK.Examples.Common
 {
-    [CustomEditor(typeof(GameModelSetupBasic))]
+    [CustomEditor(typeof(GameModelSetup), true)]
     public sealed class GameModelSetupInspector : Editor
     {
-        private GameModelSetupBasic _gameModelSetup;
+        private GameModelSetup _gameModelSetup;
 
-        private void OnEnable() => _gameModelSetup = target as GameModelSetupBasic;
+        private void OnEnable()
+        {
+            _gameModelSetup = target as GameModelSetup;
+
+            if (_gameModelSetup != null)
+                _gameModelSetup.LoadConfig();
+        }
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
             GUILayout.Space(8f);
+
+            if (_gameModelSetup == null)
+            {
+                EditorGUILayout.HelpBox("GameModelSetup is null", MessageType.Error);
+                return;
+            }
 
             _ = EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Core", GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
@@ -68,7 +80,7 @@ namespace SK.Examples.Common
                 EditorGUILayout.EndHorizontal();
             }
             else
-                EditorGUILayout.HelpBox("No core selected!", MessageType.Error);
+                EditorGUILayout.HelpBox("No core selected", MessageType.Error);
         }
 
         private void ShowSelectCoreWindow()

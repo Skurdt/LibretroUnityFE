@@ -20,8 +20,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+using SK.Utilities.Unity;
 using UnityEngine.InputSystem;
-using SK.UnityUtilities;
 
 namespace SK.Examples.Player
 {
