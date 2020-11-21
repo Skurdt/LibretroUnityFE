@@ -1,4 +1,4 @@
-/* MIT License
+﻿/* MIT License
 
  * Copyright (c) 2020 Skurdt
  *
@@ -30,23 +30,26 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
 namespace SK.Libretro.Unity.EditorOnly
 {
-    public sealed class LibretroManagerWindow : EditorWindow
+    public class LibretroManagerWindow : EditorWindow
     {
         [Serializable]
         public sealed class Core
         {
+            public bool Latest => CurrentDate.Equals(LatestDate, StringComparison.OrdinalIgnoreCase);
+            public bool Processing { get; internal set; }
+
             public string FullName    = "";
             public string DisplayName = "";
             public string CurrentDate = "";
             public string LatestDate  = "";
             public bool Available     = false;
-
-            public bool Latest => CurrentDate.Equals(LatestDate, StringComparison.OrdinalIgnoreCase);
         }
 
         [Serializable]
@@ -83,9 +86,14 @@ namespace SK.Libretro.Unity.EditorOnly
         private static readonly Color _greenColor         = Color.green;
         private static readonly Color _orangeColor        = new Color(1.0f, 0.5f, 0f, 1f);
         private static readonly Color _redColor           = Color.red;
+        private static readonly Color _grayColor          = Color.gray;
 
         private static CoreList _coreList;
         private static Vector2 _scrollPos;
+        private static string _statusText = "";
+
+        private bool _taskRunning            = false;
+        private CancellationTokenSource _cts = null;
 
         [MenuItem("Libretro/Manage Cores"), SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Unity Editor")]
         private static void ShowWindow()
@@ -107,13 +115,14 @@ namespace SK.Libretro.Unity.EditorOnly
 
             Refresh();
 
-            GetWindow<LibretroManagerWindow>("Core Manager").minSize = new Vector2(286f, 120f);
+            GetCustomWindow(true).minSize = new Vector2(306f, 120f);
         }
 
         private void OnGUI()
         {
             GUILayout.Space(16f);
-            if (GUILayout.Button("Refresh", GUILayout.Height(EditorGUIUtility.singleLineHeight * 2f)))
+
+            if (GUILayout.Button("Refresh", GUILayout.Height(EditorGUIUtility.singleLineHeight * 2f)) && !_taskRunning)
                 Refresh();
 
             GUILayout.Space(8f);
@@ -128,48 +137,103 @@ namespace SK.Libretro.Unity.EditorOnly
                         string buttonText;
                         if (core.Available && core.Latest)
                         {
-                            GUI.backgroundColor = _greenColor;
-                            buttonText          = "OK";
+                            GUI.backgroundColor = core.Processing ? _grayColor : _greenColor;
+                            buttonText          = core.Processing ? "Busy..." : "OK";
                         }
                         else if (core.Available && !core.Latest)
                         {
-                            GUI.backgroundColor = _orangeColor;
-                            buttonText          = "Update";
+                            GUI.backgroundColor = core.Processing ? _grayColor : _orangeColor;
+                            buttonText          = core.Processing ? "Busy..." : "Update";
                         }
                         else
                         {
-                            GUI.backgroundColor = _redColor;
-                            buttonText          = "Download";
+                            GUI.backgroundColor = core.Processing ? _grayColor : _redColor;
+                            buttonText          = core.Processing ? "Busy..." : "Download";
                         }
 
-                        if (GUILayout.Button(new GUIContent(buttonText, null, core.DisplayName), GUILayout.Width(80f), GUILayout.Height(EditorGUIUtility.singleLineHeight)) && !core.Latest)
+                        if (GUILayout.Button(new GUIContent(buttonText, null, core.DisplayName), GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)) && !core.Processing)
                         {
-                            try
-                            {
-                                string zipPath = DownloadFile($"{_buildbotUrl}{core.FullName}");
-                                ExtractFile(zipPath);
+                            _taskRunning = true;
 
-                                core.CurrentDate = core.LatestDate;
-                                core.Available   = true;
-
-                                _coreList.Cores = _coreList.Cores.OrderBy(x => x.Available).ThenBy(x => x.Latest).ThenBy(x => x.DisplayName).ToList();
-                                _ = FileSystem.SerializeToJson(_coreList, _coresStatusFile);
-                            }
-                            catch (Exception e)
-                            {
-                                Debug.LogException(e);
-                            }
-
+                            // Threaded processing taken from: https://ru.stackoverflow.com/questions/1088120
+                            _cts                           = new CancellationTokenSource();
+                            CancellationToken token        = _cts.Token;
+                            SynchronizationContext context = SynchronizationContext.Current;
+                            _ = Task.Run(() => DownloadAndExtractTask(core, context, token), token)
+                                    .ContinueWith(
+                                        t =>
+                                        {
+                                            HandleTaskException(t);
+                                            OnTaskFinishedOrCanceled(core);
+                                        },
+                                        token,
+                                        TaskContinuationOptions.OnlyOnFaulted,
+                                        TaskScheduler.FromCurrentSynchronizationContext()
+                                    );
                         }
                     }
                     GUILayout.EndHorizontal();
                 }
             }
             GUILayout.EndScrollView();
+
+            if (!string.IsNullOrEmpty(_statusText))
+            {
+                GUILayout.Space(8f);
+                EditorGUILayout.HelpBox(_statusText, MessageType.Info);
+            }
+        }
+
+        private void OnTaskFinishedOrCanceled(Core core)
+        {
+            _taskRunning = false;
+            _cts?.Dispose();
+            _cts = null;
+            core.Processing = false;
+        }
+
+        private static void HandleTaskException(Task task)
+        {
+            if (task.IsFaulted)
+            {
+                Exception taskException = task.Exception;
+                while (taskException is AggregateException && taskException.InnerException != null)
+                    taskException = taskException.InnerException;
+                _ = EditorUtility.DisplayDialog("Task chain terminated", $"Exception: {taskException.Message}", "Ok");
+            }
+        }
+
+        private static LibretroManagerWindow GetCustomWindow(bool focus) => GetWindow<LibretroManagerWindow>("Libretro Core Manager", focus);
+
+        private static void DownloadAndExtractTask(Core core, SynchronizationContext context, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+
+            try
+            {
+                core.Processing = true;
+
+                string zipPath = DownloadFile($"{_buildbotUrl}{core.FullName}");
+                ExtractFile(zipPath);
+
+                core.CurrentDate = core.LatestDate;
+                core.Available   = true;
+
+                _coreList.Cores = _coreList.Cores.OrderBy(x => x.Available).ThenBy(x => x.Latest).ThenBy(x => x.DisplayName).ToList();
+                _ = FileSystem.SerializeToJson(_coreList, _coresStatusFile);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+
+            context.Post(_ => GetCustomWindow(true).OnTaskFinishedOrCanceled(core), null);
         }
 
         private static void Refresh()
         {
+            _statusText = "";
+
             foreach (Core core in _coreList.Cores)
             {
                 bool fileExists = File.Exists(Path.GetFullPath(Path.Combine(_coresDirectory, core.FullName.Replace(".zip", ""))));
@@ -227,7 +291,6 @@ namespace SK.Libretro.Unity.EditorOnly
                 if (File.Exists(filePath))
                     File.Delete(filePath);
                 webClient.DownloadFile(url, filePath);
-                Debug.Log($"Downloaded {Path.GetFileNameWithoutExtension(fileName)}");
                 return filePath;
             }
         }
@@ -255,7 +318,7 @@ namespace SK.Libretro.Unity.EditorOnly
                 File.Delete(zipPath);
             }
 
-            Debug.Log($"Extracted {Path.GetFileNameWithoutExtension(zipPath)}");
+            _statusText = $"Processed {Path.GetFileNameWithoutExtension(zipPath)}";
         }
     }
 }
