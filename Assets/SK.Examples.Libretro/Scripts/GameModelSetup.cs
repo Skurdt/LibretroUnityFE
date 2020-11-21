@@ -26,6 +26,7 @@ using System;
 using System.IO;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace SK.Examples
 {
@@ -33,6 +34,7 @@ namespace SK.Examples
     internal abstract class GameModelSetup : MonoBehaviour
     {
         [SerializeField] private bool _analogDirectionsToDigital = false;
+        [SerializeField] private Toggle _analogDirectionsToDigitalToggle;
 
         public string CoreName { get; set; }
         public string GameDirectory { get; set; }
@@ -52,7 +54,13 @@ namespace SK.Examples
 
         private static readonly string _configFilePath = Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "config.json"));
 
-        private void Awake() => Viewer = Camera.main.transform;
+        private void Awake()
+        {
+            Viewer = Camera.main.transform;
+
+            if (_analogDirectionsToDigitalToggle != null)
+                _analogDirectionsToDigitalToggle.isOn = _analogDirectionsToDigital;
+        }
 
         private void Start()
         {
@@ -74,7 +82,7 @@ namespace SK.Examples
 
             OnUpdate();
 
-            Libretro?.Update();
+            Libretro.Update();
         }
 
         private void OnEnable() => Application.focusChanged += OnApplicationFocusChanged;
@@ -92,6 +100,8 @@ namespace SK.Examples
         public bool SaveState(int index, bool saveScreenshot = true) => Libretro != null && Libretro.SaveState(index, saveScreenshot);
 
         public bool LoadState(int index) => Libretro != null && Libretro.LoadState(index);
+
+        public void UI_SetAnalogToDigitalInput(bool value) => Libretro?.ToggleAnalogToDigitalInput(value);
 
         protected virtual void OnUpdate()
         {
@@ -159,6 +169,9 @@ namespace SK.Examples
             GameDirectory              = game.Directory;
             GameName                   = game.Name;
             _analogDirectionsToDigital = game.AnalogDirectionsToDigital;
+
+            if (_analogDirectionsToDigitalToggle != null)
+                _analogDirectionsToDigitalToggle.isOn = _analogDirectionsToDigital;
         }
 
         [ContextMenu("Save configuration")]
@@ -169,7 +182,7 @@ namespace SK.Examples
                 Core                      = CoreName,
                 Directory                 = GameDirectory,
                 Name                      = GameName,
-                AnalogDirectionsToDigital = _analogDirectionsToDigital
+                AnalogDirectionsToDigital = _analogDirectionsToDigitalToggle != null ? _analogDirectionsToDigitalToggle.isOn : _analogDirectionsToDigital
             };
             string json = JsonUtility.ToJson(game, true);
             File.WriteAllText(_configFilePath, json);

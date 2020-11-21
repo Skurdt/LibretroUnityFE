@@ -246,6 +246,13 @@ namespace SK.Libretro.Unity
                 _screenshotCoroutine = _screenNode.StartCoroutine(CoSaveScreenshot(screenshotPath));
         }
 
+        public void ToggleAnalogToDigitalInput(bool value)
+        {
+            DeactivateInput();
+            _settings.AnalogDirectionsToDigital = value;
+            ActivateInput();
+        }
+
         private IEnumerator CoUpdateSoftware()
         {
             if (_wrapper == null || !Running)
