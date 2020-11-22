@@ -33,8 +33,8 @@ namespace SK.Examples
     [SelectionBase, DisallowMultipleComponent]
     internal abstract class GameModelSetup : MonoBehaviour
     {
-        [SerializeField] private bool _analogDirectionsToDigital = false;
-        [SerializeField] private Toggle _analogDirectionsToDigitalToggle;
+        public bool AnalogDirectionsToDigital = false;
+        public Toggle AnalogDirectionsToDigitalToggle;
 
         public string CoreName { get; set; }
         public string GameDirectory { get; set; }
@@ -43,13 +43,21 @@ namespace SK.Examples
         protected Transform Viewer { get; private set; } = null;
         protected LibretroBridge Libretro { get; private set; } = null;
 
+        protected abstract int IndexInConfig { get; }
+
         [Serializable]
-        private struct ConfigFileContent
+        protected struct ConfigFileContent
         {
             public string Core;
             public string Directory;
             public string Name;
             public bool AnalogDirectionsToDigital;
+        }
+
+        [Serializable]
+        protected struct ConfigFileContentList
+        {
+            public ConfigFileContent[] Entries;
         }
 
         private static readonly string _configFilePath = Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "config.json"));
@@ -58,8 +66,8 @@ namespace SK.Examples
         {
             Viewer = Camera.main.transform;
 
-            if (_analogDirectionsToDigitalToggle != null)
-                _analogDirectionsToDigitalToggle.isOn = _analogDirectionsToDigital;
+            if (AnalogDirectionsToDigitalToggle != null)
+                AnalogDirectionsToDigitalToggle.isOn = AnalogDirectionsToDigital;
         }
 
         private void Start()
@@ -130,7 +138,7 @@ namespace SK.Examples
 
             LibretroBridgeSettings settings = new LibretroBridgeSettings
             {
-                AnalogDirectionsToDigital = _analogDirectionsToDigital
+                AnalogDirectionsToDigital = AnalogDirectionsToDigital
             };
             Libretro = new LibretroBridge(screen, Viewer, settings);
             if (!Libretro.Start(CoreName, GameDirectory, GameName))
@@ -164,28 +172,27 @@ namespace SK.Examples
             if (string.IsNullOrEmpty(json))
                 return;
 
-            ConfigFileContent game     = JsonUtility.FromJson<ConfigFileContent>(json);
+            ConfigFileContentList gameList = JsonUtility.FromJson<ConfigFileContentList>(json);
+            if (gameList.Entries == null || gameList.Entries.Length == 0 || transform.GetSiblingIndex() > gameList.Entries.Length - 1)
+                return;
+
+            ConfigFileContent game     = gameList.Entries[IndexInConfig];
             CoreName                   = game.Core;
             GameDirectory              = game.Directory;
             GameName                   = game.Name;
-            _analogDirectionsToDigital = game.AnalogDirectionsToDigital;
+            AnalogDirectionsToDigital = game.AnalogDirectionsToDigital;
 
-            if (_analogDirectionsToDigitalToggle != null)
-                _analogDirectionsToDigitalToggle.isOn = _analogDirectionsToDigital;
+            if (AnalogDirectionsToDigitalToggle != null)
+                AnalogDirectionsToDigitalToggle.isOn = AnalogDirectionsToDigital;
         }
 
         [ContextMenu("Save configuration")]
-        public void SaveConfig()
+        protected void SaveConfig()
         {
-            ConfigFileContent game = new ConfigFileContent
-            {
-                Core                      = CoreName,
-                Directory                 = GameDirectory,
-                Name                      = GameName,
-                AnalogDirectionsToDigital = _analogDirectionsToDigitalToggle != null ? _analogDirectionsToDigitalToggle.isOn : _analogDirectionsToDigital
-            };
-            string json = JsonUtility.ToJson(game, true);
+            string json = JsonUtility.ToJson(GetConfigContent(), true);
             File.WriteAllText(_configFilePath, json);
         }
+
+        protected abstract ConfigFileContentList GetConfigContent();
     }
 }

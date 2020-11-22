@@ -55,7 +55,7 @@ namespace SK.Examples.Player
                 if ((Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame) || (Gamepad.current != null && Gamepad.current.rightStickButton.wasPressedThisFrame))
                     _stateController.TransitionTo<NormalState>();
 
-                if (Keyboard.current != null)
+                if (Keyboard.current != null && _currentGame != null)
                 {
                     if (Keyboard.current.pKey.wasPressedThisFrame)
                     {

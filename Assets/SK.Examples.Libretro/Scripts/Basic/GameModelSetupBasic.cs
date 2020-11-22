@@ -60,5 +60,21 @@ namespace SK.Examples
 
             Libretro.Rewind(Keyboard.current.backspaceKey.isPressed);
         }
+
+        protected override int IndexInConfig => 0;
+
+        protected override ConfigFileContentList GetConfigContent() => new ConfigFileContentList
+        {
+            Entries = new ConfigFileContent[]
+            {
+                new ConfigFileContent
+                {
+                    Core                      = CoreName,
+                    Directory                 = GameDirectory,
+                    Name                      = GameName,
+                    AnalogDirectionsToDigital = AnalogDirectionsToDigitalToggle != null ? AnalogDirectionsToDigitalToggle.isOn : AnalogDirectionsToDigital
+                }
+            }
+        };
     }
 }

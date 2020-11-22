@@ -37,5 +37,32 @@ namespace SK.Examples
                     Libretro.InputEnabled = value;
             }
         }
+
+        protected override int IndexInConfig => transform.GetSiblingIndex();
+
+        protected override ConfigFileContentList GetConfigContent()
+        {
+            GameModelSetup[] gameModelSetups = transform.parent.GetComponentsInChildren<GameModelSetup>();
+
+            ConfigFileContentList gameList = new ConfigFileContentList
+            {
+                Entries = new ConfigFileContent[gameModelSetups.Length]
+            };
+
+            for (int i = 0; i < gameModelSetups.Length; ++i)
+            {
+                GameModelSetup gameModelSetup = gameModelSetups[i];
+
+                gameList.Entries[i] = new ConfigFileContent
+                {
+                    Core                      = gameModelSetup.CoreName,
+                    Directory                 = gameModelSetup.GameDirectory,
+                    Name                      = gameModelSetup.GameName,
+                    AnalogDirectionsToDigital = gameModelSetup.AnalogDirectionsToDigitalToggle != null ? gameModelSetup.AnalogDirectionsToDigitalToggle.isOn : gameModelSetup.AnalogDirectionsToDigital
+                };
+            }
+
+            return gameList;
+        }
     }
 }

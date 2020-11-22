@@ -125,7 +125,6 @@ namespace SK.Libretro.Unity
 
             ActivateGraphics();
             ActivateAudio();
-            ActivateInput();
 
             _accumulatedTime = 0;
             _stopwatch.Restart();
