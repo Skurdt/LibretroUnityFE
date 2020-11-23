@@ -49,24 +49,6 @@ namespace SK.Examples
                     _libretro.InputEnabled = value;
             }
         }
-        protected abstract int IndexInConfig { get; }
-
-        [Serializable]
-        protected struct ConfigFileContent
-        {
-            public string Core;
-            public string Directory;
-            public string Name;
-            public bool AnalogDirectionsToDigital;
-        }
-
-        [Serializable]
-        protected struct ConfigFileContentList
-        {
-            public ConfigFileContent[] Entries;
-        }
-
-        private static readonly string _configFilePath = Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "config.json"));
 
         private LibretroBridge _libretro = null;
         private Transform _viewer        = null;
@@ -179,24 +161,42 @@ namespace SK.Examples
                 _libretro?.Resume();
         }
 
+        /***********************************************************************************************************************
+         * Config file
+         **********************************************************************************************************************/
+        [Serializable]
+        protected sealed class ConfigFileContent
+        {
+            public string Core;
+            public string Directory;
+            public string Name;
+            public bool AnalogDirectionsToDigital;
+            public ConfigFileContent(GameModelSetup gameModelSetup)
+            {
+                Core                      = gameModelSetup.CoreName;
+                Directory                 = gameModelSetup.GameDirectory;
+                Name                      = gameModelSetup.GameName;
+                AnalogDirectionsToDigital = gameModelSetup.AnalogDirectionsToDigital;
+            }
+        }
+
         [ContextMenu("Load configuration")]
         public void LoadConfig()
         {
-            if (!File.Exists(_configFilePath))
+            if (!File.Exists(ConfigFilePath))
                 return;
 
-            string json = File.ReadAllText(_configFilePath);
+            string json = File.ReadAllText(ConfigFilePath);
             if (string.IsNullOrEmpty(json))
                 return;
 
-            ConfigFileContentList gameList = JsonUtility.FromJson<ConfigFileContentList>(json);
-            if (gameList.Entries == null || gameList.Entries.Length == 0 || transform.GetSiblingIndex() > gameList.Entries.Length - 1)
+            ConfigFileContent game = LoadJsonConfig(json);
+            if (game == null)
                 return;
 
-            ConfigFileContent game     = gameList.Entries[IndexInConfig];
-            CoreName                   = game.Core;
-            GameDirectory              = game.Directory;
-            GameName                   = game.Name;
+            CoreName                  = game.Core;
+            GameDirectory             = game.Directory;
+            GameName                  = game.Name;
             AnalogDirectionsToDigital = game.AnalogDirectionsToDigital;
 
             if (AnalogDirectionsToDigitalToggle != null)
@@ -204,12 +204,15 @@ namespace SK.Examples
         }
 
         [ContextMenu("Save configuration")]
-        protected void SaveConfig()
+        private void SaveConfig()
         {
-            string json = JsonUtility.ToJson(GetConfigContent(), true);
-            File.WriteAllText(_configFilePath, json);
+            string json = GetJsonConfig();
+            if (!string.IsNullOrEmpty(json))
+                File.WriteAllText(ConfigFilePath, json);
         }
 
-        protected abstract ConfigFileContentList GetConfigContent();
+        protected abstract string ConfigFilePath { get; }
+        protected abstract ConfigFileContent LoadJsonConfig(string json);
+        protected abstract string GetJsonConfig();
     }
 }

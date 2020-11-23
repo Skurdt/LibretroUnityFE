@@ -20,35 +20,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+using System;
+using System.IO;
+using UnityEngine;
+
 namespace SK.Examples
 {
     internal sealed class GameModelSetupInteractive : GameModelSetup
     {
-        protected override int IndexInConfig => transform.GetSiblingIndex();
+        [Serializable]
+        private sealed class ConfigFileContentList
+        {
+            public ConfigFileContent[] Entries;
+            public ConfigFileContentList(int length) => Entries = new ConfigFileContent[length];
+        }
 
-        protected override ConfigFileContentList GetConfigContent()
+        protected override string ConfigFilePath => Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "config_interactive.json"));
+
+        protected override ConfigFileContent LoadJsonConfig(string json)
+        {
+            ConfigFileContentList gameList = JsonUtility.FromJson<ConfigFileContentList>(json);
+            if (gameList.Entries == null || gameList.Entries.Length == 0 || transform.GetSiblingIndex() > gameList.Entries.Length - 1)
+                return null;
+
+            return gameList.Entries[transform.GetSiblingIndex()];
+        }
+
+        protected override string GetJsonConfig()
         {
             GameModelSetup[] gameModelSetups = transform.parent.GetComponentsInChildren<GameModelSetup>();
+            if (gameModelSetups.Length == 0)
+                return null;
 
-            ConfigFileContentList gameList = new ConfigFileContentList
-            {
-                Entries = new ConfigFileContent[gameModelSetups.Length]
-            };
-
+            ConfigFileContentList gameList = new ConfigFileContentList(gameModelSetups.Length);
             for (int i = 0; i < gameModelSetups.Length; ++i)
-            {
-                GameModelSetup gameModelSetup = gameModelSetups[i];
+                gameList.Entries[i] = new ConfigFileContent(gameModelSetups[i]);
 
-                gameList.Entries[i] = new ConfigFileContent
-                {
-                    Core                      = gameModelSetup.CoreName,
-                    Directory                 = gameModelSetup.GameDirectory,
-                    Name                      = gameModelSetup.GameName,
-                    AnalogDirectionsToDigital = gameModelSetup.AnalogDirectionsToDigitalToggle != null ? gameModelSetup.AnalogDirectionsToDigitalToggle.isOn : gameModelSetup.AnalogDirectionsToDigital
-                };
-            }
-
-            return gameList;
+            return JsonUtility.ToJson(gameList, true);
         }
     }
 }

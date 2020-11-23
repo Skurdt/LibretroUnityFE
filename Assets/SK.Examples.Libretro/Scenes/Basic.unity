@@ -583,8 +583,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2aad918f2ab49244ca2e2c0ee36f0a44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _analogDirectionsToDigital: 0
-  _analogDirectionsToDigitalToggle: {fileID: 624457924}
+  AnalogDirectionsToDigital: 0
+  AnalogDirectionsToDigitalToggle: {fileID: 624457924}
 --- !u!64 &1097943594
 MeshCollider:
   m_ObjectHideFlags: 0

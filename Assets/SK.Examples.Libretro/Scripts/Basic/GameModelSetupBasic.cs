@@ -20,6 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+using System.IO;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -27,6 +28,7 @@ namespace SK.Examples
 {
     internal sealed class GameModelSetupBasic : GameModelSetup
     {
+
         protected override void OnLateStart() => InputEnabled = true;
 
         protected override void OnUpdate()
@@ -63,20 +65,8 @@ namespace SK.Examples
             Rewind(Keyboard.current.backspaceKey.isPressed);
         }
 
-        protected override int IndexInConfig => 0;
-
-        protected override ConfigFileContentList GetConfigContent() => new ConfigFileContentList
-        {
-            Entries = new ConfigFileContent[]
-            {
-                new ConfigFileContent
-                {
-                    Core                      = CoreName,
-                    Directory                 = GameDirectory,
-                    Name                      = GameName,
-                    AnalogDirectionsToDigital = AnalogDirectionsToDigitalToggle != null ? AnalogDirectionsToDigitalToggle.isOn : AnalogDirectionsToDigital
-                }
-            }
-        };
+        protected override string ConfigFilePath => Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "config_basic.json"));
+        protected override ConfigFileContent LoadJsonConfig(string json) => JsonUtility.FromJson<ConfigFileContent>(json);
+        protected override string GetJsonConfig() => JsonUtility.ToJson(new ConfigFileContent(this), true);
     }
 }
