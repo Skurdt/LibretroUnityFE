@@ -24,20 +24,6 @@ namespace SK.Examples
 {
     internal sealed class GameModelSetupInteractive : GameModelSetup
     {
-        public bool Running => Libretro != null && Libretro.Running;
-
-        public void Rewind(bool rewind) => Libretro.Rewind(rewind);
-
-        public bool InputEnabled
-        {
-            get => Libretro != null && Libretro.InputEnabled;
-            set
-            {
-                if (Libretro != null)
-                    Libretro.InputEnabled = value;
-            }
-        }
-
         protected override int IndexInConfig => transform.GetSiblingIndex();
 
         protected override ConfigFileContentList GetConfigContent()

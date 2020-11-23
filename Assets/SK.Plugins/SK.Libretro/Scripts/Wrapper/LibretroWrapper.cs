@@ -159,7 +159,7 @@ namespace SK.Libretro
         private uint _totalFrameCount                             = 0;
         private long _frameTimeLast                               = 0;
 
-        public LibretroWrapper(LibretroTargetPlatform targetPlatform, string baseDirectory = null)
+        public unsafe LibretroWrapper(LibretroTargetPlatform targetPlatform, string baseDirectory = null)
         {
             TargetPlatform = targetPlatform;
 
@@ -198,15 +198,12 @@ namespace SK.Libretro
             Audio       = new LibretroAudio(this);
             Input       = new LibretroInput();
 
-            unsafe
-            {
-                EnvironmentCallback      = Environment.Callback;
-                VideoRefreshCallback     = Graphics.Callback;
-                AudioSampleCallback      = Audio.SampleCallback;
-                AudioSampleBatchCallback = Audio.SampleBatchCallback;
-                InputPollCallback        = Input.PollCallback;
-                InputStateCallback       = Input.StateCallback;
-            }
+            EnvironmentCallback      = Environment.Callback;
+            VideoRefreshCallback     = Graphics.Callback;
+            AudioSampleCallback      = Audio.SampleCallback;
+            AudioSampleBatchCallback = Audio.SampleBatchCallback;
+            InputPollCallback        = Input.PollCallback;
+            InputStateCallback       = Input.StateCallback;
 
             LogPrintfCallback = LibretroLog.RetroLogPrintf;
         }
@@ -318,7 +315,7 @@ namespace SK.Libretro
 
         public void DeactivateInput() => Input.Processor = null;
 
-        public bool SaveState(int index, out string outPath)
+        public unsafe bool SaveState(int index, out string outPath)
         {
             outPath = null;
 
@@ -327,30 +324,27 @@ namespace SK.Libretro
                 return false;
 
             byte[] data = new byte[size];
-            unsafe
+            fixed (byte* p = data)
             {
-                fixed (byte* p = data)
-                {
-                    bool result = Core.retro_serialize(p, size);
-                    if (result)
-                    {
-                        string coreDirectory = Path.Combine(SavesDirectory, Core.Name);
-                        if (!Directory.Exists(coreDirectory))
-                            _ = Directory.CreateDirectory(coreDirectory);
-
-                        string gameDirectory = Game.Name != null ? Path.Combine(coreDirectory, Path.GetFileNameWithoutExtension(Game.Name)) : null;
-                        if (gameDirectory != null && !Directory.Exists(gameDirectory))
-                            _ = Directory.CreateDirectory(gameDirectory);
-
-                        outPath = Path.GetFullPath(gameDirectory != null ? Path.Combine(gameDirectory, $"save_{index}.state") : Path.Combine(coreDirectory, $"save_{index}.state"));
-                        File.WriteAllBytes(outPath, data);
-                    }
-                    return true;
-                }
+                if (!Core.retro_serialize(p, size))
+                    return false;
             }
+
+            string coreDirectory = Path.Combine(SavesDirectory, Core.Name);
+            if (!Directory.Exists(coreDirectory))
+                _ = Directory.CreateDirectory(coreDirectory);
+
+            string gameDirectory = Game.Name != null ? Path.Combine(coreDirectory, Path.GetFileNameWithoutExtension(Game.Name)) : null;
+            if (gameDirectory != null && !Directory.Exists(gameDirectory))
+                _ = Directory.CreateDirectory(gameDirectory);
+
+            outPath = Path.GetFullPath(gameDirectory != null ? Path.Combine(gameDirectory, $"save_{index}.state") : Path.Combine(coreDirectory, $"save_{index}.state"));
+            File.WriteAllBytes(outPath, data);
+
+            return true;
         }
 
-        public bool LoadState(int index)
+        public unsafe bool LoadState(int index)
         {
             string coreDirectory = Path.Combine(SavesDirectory, Core.Name);
             if (!Directory.Exists(coreDirectory))
@@ -370,14 +364,8 @@ namespace SK.Libretro
                 return false;
 
             byte[] data = File.ReadAllBytes(savePath);
-            unsafe
-            {
-                fixed (byte* p = data)
-                {
-                    // FIXME: This returns false, not sure why
-                    _ = Core.retro_unserialize(p, size);
-                }
-            }
+            fixed (byte* p = data)
+                _ = Core.retro_unserialize(p, size); // FIXME: This returns false, not sure why
 
             return true;
         }
@@ -415,9 +403,7 @@ namespace SK.Libretro
 
             byte[] data = new byte[size];
             fixed (byte* p = data)
-            {
                 return Core.retro_serialize(p, size) ? new SaveStateData(data, size) : null;
-            }
         }
 
         private unsafe void RewindLoadState(SaveStateData saveStateData)

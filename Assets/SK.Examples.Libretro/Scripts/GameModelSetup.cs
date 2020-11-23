@@ -39,10 +39,16 @@ namespace SK.Examples
         public string CoreName { get; set; }
         public string GameDirectory { get; set; }
         public string GameName { get; set; }
-
-        protected Transform Viewer { get; private set; } = null;
-        protected LibretroBridge Libretro { get; private set; } = null;
-
+        public bool Running => _libretro != null && _libretro.Running;
+        public bool InputEnabled
+        {
+            get => _libretro != null && _libretro.InputEnabled;
+            set
+            {
+                if (_libretro != null)
+                    _libretro.InputEnabled = value;
+            }
+        }
         protected abstract int IndexInConfig { get; }
 
         [Serializable]
@@ -62,9 +68,12 @@ namespace SK.Examples
 
         private static readonly string _configFilePath = Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "config.json"));
 
+        private LibretroBridge _libretro = null;
+        private Transform _viewer        = null;
+
         private void Awake()
         {
-            Viewer = Camera.main.transform;
+            _viewer = Camera.main.transform;
 
             if (AnalogDirectionsToDigitalToggle != null)
                 AnalogDirectionsToDigitalToggle.isOn = AnalogDirectionsToDigital;
@@ -74,6 +83,9 @@ namespace SK.Examples
         {
             LoadConfig();
             StartGame();
+
+            if (_libretro != null && _libretro.Running)
+                OnLateStart();
         }
 
         private void Update()
@@ -85,12 +97,11 @@ namespace SK.Examples
                 return;
             }
 
-            if (Libretro == null || !Libretro.Running)
-                return;
-
-            OnUpdate();
-
-            Libretro.Update();
+            if (_libretro != null && _libretro.Running)
+            {
+                OnUpdate();
+                _libretro.Update();
+            }
         }
 
         private void OnEnable() => Application.focusChanged += OnApplicationFocusChanged;
@@ -101,15 +112,21 @@ namespace SK.Examples
             StopGame();
         }
 
-        public void Pause() => Libretro?.Pause();
+        public void Pause() => _libretro?.Pause();
 
-        public void Resume() => Libretro?.Resume();
+        public void Resume() => _libretro?.Resume();
 
-        public bool SaveState(int index, bool saveScreenshot = true) => Libretro != null && Libretro.SaveState(index, saveScreenshot);
+        public bool SaveState(int index, bool saveScreenshot = true) => _libretro != null && _libretro.SaveState(index, saveScreenshot);
 
-        public bool LoadState(int index) => Libretro != null && Libretro.LoadState(index);
+        public bool LoadState(int index) => _libretro != null && _libretro.LoadState(index);
 
-        public void UI_SetAnalogToDigitalInput(bool value) => Libretro?.ToggleAnalogToDigitalInput(value);
+        public void Rewind(bool rewind) => _libretro.Rewind(rewind);
+
+        public void UI_SetAnalogToDigitalInput(bool value) => _libretro?.ToggleAnalogToDigitalInput(value);
+
+        protected virtual void OnLateStart()
+        {
+        }
 
         protected virtual void OnUpdate()
         {
@@ -140,8 +157,8 @@ namespace SK.Examples
             {
                 AnalogDirectionsToDigital = AnalogDirectionsToDigital
             };
-            Libretro = new LibretroBridge(screen, Viewer, settings);
-            if (!Libretro.Start(CoreName, GameDirectory, GameName))
+            _libretro = new LibretroBridge(screen, _viewer, settings);
+            if (!_libretro.Start(CoreName, GameDirectory, GameName))
             {
                 StopGame();
                 return;
@@ -150,16 +167,16 @@ namespace SK.Examples
 
         protected void StopGame()
         {
-            Libretro?.Stop();
-            Libretro = null;
+            _libretro?.Stop();
+            _libretro = null;
         }
 
         private void OnApplicationFocusChanged(bool focus)
         {
             if (!focus)
-                Libretro?.Pause();
+                _libretro?.Pause();
             else
-                Libretro?.Resume();
+                _libretro?.Resume();
         }
 
         [ContextMenu("Load configuration")]

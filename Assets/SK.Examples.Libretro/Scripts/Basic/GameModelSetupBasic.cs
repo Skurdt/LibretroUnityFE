@@ -27,6 +27,8 @@ namespace SK.Examples
 {
     internal sealed class GameModelSetupBasic : GameModelSetup
     {
+        protected override void OnLateStart() => InputEnabled = true;
+
         protected override void OnUpdate()
         {
             if (Keyboard.current == null)
@@ -34,10 +36,10 @@ namespace SK.Examples
 
             if (Keyboard.current.pKey.wasPressedThisFrame)
             {
-                if (Libretro.Running)
-                    Libretro.Pause();
+                if (Running)
+                    Pause();
                 else
-                    Libretro.Resume();
+                    Resume();
             }
 
             if (Keyboard.current.f5Key.wasPressedThisFrame && SaveState(0))
@@ -58,7 +60,7 @@ namespace SK.Examples
             if (Keyboard.current.f12Key.wasPressedThisFrame && LoadState(3))
                 Debug.Log("State loaded from slot 3");
 
-            Libretro.Rewind(Keyboard.current.backspaceKey.isPressed);
+            Rewind(Keyboard.current.backspaceKey.isPressed);
         }
 
         protected override int IndexInConfig => 0;

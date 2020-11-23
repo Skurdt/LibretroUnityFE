@@ -55,7 +55,7 @@ namespace SK.Libretro.Unity
 
         private readonly CommandBuffer _retroRunCommandBuffer = new CommandBuffer();
 
-        public GraphicsProcessorHardware(int width, int height, bool depth, bool stencil, FilterMode filterMode = FilterMode.Point)
+        public unsafe GraphicsProcessorHardware(int width, int height, bool depth, bool stencil, FilterMode filterMode = FilterMode.Point)
         {
             Texture = new Texture2D(width, height, TextureFormat.RGB24, false)
             {
@@ -64,10 +64,7 @@ namespace SK.Libretro.Unity
 
             ContextData initContextData = new ContextData(Texture, depth, stencil);
             CommandBuffer cb = new CommandBuffer();
-            unsafe
-            {
-                cb.IssuePluginEventAndData(LibretroPlugin.GetRenderEventFunc(), 0, (IntPtr)(&initContextData));
-            }
+            cb.IssuePluginEventAndData(LibretroPlugin.GetRenderEventFunc(), 0, (IntPtr)(&initContextData));
             Graphics.ExecuteCommandBuffer(cb);
             Initialized = true;
         }
@@ -102,7 +99,7 @@ namespace SK.Libretro.Unity
 
         public unsafe void ProcessFrameRGB565(ushort* data, int width, int height, int pitch) => UpdateTexture(width, height);
 
-        private void UpdateTexture(int width, int height)
+        private unsafe void UpdateTexture(int width, int height)
         {
             if (Texture.width != width || Texture.height != height)
             {
@@ -111,13 +108,10 @@ namespace SK.Libretro.Unity
 
             //    CommandBuffer cb = new CommandBuffer();
             //    cb.IssuePluginEvent(LibretroPlugin.GetRenderEventFunc(), 1);
-            //    unsafe
+            //    fixed (void* p = &_initContextData)
             //    {
-            //        fixed (void* p = &_initContextData)
-            //        {
-            //            cb.IssuePluginEventAndData(LibretroPlugin.GetRenderEventFunc(), 0, (IntPtr)p);
-            //            Graphics.ExecuteCommandBuffer(cb);
-            //        }
+            //        cb.IssuePluginEventAndData(LibretroPlugin.GetRenderEventFunc(), 0, (IntPtr)p);
+            //        Graphics.ExecuteCommandBuffer(cb);
             //    }
             }
         }
