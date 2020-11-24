@@ -23,9 +23,12 @@
 using SK.Libretro.Unity;
 using SK.Utilities.Unity;
 using System;
+using System.Collections;
 using System.IO;
+using System.IO.Compression;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace SK.Examples
@@ -34,7 +37,10 @@ namespace SK.Examples
     internal abstract class GameModelSetup : MonoBehaviour
     {
         public bool AnalogDirectionsToDigital = false;
+
         public Toggle AnalogDirectionsToDigitalToggle;
+        public Image DownloadProgressImage;
+        public Text DownloadProgressText;
 
         public string CoreName { get; set; }
         public string GameDirectory { get; set; }
@@ -49,21 +55,36 @@ namespace SK.Examples
                     _libretro.InputEnabled = value;
             }
         }
+        public float DownloadProgress { get; private set; } = 0f;
 
         private LibretroBridge _libretro = null;
         private Transform _viewer        = null;
+
+        private bool _coreReady = false;
 
         private void Awake()
         {
             _viewer = Camera.main.transform;
 
+            AnalogDirectionsToDigitalToggle = GameObject.Find("AnalogToDigitalToggle").GetComponent<Toggle>();
             if (AnalogDirectionsToDigitalToggle != null)
                 AnalogDirectionsToDigitalToggle.isOn = AnalogDirectionsToDigital;
+
+            if (DownloadProgressImage != null)
+                DownloadProgressImage.gameObject.SetActive(false);
+            if (DownloadProgressText != null)
+                DownloadProgressText.gameObject.SetActive(false);
         }
 
-        private void Start()
+        private IEnumerator Start()
         {
             LoadConfig();
+
+            TryDownloadCore();
+
+            while (!_coreReady)
+                yield return null;
+
             StartGame();
 
             if (_libretro != null && _libretro.Running)
@@ -135,7 +156,7 @@ namespace SK.Examples
                 return;
             }
 
-            LibretroBridgeSettings settings = new LibretroBridgeSettings
+            LibretroBridge.Settings settings = new LibretroBridge.Settings
             {
                 AnalogDirectionsToDigital = AnalogDirectionsToDigital
             };
@@ -214,5 +235,156 @@ namespace SK.Examples
         protected abstract string ConfigFilePath { get; }
         protected abstract ConfigFileContent LoadJsonConfig(string json);
         protected abstract string GetJsonConfig();
+
+        /***********************************************************************************************************************
+         * Dynamic core download
+         **********************************************************************************************************************/
+        private void TryDownloadCore()
+        {
+            string extensionString = GetLibretroBotExtension();
+            if (extensionString == null)
+                return;
+
+            string coresDirectory = Path.Combine(Application.streamingAssetsPath, "libretro~/cores");
+            string corePath       = Path.GetFullPath(Path.Combine(coresDirectory, $"{CoreName}_libretro.{extensionString}"));
+            if (File.Exists(corePath))
+            {
+                _coreReady       = true;
+                DownloadProgress = 1f;
+                return;
+            }
+
+            string platformString = GetLibretroBotPlatform();
+            if (platformString == null)
+                return;
+
+            string url = GetLibretroBotUrl(platformString, extensionString);
+            _ = StartCoroutine(DownloadFile(url, coresDirectory));
+        }
+
+        private IEnumerator DownloadFile(string url, string destinationDir)
+        {
+            if (!Directory.Exists(destinationDir))
+                _ = Directory.CreateDirectory(destinationDir);
+
+            string filePath = Path.GetFullPath(Path.Combine(destinationDir, Path.GetFileName(url)));
+            if (File.Exists(filePath))
+                File.Delete(filePath);
+
+            using (UnityWebRequest uwr = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET))
+            {
+                uwr.downloadHandler = new DownloadHandlerFile(filePath);
+                _ = uwr.SendWebRequest();
+
+                if (uwr.isNetworkError || uwr.isHttpError)
+                    Debug.LogError(uwr.error);
+                else
+                {
+                    if (DownloadProgressImage != null)
+                        DownloadProgressImage.gameObject.SetActive(true);
+
+                    if (DownloadProgressText != null)
+                        DownloadProgressText.gameObject.SetActive(true);
+
+                    while (!uwr.downloadHandler.isDone)
+                    {
+                        DownloadProgress = uwr.downloadProgress;
+                        if (DownloadProgressImage != null)
+                            DownloadProgressImage.fillAmount = DownloadProgress;
+                        if (DownloadProgressText != null)
+                            DownloadProgressText.text = $"Downloading core... {DownloadProgress * 100f}%";
+                        yield return null;
+                    }
+                }
+
+                DownloadProgress = 1.0f;
+                if (DownloadProgressImage != null)
+                {
+                    DownloadProgressImage.fillAmount = DownloadProgress;
+                    DownloadProgressImage.gameObject.SetActive(false);
+                }
+                if (DownloadProgressText != null)
+                {
+                    DownloadProgressText.text = "";
+                    DownloadProgressText.gameObject.SetActive(false);
+                }
+
+                ExtractFile(filePath, destinationDir);
+            }
+        }
+
+        private void ExtractFile(string zipPath, string destinationDir)
+        {
+            try
+            {
+                if (!File.Exists(zipPath))
+                    return;
+
+                using (ZipArchive archive = ZipFile.OpenRead(zipPath))
+                {
+                    foreach (ZipArchiveEntry entry in archive.Entries)
+                    {
+                        string destinationPath = Path.GetFullPath(Path.Combine(destinationDir, entry.FullName));
+                        if (File.Exists(destinationPath))
+                            File.Delete(destinationPath);
+                        entry.ExtractToFile(destinationPath);
+                    }
+                    _coreReady = true;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                File.Delete(zipPath);
+            }
+        }
+
+        private string GetLibretroBotUrl(string platformString, string extensionString)
+            => $"https://buildbot.libretro.com/nightly/{platformString}/x86_64/latest/{CoreName}_libretro.{extensionString}.zip";
+
+        private static string GetLibretroBotPlatform()
+        {
+            switch (Application.platform)
+            {
+                case RuntimePlatform.LinuxEditor:
+                case RuntimePlatform.LinuxPlayer:
+                    return "linux";
+                case RuntimePlatform.OSXEditor:
+                case RuntimePlatform.OSXPlayer:
+                    return "apple/osx";
+                case RuntimePlatform.WindowsEditor:
+                case RuntimePlatform.WindowsPlayer:
+                    return "windows";
+                default:
+                {
+                    Debug.LogError($"Invalid/unsupported platform detected: {Application.platform}");
+                    return null;
+                }
+            }
+        }
+
+        private static string GetLibretroBotExtension()
+        {
+            switch (Application.platform)
+            {
+                case RuntimePlatform.LinuxEditor:
+                case RuntimePlatform.LinuxPlayer:
+                    return "so";
+                case RuntimePlatform.OSXEditor:
+                case RuntimePlatform.OSXPlayer:
+                    return "dylib";
+                case RuntimePlatform.WindowsEditor:
+                case RuntimePlatform.WindowsPlayer:
+                    return "dll";
+                default:
+                {
+                    Debug.LogError($"Invalid/unsupported platform detected: {Application.platform}");
+                    return null;
+                }
+            }
+        }
     }
 }

@@ -29,18 +29,18 @@ using UnityEngine.Rendering;
 
 namespace SK.Libretro.Unity
 {
-    public sealed class LibretroBridgeSettings
-    {
-        public float TimeScale                      = 1.0f;
-        public bool AudioVolumeControlledByDistance = true;
-        public float AudioMaxVolume                 = 1f;
-        public float AudioMinDistance               = 2f;
-        public float AudioMaxDistance               = 10f;
-        public bool AnalogDirectionsToDigital       = false;
-    }
-
     public sealed class LibretroBridge
     {
+        public sealed class Settings
+        {
+            public float TimeScale                      = 1.0f;
+            public bool AudioVolumeControlledByDistance = true;
+            public float AudioMaxVolume                 = 1f;
+            public float AudioMinDistance               = 2f;
+            public float AudioMaxDistance               = 10f;
+            public bool AnalogDirectionsToDigital       = false;
+        }
+
         public bool Running { get; private set; } = false;
 
         public bool InputEnabled
@@ -61,12 +61,12 @@ namespace SK.Libretro.Unity
         private readonly Transform _screenTransform;
         private readonly Renderer _screenRenderer;
         private readonly Transform _viewer;
-        private readonly LibretroBridgeSettings _settings;
+        private readonly Settings _settings;
 
         private readonly Material _savedMaterial = null;
 
         private LibretroWrapper _wrapper              = null;
-        private System.Func<IEnumerator> _updateFunc         = null;
+        private System.Func<IEnumerator> _updateFunc  = null;
         private GraphicsProcessorHardware _hwRenderer = null;
         private bool _inputEnabled                    = false;
 
@@ -79,7 +79,7 @@ namespace SK.Libretro.Unity
         private double _accumulatedTime                          = 0.0;
         private int _nLoops                                      = 0;
 
-        public LibretroBridge(ScreenNode screen, Transform viewer, LibretroBridgeSettings settings = null)
+        public LibretroBridge(ScreenNode screen, Transform viewer, Settings settings = null)
         {
             if (_firstInstance)
             {
@@ -92,7 +92,7 @@ namespace SK.Libretro.Unity
             _screenTransform = screen.transform;
             _screenRenderer  = screen.GetComponent<Renderer>();
             _viewer          = viewer;
-            _settings        = settings ?? new LibretroBridgeSettings();
+            _settings        = settings ?? new Settings();
             _savedMaterial   = new Material(_screenRenderer.material);
 
             MaterialPropertyBlock block = new MaterialPropertyBlock();
