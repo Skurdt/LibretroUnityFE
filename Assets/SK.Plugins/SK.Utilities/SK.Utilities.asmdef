@@ -1,5 +1,6 @@
 {
     "name": "SK.Utilities",
+    "rootNamespace": "SK.Utilities",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

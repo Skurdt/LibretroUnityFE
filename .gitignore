@@ -138,3 +138,5 @@ Temporary Items
 .idea
 
 NativePlugin/x64/
+
+.vsconfig

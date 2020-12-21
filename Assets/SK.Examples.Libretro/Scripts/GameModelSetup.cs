@@ -66,9 +66,13 @@ namespace SK.Examples
         {
             _viewer = Camera.main.transform;
 
-            AnalogDirectionsToDigitalToggle = GameObject.Find("AnalogToDigitalToggle").GetComponent<Toggle>();
-            if (AnalogDirectionsToDigitalToggle != null)
-                AnalogDirectionsToDigitalToggle.isOn = AnalogDirectionsToDigital;
+            GameObject analogToDigitalToggleGameObject = GameObject.Find("AnalogToDigitalToggle");
+            if (analogToDigitalToggleGameObject != null)
+            {
+                AnalogDirectionsToDigitalToggle = analogToDigitalToggleGameObject.GetComponent<Toggle>();
+                if (AnalogDirectionsToDigitalToggle != null)
+                    AnalogDirectionsToDigitalToggle.isOn = AnalogDirectionsToDigital;
+            }
 
             if (DownloadProgressImage != null)
                 DownloadProgressImage.gameObject.SetActive(false);
@@ -276,7 +280,7 @@ namespace SK.Examples
                 uwr.downloadHandler = new DownloadHandlerFile(filePath);
                 _ = uwr.SendWebRequest();
 
-                if (uwr.isNetworkError || uwr.isHttpError)
+                if (uwr.result != UnityWebRequest.Result.Success)
                     Debug.LogError(uwr.error);
                 else
                 {

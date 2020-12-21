@@ -94,12 +94,6 @@ namespace SK.Libretro.Unity
             _viewer          = viewer;
             _settings        = settings ?? new Settings();
             _savedMaterial   = new Material(_screenRenderer.material);
-
-            MaterialPropertyBlock block = new MaterialPropertyBlock();
-            _screenRenderer.GetPropertyBlock(block);
-            block.SetTexture("_MainTex", Texture2D.blackTexture);
-            block.SetColor("_Color", Color.black);
-            _screenRenderer.SetPropertyBlock(block);
         }
 
         public bool Start(string coreName, string gameDirectory, string gameName)
@@ -414,20 +408,10 @@ namespace SK.Libretro.Unity
 
             MaterialPropertyBlock block = new MaterialPropertyBlock();
             _screenRenderer.GetPropertyBlock(block);
-            block.SetTexture("_EmissionMap", texture);
-            block.SetColor("_EmissionColor", Color.white);
+            block.SetTexture("_Texture", texture);
+            block.SetFloat("_Intensity", 1.2f);
             _screenRenderer.SetPropertyBlock(block);
         }
-
-//        private void AudioSetVolume(float volume)
-//        {
-//#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-//            if (_wrapper == null || !(_wrapper.Audio.Processor is NAudio.AudioProcessor audioProcessor))
-//                return;
-
-//            audioProcessor.SetVolume(math.clamp(volume, 0f, AudioMaxVolume));
-//#endif
-//        }
 
         private IEnumerator CoSaveScreenshot(string screenshotPath)
         {

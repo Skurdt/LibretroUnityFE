@@ -1,5 +1,6 @@
 {
     "name": "SK.Utilities.Unity",
+    "rootNamespace": "SK.Utilities.Unity",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
