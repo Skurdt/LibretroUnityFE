@@ -419,7 +419,7 @@ namespace SK.Libretro.Unity
 
             MaterialPropertyBlock block = new MaterialPropertyBlock();
             _screenRenderer.GetPropertyBlock(block);
-            Texture2D tex = block.GetTexture("_EmissionMap") as Texture2D;
+            Texture2D tex = block.GetTexture("_Texture") as Texture2D;
     	    File.WriteAllBytes(screenshotPath, tex.EncodeToTGA());
             _screenshotCoroutine = null;
         }

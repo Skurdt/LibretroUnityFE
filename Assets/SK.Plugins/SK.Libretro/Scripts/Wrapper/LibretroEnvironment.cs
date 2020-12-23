@@ -571,41 +571,49 @@ namespace SK.Libretro
                 LibretroWrapper.CoreOptionsList.Cores.Add(_wrapper.Core.CoreOptions);
             }
 
-            for (int i = 0; i < RETRO_NUM_CORE_OPTION_VALUES_MAX; ++i)
+            try
             {
-                IntPtr ins = new IntPtr(data + (i * Marshal.SizeOf<retro_core_option_definition>()));
-                retro_core_option_definition defs = Marshal.PtrToStructure<retro_core_option_definition>(ins);
-                if (defs.key == null)
-                    break;
-
-                string key = UnsafeStringUtils.CharsToString(defs.key);
-
-                string coreOption = _wrapper.Core.CoreOptions.Options.Find(x => x.StartsWith(key, StringComparison.OrdinalIgnoreCase));
-                if (coreOption != null)
-                    continue;
-
-                string defaultValue = UnsafeStringUtils.CharsToString(defs.default_value);
-
-                List<string> possibleValues = new List<string>();
-                for (int j = 0; j < defs.values.Length; j++)
+                for (int i = 0; i < RETRO_NUM_CORE_OPTION_VALUES_MAX; ++i)
                 {
-                    retro_core_option_value val = defs.values[j];
-                    if (val.value != null)
-                        possibleValues.Add(UnsafeStringUtils.CharsToString(val.value));
+                    IntPtr ins = new IntPtr(data + (i * Marshal.SizeOf<retro_core_option_definition>()));
+                    retro_core_option_definition defs = Marshal.PtrToStructure<retro_core_option_definition>(ins);
+                    if (defs.key == null)
+                        break;
+
+                    string key = UnsafeStringUtils.CharsToString(defs.key);
+
+                    string coreOption = _wrapper.Core.CoreOptions.Options.Find(x => x.StartsWith(key, StringComparison.OrdinalIgnoreCase));
+                    if (coreOption != null)
+                        continue;
+
+                    string defaultValue = UnsafeStringUtils.CharsToString(defs.default_value);
+
+                    List<string> possibleValues = new List<string>();
+                    for (int j = 0; j < defs.values.Length; j++)
+                    {
+                        retro_core_option_value val = defs.values[j];
+                        if (val.value != null)
+                            possibleValues.Add(UnsafeStringUtils.CharsToString(val.value));
+                    }
+
+                    string value = "";
+                    if (!string.IsNullOrEmpty(defaultValue))
+                        value = defaultValue;
+                    else if (possibleValues.Count > 0)
+                        value = possibleValues[0];
+
+                    coreOption = $"{key};{value};{string.Join("|", possibleValues)}";
+
+                    _wrapper.Core.CoreOptions.Options.Add(coreOption);
                 }
 
-                string value = "";
-                if (!string.IsNullOrEmpty(defaultValue))
-                    value = defaultValue;
-                else if (possibleValues.Count > 0)
-                    value = possibleValues[0];
-
-                coreOption = $"{key};{value};{string.Join("|", possibleValues)}";
-
-                _wrapper.Core.CoreOptions.Options.Add(coreOption);
+                LibretroWrapper.SaveCoreOptionsFile();
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e.Message);
             }
 
-            LibretroWrapper.SaveCoreOptionsFile();
             return true;
         }
     }
