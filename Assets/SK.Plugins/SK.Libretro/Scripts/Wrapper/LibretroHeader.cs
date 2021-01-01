@@ -43,7 +43,7 @@ namespace SK.Libretro
     internal static unsafe class LibretroHeader
     {
 #pragma warning disable IDE1006 // Naming Styles
-        public const uint RETRO_API_VERSION = 1;
+        public const uint RETRO_API_VERSION = 0;
 
         public const int RETRO_DEVICE_TYPE_SHIFT = 8;
         public const int RETRO_DEVICE_MASK       = (1 << RETRO_DEVICE_TYPE_SHIFT) - 1;
@@ -1048,12 +1048,12 @@ namespace SK.Libretro
             public char* key;
             public char* desc;
             public char* info;
-            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.Struct, SizeConst = RETRO_NUM_CORE_OPTION_VALUES_MAX)]
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = RETRO_NUM_CORE_OPTION_VALUES_MAX)]
             public retro_core_option_value[] values; // retro_core_option_value[RETRO_NUM_CORE_OPTION_VALUES_MAX]
             public char* default_value;
         }
 
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct retro_core_options_intl
         {
             public IntPtr us;    // retro_core_option_definition*

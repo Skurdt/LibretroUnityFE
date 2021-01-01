@@ -1,4 +1,4 @@
-﻿/* MIT License
+/* MIT License
 
  * Copyright (c) 2020 Skurdt
  *
@@ -23,7 +23,6 @@
 using SK.Libretro.Utilities;
 using SK.Utilities;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using static SK.Libretro.LibretroHeader;
@@ -51,7 +50,7 @@ namespace SK.Libretro
                 case retro_environment.RETRO_ENVIRONMENT_GET_VARIABLE:                                return GetVariable();
                 case retro_environment.RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE:                         return GetVariableUpdate();
                 case retro_environment.RETRO_ENVIRONMENT_GET_LIBRETRO_PATH:                           return GetLibretroPath();
-                case retro_environment.RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE:                        return ENVIRONMENT_NOT_IMPLEMENTED();
+                case retro_environment.RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE:                        return ENVIRONMENT_NOT_IMPLEMENTED(true);
                 case retro_environment.RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES:               return GetInputDeviceCapabilities();
                 case retro_environment.RETRO_ENVIRONMENT_GET_SENSOR_INTERFACE:                        return ENVIRONMENT_NOT_IMPLEMENTED();
                 case retro_environment.RETRO_ENVIRONMENT_GET_CAMERA_INTERFACE:                        return ENVIRONMENT_NOT_IMPLEMENTED();
@@ -96,15 +95,15 @@ namespace SK.Libretro
                 case retro_environment.RETRO_ENVIRONMENT_SET_PROC_ADDRESS_CALLBACK:                   return ENVIRONMENT_NOT_IMPLEMENTED();
                 case retro_environment.RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO:                          return ENVIRONMENT_NOT_IMPLEMENTED();
                 case retro_environment.RETRO_ENVIRONMENT_SET_CONTROLLER_INFO:                         return SetControllerInfo();
-                case retro_environment.RETRO_ENVIRONMENT_SET_MEMORY_MAPS:                             return ENVIRONMENT_NOT_IMPLEMENTED();
+                case retro_environment.RETRO_ENVIRONMENT_SET_MEMORY_MAPS:                             return ENVIRONMENT_NOT_IMPLEMENTED(true);
                 case retro_environment.RETRO_ENVIRONMENT_SET_GEOMETRY:                                return SetGeometry();
-                case retro_environment.RETRO_ENVIRONMENT_SET_SUPPORT_ACHIEVEMENTS:                    return ENVIRONMENT_NOT_IMPLEMENTED();
+                case retro_environment.RETRO_ENVIRONMENT_SET_SUPPORT_ACHIEVEMENTS:                    return ENVIRONMENT_NOT_IMPLEMENTED(true);
                 case retro_environment.RETRO_ENVIRONMENT_SET_HW_RENDER_CONTEXT_NEGOTIATION_INTERFACE: return ENVIRONMENT_NOT_IMPLEMENTED();
                 case retro_environment.RETRO_ENVIRONMENT_SET_SERIALIZATION_QUIRKS:                    return ENVIRONMENT_NOT_IMPLEMENTED();
                 case retro_environment.RETRO_ENVIRONMENT_SET_HW_SHARED_CONTEXT:                       return ENVIRONMENT_NOT_IMPLEMENTED();
                 case retro_environment.RETRO_ENVIRONMENT_SET_CORE_OPTIONS:                            return SetCoreOptions();
                 case retro_environment.RETRO_ENVIRONMENT_SET_CORE_OPTIONS_INTL:                       return SetCoreOptionsIntl();
-                case retro_environment.RETRO_ENVIRONMENT_SET_CORE_OPTIONS_DISPLAY:                    return ENVIRONMENT_NOT_IMPLEMENTED();
+                case retro_environment.RETRO_ENVIRONMENT_SET_CORE_OPTIONS_DISPLAY:                    return ENVIRONMENT_NOT_IMPLEMENTED(true);
                 case retro_environment.RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT_INTERFACE:              return ENVIRONMENT_NOT_IMPLEMENTED();
                 case retro_environment.RETRO_ENVIRONMENT_SHUTDOWN:                                    return Shutdown();
                 case retro_environment.RETRO_ENVIRONMENT_SET_MESSAGE_EXT:                             return ENVIRONMENT_NOT_IMPLEMENTED();
@@ -128,7 +127,10 @@ namespace SK.Libretro
              */
             bool ENVIRONMENT_NOT_IMPLEMENTED(bool defaultReturns = false)
             {
-                Logger.LogError("Environment not implemented!", cmd.ToString());
+                if (defaultReturns)
+                    Logger.LogWarning("Environment not implemented!", cmd.ToString());
+                else
+                    Logger.LogError("Environment not implemented!", cmd.ToString());
                 return defaultReturns;
             }
 
@@ -548,21 +550,28 @@ namespace SK.Libretro
                 return true;
             }
 
-            bool SetCoreOptions() => data != null && SetCoreOptionsInternal((long)data);
+            bool SetCoreOptions()
+            {
+                if (data == null)
+                    return false;
+
+                return SetCoreOptionsInternal();
+            }
 
             bool SetCoreOptionsIntl()
             {
                 if (data == null)
                     return false;
-                retro_core_options_intl inOptionsIntl = Marshal.PtrToStructure<retro_core_options_intl>((IntPtr)data);
-                return SetCoreOptionsInternal(inOptionsIntl.us.ToInt64());
+
+                return SetCoreOptionsInternal();
             }
 
             bool Shutdown() => true;
             #endregion
         }
 
-        private unsafe bool SetCoreOptionsInternal(long data)
+        // TODO: fix this
+        private unsafe bool SetCoreOptionsInternal()
         {
             _wrapper.Core.CoreOptions = LibretroWrapper.CoreOptionsList.Cores.Find(x => x.CoreName.Equals(_wrapper.Core.Name, StringComparison.OrdinalIgnoreCase));
             if (_wrapper.Core.CoreOptions == null)
@@ -571,48 +580,7 @@ namespace SK.Libretro
                 LibretroWrapper.CoreOptionsList.Cores.Add(_wrapper.Core.CoreOptions);
             }
 
-            try
-            {
-                for (int i = 0; i < RETRO_NUM_CORE_OPTION_VALUES_MAX; ++i)
-                {
-                    IntPtr ins = new IntPtr(data + (i * Marshal.SizeOf<retro_core_option_definition>()));
-                    retro_core_option_definition defs = Marshal.PtrToStructure<retro_core_option_definition>(ins);
-                    if (defs.key == null)
-                        break;
-
-                    string key = UnsafeStringUtils.CharsToString(defs.key);
-
-                    string coreOption = _wrapper.Core.CoreOptions.Options.Find(x => x.StartsWith(key, StringComparison.OrdinalIgnoreCase));
-                    if (coreOption != null)
-                        continue;
-
-                    string defaultValue = UnsafeStringUtils.CharsToString(defs.default_value);
-
-                    List<string> possibleValues = new List<string>();
-                    for (int j = 0; j < defs.values.Length; j++)
-                    {
-                        retro_core_option_value val = defs.values[j];
-                        if (val.value != null)
-                            possibleValues.Add(UnsafeStringUtils.CharsToString(val.value));
-                    }
-
-                    string value = "";
-                    if (!string.IsNullOrEmpty(defaultValue))
-                        value = defaultValue;
-                    else if (possibleValues.Count > 0)
-                        value = possibleValues[0];
-
-                    coreOption = $"{key};{value};{string.Join("|", possibleValues)}";
-
-                    _wrapper.Core.CoreOptions.Options.Add(coreOption);
-                }
-
-                LibretroWrapper.SaveCoreOptionsFile();
-            }
-            catch (Exception e)
-            {
-                Logger.LogError(e.Message);
-            }
+            LibretroWrapper.SaveCoreOptionsFile();
 
             return true;
         }

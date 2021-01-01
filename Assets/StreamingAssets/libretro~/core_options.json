@@ -161,6 +161,44 @@
                 "mupen64plus-u-cbutton;C4;C1|C2|C3|C4",
                 "mupen64plus-virefresh;Auto;Auto|1500|2200"
             ]
+        },
+        {
+            "CoreName": "vbam",
+            "Options": [
+                "vbam_allowcolorizerhack;disabled;disabled|enabled;",
+                "vbam_astick_deadzone;15;15|0|5|10|20|25|30;",
+                "vbam_forceRTCenable;disabled;disabled|enabled;",
+                "vbam_gbcoloroption;disabled;disabled|enabled;",
+                "vbam_gbHardware;gbc;gbc|auto|sgb|gb|gba|sgb2;",
+                "vbam_gyro_sensitivity;100;100|10|15|20|25|30|35|40|45|50|55|60|65|70|75|80|85|90|95|105|110|115|120;",
+                "vbam_interframeblending;disabled;disabled|smart|motion blur;",
+                "vbam_layer_1;enabled;enabled|disabled;",
+                "vbam_layer_2;enabled;enabled|disabled;",
+                "vbam_layer_3;enabled;enabled|disabled;",
+                "vbam_layer_4;enabled;enabled|disabled;",
+                "vbam_layer_5;enabled;enabled|disabled;",
+                "vbam_layer_6;enabled;enabled|disabled;",
+                "vbam_layer_7;enabled;enabled|disabled;",
+                "vbam_layer_8;enabled;enabled|disabled;",
+                "vbam_lcdfilter;disabled;disabled|enabled;",
+                "vbam_palettes;black and white;black and white|blue sea|dark knight|green forest|hot desert|pink dreams|wierd colors|original gameboy|gba sp;",
+                "vbam_show_advanced_options;disabled;disabled|enabled;",
+                "vbam_showborders;disabled;disabled|enabled|auto;",
+                "vbam_solarsensor;0;0|1|2|3|4|5|6|7|8|9|10;",
+                "vbam_sound_1;enabled;enabled|disabled;",
+                "vbam_sound_2;enabled;enabled|disabled;",
+                "vbam_sound_3;enabled;enabled|disabled;",
+                "vbam_sound_4;enabled;enabled|disabled;",
+                "vbam_sound_5;enabled;enabled|disabled;",
+                "vbam_sound_6;enabled;enabled|disabled;",
+                "vbam_soundfiltering;5;5|0|1|2|3|4|6|7|8|9|10;",
+                "vbam_soundinterpolation;enabled;enabled|disabled;",
+                "vbam_swap_astick;disabled;disabled|enabled;",
+                "vbam_tilt_sensitivity;100;100|10|15|20|25|30|35|40|45|50|55|60|65|70|75|80|85|90|95|105|110|115|120;",
+                "vbam_turbodelay;3;3|1|2|4|5|6|7|8|9|10|11|12|13|14|15;",
+                "vbam_turboenable;enabled;enabled|disabled;",
+                "vbam_usebios;disabled;disabled|enabled;"
+            ]
         }
     ]
 }
