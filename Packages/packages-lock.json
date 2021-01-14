@@ -1,5 +1,31 @@
 {
   "dependencies": {
+    "com.sk.libretro": {
+      "version": "https://github.com/Skurdt/SK.Libretro.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.burst": "1.4.3",
+        "com.unity.inputsystem": "1.0.1",
+        "com.sk.utilities": "1.0.0",
+        "com.sk.utilities.unity": "1.0.0"
+      },
+      "hash": "3ef2742ceefada6054750ce7677317b9660c0000"
+    },
+    "com.sk.utilities": {
+      "version": "https://github.com/Skurdt/SK.Utilities.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "8b05eeddbd8a19c5d9b505fd0f9dcd28bcb60784"
+    },
+    "com.sk.utilities.unity": {
+      "version": "https://github.com/Skurdt/SK.Utilities.Unity.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "a5597e143d92a8e29c4b7145577326eb6f270f66"
+    },
     "com.unity.burst": {
       "version": "1.4.3",
       "depth": 0,
