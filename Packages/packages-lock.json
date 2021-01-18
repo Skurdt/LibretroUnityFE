@@ -6,11 +6,12 @@
       "source": "git",
       "dependencies": {
         "com.unity.burst": "1.4.3",
-        "com.unity.inputsystem": "1.0.1",
+        "com.unity.textmeshpro": "3.0.3",
+        "com.unity.inputsystem": "1.1.0-preview.2",
         "com.sk.utilities": "1.0.0",
         "com.sk.utilities.unity": "1.0.0"
       },
-      "hash": "3ef2742ceefada6054750ce7677317b9660c0000"
+      "hash": "0d040d566d7cf8721fe4d35df3f72e6401beb8ee"
     },
     "com.sk.utilities": {
       "version": "https://github.com/Skurdt/SK.Utilities.git",
@@ -43,7 +44,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.inputsystem": {
-      "version": "1.0.1",
+      "version": "1.1.0-preview.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -90,6 +91,15 @@
       "dependencies": {
         "com.unity.render-pipelines.core": "10.2.2",
         "com.unity.searcher": "4.3.1"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.textmeshpro": {
+      "version": "3.0.3",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },
