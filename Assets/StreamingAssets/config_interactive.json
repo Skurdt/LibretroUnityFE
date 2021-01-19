@@ -17,6 +17,12 @@
             "Directory": "D:/__Roms/mame2003-plus",
             "Name": "joust",
             "AnalogDirectionsToDigital": false
+        },
+        {
+            "Core": "mame2003_plus",
+            "Directory": "D:/__Roms/mame2003-plus",
+            "Name": "1942",
+            "AnalogDirectionsToDigital": false
         }
     ]
 }

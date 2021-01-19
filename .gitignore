@@ -131,11 +131,16 @@ Temporary Items
 .apdisk
 
 # TMP assets
-/[Aa]ssets/TextMesh Pro/**
+Assets/TextMesh Pro/**
+Assets/TextMesh Pro.meta
 
 # Libretro
-/[Aa]ssets/StreamingAssets/libretro~/**
-!/[Aa]ssets/StreamingAssets/libretro~/core_options.json
+Assets/StreamingAssets/libretro~/**
+!Assets/StreamingAssets/libretro~/core_options.json
+
+# Libretro Packages
+Packages/
+!Packages/manifest.json
 
 #idea
 .idea
