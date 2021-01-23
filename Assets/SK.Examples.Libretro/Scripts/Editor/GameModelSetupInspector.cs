@@ -36,7 +36,10 @@ namespace SK.Examples.Common
             _gameModelSetup = target as GameModelSetup;
 
             if (_gameModelSetup != null)
+            {
+                EditorGUI.FocusTextInControl(null);
                 _gameModelSetup.LoadConfig();
+            }
         }
 
         public override void OnInspectorGUI()
@@ -54,7 +57,10 @@ namespace SK.Examples.Common
             using (new EditorGUI.DisabledGroupScope(EditorApplication.isPlaying))
             {
                 if (GUILayout.Button("Load", GUILayout.Height(EditorGUIUtility.singleLineHeight * 2f)))
+                {
+                    EditorGUI.FocusTextInControl(null);
                     _gameModelSetup.LoadConfig();
+                }
 
                 GUILayout.Space(8f);
 
