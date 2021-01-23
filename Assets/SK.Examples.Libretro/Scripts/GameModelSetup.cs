@@ -211,7 +211,7 @@ namespace SK.Examples
         }
 
         [ContextMenu("Save configuration")]
-        private void SaveConfig()
+        public void SaveConfig()
         {
             string json = GetJsonConfig();
             if (!string.IsNullOrEmpty(json))

@@ -20,7 +20,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-#if UNITY_EDITOR
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -52,35 +51,47 @@ namespace SK.Examples.Common
                 return;
             }
 
-            _ = EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Core", GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
-                ShowSelectCoreWindow();
-            _gameModelSetup.CoreName = EditorGUILayout.TextField(_gameModelSetup.CoreName);
-            EditorGUILayout.EndHorizontal();
-
-            _ = EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Directory", GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
-                ShowSelectRomDirectoryDialog();
-            _gameModelSetup.GameDirectory = EditorGUILayout.TextField(_gameModelSetup.GameDirectory);
-            EditorGUILayout.EndHorizontal();
-
-            _ = EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Rom", GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
-                ShowSelectRomDialog();
-            _gameModelSetup.GameName = EditorGUILayout.TextField(_gameModelSetup.GameName);
-            EditorGUILayout.EndHorizontal();
-
-            GUILayout.Space(8f);
-
-            if (!string.IsNullOrEmpty(_gameModelSetup.CoreName))
+            using (new EditorGUI.DisabledGroupScope(EditorApplication.isPlaying))
             {
-                _ = EditorGUILayout.BeginHorizontal();
-                if (!EditorApplication.isPlaying && GUILayout.Button("Start", GUILayout.Height(EditorGUIUtility.singleLineHeight)))
-                    _ = EditorApplication.ExecuteMenuItem("Edit/Play");
-                EditorGUILayout.EndHorizontal();
+                if (GUILayout.Button("Load", GUILayout.Height(EditorGUIUtility.singleLineHeight * 2f)))
+                    _gameModelSetup.LoadConfig();
+
+                GUILayout.Space(8f);
+
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    if (GUILayout.Button("Core", GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
+                        ShowSelectCoreWindow();
+                    _gameModelSetup.CoreName = EditorGUILayout.TextField(_gameModelSetup.CoreName);
+                }
+
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    if (GUILayout.Button("Directory", GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
+                        ShowSelectRomDirectoryDialog();
+                    _gameModelSetup.GameDirectory = EditorGUILayout.TextField(_gameModelSetup.GameDirectory);
+                }
+
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    if (GUILayout.Button("Rom", GUILayout.Width(100f), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
+                        ShowSelectRomDialog();
+                    _gameModelSetup.GameName = EditorGUILayout.TextField(_gameModelSetup.GameName);
+                }
+
+                GUILayout.Space(8f);
+
+                if (!string.IsNullOrEmpty(_gameModelSetup.CoreName))
+                {
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        if (GUILayout.Button("Save", GUILayout.Height(EditorGUIUtility.singleLineHeight * 2f)))
+                            _gameModelSetup.SaveConfig();
+                    }
+                }
+                else
+                    EditorGUILayout.HelpBox("No core selected", MessageType.Error);
             }
-            else
-                EditorGUILayout.HelpBox("No core selected", MessageType.Error);
         }
 
         private void ShowSelectCoreWindow()
@@ -111,4 +122,3 @@ namespace SK.Examples.Common
         }
     }
 }
-#endif
