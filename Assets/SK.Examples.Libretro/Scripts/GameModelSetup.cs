@@ -34,8 +34,10 @@ namespace SK.Examples
     internal abstract class GameModelSetup : MonoBehaviour
     {
         public bool AnalogDirectionsToDigital = false;
+        public bool RewindEnabled             = false;
 
         public Toggle AnalogDirectionsToDigitalToggle;
+        public Toggle RewindToggle;
 
         public string CoreName { get; set; }
         public string GameDirectory { get; set; }
@@ -64,6 +66,14 @@ namespace SK.Examples
                 AnalogDirectionsToDigitalToggle = analogToDigitalToggleGameObject.GetComponent<Toggle>();
                 if (AnalogDirectionsToDigitalToggle != null)
                     AnalogDirectionsToDigitalToggle.isOn = AnalogDirectionsToDigital;
+            }
+
+            GameObject rewindToggleGameObject = GameObject.Find("RewindToggle");
+            if (rewindToggleGameObject != null)
+            {
+                RewindToggle = rewindToggleGameObject.GetComponent<Toggle>();
+                if (RewindToggle != null)
+                    RewindToggle.isOn = RewindEnabled;
             }
         }
 
@@ -111,7 +121,9 @@ namespace SK.Examples
 
         public void Rewind(bool rewind) => _libretro.Rewind(rewind);
 
-        public void UI_SetAnalogToDigitalInput(bool value) => _libretro?.ToggleAnalogToDigitalInput(value);
+        public void UI_SetAnalogToDigitalInput(bool value) => _libretro?.SetAnalogToDigitalInput(value);
+
+        public void UI_SetRewind(bool value) => _libretro?.SetRewindEnabled(value);
 
         protected virtual void OnLateStart()
         {
