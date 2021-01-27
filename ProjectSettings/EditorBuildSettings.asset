@@ -9,5 +9,5 @@ EditorBuildSettings:
     path: Assets/SK.Examples.Libretro/Scenes/Interactive.unity
     guid: 0b7e89268507b27459222a61f76cf1e2
   m_configObjects:
-    com.unity.input.settings: {fileID: 11400000, guid: 89f3fbbbadeb662498a5cf7447183d48,
+    com.unity.input.settings: {fileID: 11400000, guid: 29017b7b803870d47a42b03a19711015,
       type: 2}
