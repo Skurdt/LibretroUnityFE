@@ -26,7 +26,7 @@ using UnityEngine.InputSystem;
 
 namespace SK.Examples
 {
-    internal sealed class GameModelSetupBasic : GameModelSetup
+    public sealed class GameModelSetupBasic : GameModelSetup
     {
         protected override void OnLateStart() => InputEnabled = true;
 

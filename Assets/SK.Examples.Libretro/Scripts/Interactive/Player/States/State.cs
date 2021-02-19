@@ -22,7 +22,7 @@
 
 namespace SK.Examples.Player
 {
-    internal abstract class State
+    public abstract class State
     {
         protected readonly StateController _stateController;
         protected readonly Controls _controls;

@@ -26,7 +26,7 @@ using UnityEngine;
 
 namespace SK.Examples
 {
-    internal sealed class GameModelSetupInteractive : GameModelSetup
+    public sealed class GameModelSetupInteractive : GameModelSetup
     {
         [Serializable]
         private sealed class ConfigFileContentList

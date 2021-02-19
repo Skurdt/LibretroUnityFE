@@ -24,7 +24,7 @@ using System.Collections.Generic;
 
 namespace SK.Examples.Player
 {
-    internal sealed class StateController
+    public sealed class StateController
     {
         public State CurrentState { get; private set; }
 

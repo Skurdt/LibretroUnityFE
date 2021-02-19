@@ -1,0 +1,18 @@
+{
+    "name": "SK.Examples.EditorOnly",
+    "rootNamespace": "SK.Examples.EditorOnly",
+    "references": [
+        "GUID:142c1569b5477f54bb5102277266ef6c"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

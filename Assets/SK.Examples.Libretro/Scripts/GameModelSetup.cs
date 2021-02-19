@@ -31,7 +31,7 @@ using UnityEngine.UI;
 namespace SK.Examples
 {
     [SelectionBase, DisallowMultipleComponent]
-    internal abstract class GameModelSetup : MonoBehaviour
+    public abstract class GameModelSetup : MonoBehaviour
     {
         public bool AnalogDirectionsToDigital = false;
         public bool RewindEnabled             = false;

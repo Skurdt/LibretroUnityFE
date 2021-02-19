@@ -24,7 +24,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace SK.Examples.Common
+namespace SK.Examples.EditorOnly
 {
     [CustomEditor(typeof(GameModelSetup), true)]
     public sealed class GameModelSetupInspector : Editor

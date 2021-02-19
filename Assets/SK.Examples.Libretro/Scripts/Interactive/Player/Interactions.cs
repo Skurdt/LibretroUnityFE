@@ -26,7 +26,7 @@ using UnityEngine;
 namespace SK.Examples.Player
 {
     [RequireComponent(typeof(Controls))]
-    internal sealed class Interactions : MonoBehaviour
+    public sealed class Interactions : MonoBehaviour
     {
         [SerializeField] private float _raycastMaxDistance = 1.2f;
 

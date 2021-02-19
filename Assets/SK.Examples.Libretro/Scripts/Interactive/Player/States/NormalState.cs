@@ -25,7 +25,7 @@ using UnityEngine.InputSystem;
 
 namespace SK.Examples.Player
 {
-    internal sealed class NormalState : State
+    public sealed class NormalState : State
     {
         public NormalState(StateController stateController, Controls controls, Interactions interactions)
         : base(stateController, controls, interactions)

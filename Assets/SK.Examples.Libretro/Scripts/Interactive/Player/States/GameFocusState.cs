@@ -26,7 +26,7 @@ using UnityEngine.InputSystem;
 
 namespace SK.Examples.Player
 {
-    internal sealed class GameFocusState : State
+    public sealed class GameFocusState : State
     {
         private GameModelSetupInteractive _currentGame;
 

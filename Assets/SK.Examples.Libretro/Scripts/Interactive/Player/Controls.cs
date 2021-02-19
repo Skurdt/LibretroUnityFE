@@ -26,7 +26,7 @@ using UnityEngine.InputSystem;
 namespace SK.Examples.Player
 {
     [RequireComponent(typeof(CharacterController))]
-    internal sealed class Controls : MonoBehaviour
+    public sealed class Controls : MonoBehaviour
     {
         public bool InputEnabled;
 
