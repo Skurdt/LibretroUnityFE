@@ -24,20 +24,19 @@ using SK.Libretro.Unity;
 using SK.Utilities.Unity;
 using System;
 using System.IO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 namespace SK.Examples
 {
     [SelectionBase, DisallowMultipleComponent]
     public abstract class GameModelSetup : MonoBehaviour
     {
-        public bool AnalogDirectionsToDigital = false;
-        public bool RewindEnabled             = false;
-
-        public Toggle AnalogDirectionsToDigitalToggle;
-        public Toggle RewindToggle;
+        [SerializeField] protected Transform _viewer                  = default;
+        [SerializeField] protected MainMenuUI _menu                   = default;
+        [SerializeField] protected TMP_Text _rewindText               = default;
+        [SerializeField] protected TMP_Text _analogToDigitalInputText = default;
 
         public string CoreName { get; set; }
         public string GameDirectory { get; set; }
@@ -52,29 +51,29 @@ namespace SK.Examples
                     _libretro.InputEnabled = value;
             }
         }
+        public bool AnalogToDigitalInput { get; private set; } = false;
+        public bool RewindEnabled { get; private set; } = false;
+
+        private const string REWIND_ON_STRING                   = "Rewind: On";
+        private const string REWIND_OFF_STRING                  = "Rewind: Off";
+        private const string ANALOG_TO_DIGITAL_INPUT_ON_STRING  = "Analog To Digital: On";
+        private const string ANALOG_TO_DIGITAL_INPUT_OFF_STRING = "Analog To Digital: Off";
 
         private LibretroBridge _libretro = null;
-        private Transform _viewer        = null;
 
         private void Awake()
         {
-            _viewer = Camera.main.transform;
+            if (_viewer == null)
+                _viewer = Camera.main.transform;
 
-            GameObject analogToDigitalToggleGameObject = GameObject.Find("AnalogToDigitalToggle");
-            if (analogToDigitalToggleGameObject != null)
-            {
-                AnalogDirectionsToDigitalToggle = analogToDigitalToggleGameObject.GetComponent<Toggle>();
-                if (AnalogDirectionsToDigitalToggle != null)
-                    AnalogDirectionsToDigitalToggle.isOn = AnalogDirectionsToDigital;
-            }
+            if (_menu == null)
+                _menu = FindObjectOfType<MainMenuUI>();
 
-            GameObject rewindToggleGameObject = GameObject.Find("RewindToggle");
-            if (rewindToggleGameObject != null)
-            {
-                RewindToggle = rewindToggleGameObject.GetComponent<Toggle>();
-                if (RewindToggle != null)
-                    RewindToggle.isOn = RewindEnabled;
-            }
+            if (_rewindText != null)
+                _rewindText.text = REWIND_OFF_STRING;
+
+            if (_analogToDigitalInputText != null)
+                _analogToDigitalInputText.text = ANALOG_TO_DIGITAL_INPUT_OFF_STRING;
         }
 
         private void Start()
@@ -121,9 +120,31 @@ namespace SK.Examples
 
         public void Rewind(bool rewind) => _libretro.Rewind(rewind);
 
-        public void UI_SetAnalogToDigitalInput(bool value) => _libretro?.SetAnalogToDigitalInput(value);
+        public void UI_ToggleAnalogToDigitalInput()
+        {
+            if (_libretro == null)
+                return;
 
-        public void UI_SetRewind(bool value) => _libretro?.SetRewindEnabled(value);
+            AnalogToDigitalInput = !AnalogToDigitalInput;
+
+            if (_analogToDigitalInputText != null)
+                _analogToDigitalInputText.text = AnalogToDigitalInput ? ANALOG_TO_DIGITAL_INPUT_ON_STRING : ANALOG_TO_DIGITAL_INPUT_OFF_STRING;
+
+            _libretro.SetAnalogToDigitalInput(AnalogToDigitalInput);
+        }
+
+        public void UI_ToggleRewind()
+        {
+            if (_libretro == null)
+                return;
+
+            RewindEnabled = !RewindEnabled;
+
+            if (_rewindText != null)
+                _rewindText.text = RewindEnabled ? REWIND_ON_STRING : REWIND_OFF_STRING;
+
+            _libretro.SetRewindEnabled(RewindEnabled);
+        }
 
         protected virtual void OnLateStart()
         {
@@ -137,7 +158,7 @@ namespace SK.Examples
         {
             if (string.IsNullOrEmpty(CoreName))
             {
-                Debug.LogError("Core not set");
+                Debug.LogWarning("Core not set");
                 return;
             }
 
@@ -156,7 +177,7 @@ namespace SK.Examples
 
             LibretroBridge.Settings settings = new LibretroBridge.Settings
             {
-                AnalogDirectionsToDigital = AnalogDirectionsToDigital
+                AnalogDirectionsToDigital = AnalogToDigitalInput
             };
             _libretro = new LibretroBridge(screen, _viewer, settings);
             if (!_libretro.Start(CoreName, GameDirectory, GameName))
@@ -195,7 +216,7 @@ namespace SK.Examples
                 Core                      = gameModelSetup.CoreName;
                 Directory                 = gameModelSetup.GameDirectory;
                 Name                      = gameModelSetup.GameName;
-                AnalogDirectionsToDigital = gameModelSetup.AnalogDirectionsToDigital;
+                AnalogDirectionsToDigital = gameModelSetup.AnalogToDigitalInput;
             }
         }
 
@@ -216,10 +237,7 @@ namespace SK.Examples
             CoreName                  = game.Core;
             GameDirectory             = game.Directory;
             GameName                  = game.Name;
-            AnalogDirectionsToDigital = game.AnalogDirectionsToDigital;
-
-            if (AnalogDirectionsToDigitalToggle != null)
-                AnalogDirectionsToDigitalToggle.isOn = AnalogDirectionsToDigital;
+            AnalogToDigitalInput = game.AnalogDirectionsToDigital;
         }
 
         [ContextMenu("Save configuration")]

@@ -28,15 +28,15 @@ namespace SK.Examples.Player
     {
         public State CurrentState { get; private set; }
 
-        private readonly Controls _controls;
-        private readonly Interactions _interactions;
+        public readonly Interactions Interactions;
 
+        private readonly Controls _controls;
         private readonly List<State> _allStates = new List<State>();
 
         public StateController(Controls controls, Interactions interactions)
         {
-            _controls     = controls;
-            _interactions = interactions;
+            _controls    = controls;
+            Interactions = interactions;
         }
 
         public void Update(float dt) => CurrentState?.OnUpdate(dt);
@@ -57,7 +57,7 @@ namespace SK.Examples.Player
             }
             else
             {
-                _allStates.Add(System.Activator.CreateInstance(typeof(T), this, _controls, _interactions) as State);
+                _allStates.Add(System.Activator.CreateInstance(typeof(T), this, _controls, Interactions) as State);
                 TransitionTo<T>();
             }
         }

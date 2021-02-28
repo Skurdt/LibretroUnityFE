@@ -35,6 +35,15 @@ namespace SK.Examples
             public ConfigFileContentList(int length) => Entries = new ConfigFileContent[length];
         }
 
+        protected override void OnLateStart()
+        {
+            if (_menu != null)
+            {
+                _menu.ShowCommonOptions();
+                _menu.HideCoreSpecificOptions();
+            }
+        }
+
         protected override string ConfigFilePath => Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "config_interactive.json"));
 
         protected override ConfigFileContent LoadJsonConfig(string json)

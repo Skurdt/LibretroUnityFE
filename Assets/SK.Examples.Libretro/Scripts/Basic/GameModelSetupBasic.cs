@@ -28,7 +28,12 @@ namespace SK.Examples
 {
     public sealed class GameModelSetupBasic : GameModelSetup
     {
-        protected override void OnLateStart() => InputEnabled = true;
+        protected override void OnLateStart()
+        {
+            InputEnabled = true;
+            if (_menu != null)
+                _menu.ShowAll();
+        }
 
         protected override void OnUpdate()
         {

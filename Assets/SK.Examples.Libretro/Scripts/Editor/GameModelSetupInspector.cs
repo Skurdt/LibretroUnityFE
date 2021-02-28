@@ -87,16 +87,17 @@ namespace SK.Examples.EditorOnly
 
                 GUILayout.Space(8f);
 
-                if (!string.IsNullOrEmpty(_gameModelSetup.CoreName))
+                if (string.IsNullOrEmpty(_gameModelSetup.CoreName))
                 {
-                    using (new EditorGUILayout.HorizontalScope())
-                    {
-                        if (GUILayout.Button("Save", GUILayout.Height(EditorGUIUtility.singleLineHeight * 2f)))
-                            _gameModelSetup.SaveConfig();
-                    }
-                }
-                else
                     EditorGUILayout.HelpBox("No core selected", MessageType.Error);
+                    GUILayout.Space(8f);
+                }
+
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    if (GUILayout.Button("Save", GUILayout.Height(EditorGUIUtility.singleLineHeight * 2f)))
+                        _gameModelSetup.SaveConfig();
+                }
             }
         }
 

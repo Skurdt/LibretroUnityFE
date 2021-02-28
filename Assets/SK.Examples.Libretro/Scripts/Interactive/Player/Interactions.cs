@@ -20,6 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+using SK.Libretro.Unity;
 using SK.Utilities.Unity;
 using UnityEngine;
 
@@ -28,6 +29,8 @@ namespace SK.Examples.Player
     [RequireComponent(typeof(Controls))]
     public sealed class Interactions : MonoBehaviour
     {
+        public MainMenuUI MainMenuUI;
+
         [SerializeField] private float _raycastMaxDistance = 1.2f;
 
         private Controls _controls;
@@ -35,13 +38,16 @@ namespace SK.Examples.Player
 
         private StateController _stateController;
 
-        private GameModelSetupInteractive _currentGame;
+        public GameModelSetupInteractive CurrentGame { get; private set; }
 
         private void Awake()
         {
             _controls        = GetComponent<Controls>();
             _camera          = GetComponentInChildren<Camera>();
             _stateController = new StateController(_controls, this);
+
+            if (MainMenuUI == null)
+                MainMenuUI = FindObjectOfType<MainMenuUI>();
         }
 
         private void Start()
@@ -60,13 +66,13 @@ namespace SK.Examples.Player
             if (Physics.Raycast(ray, out RaycastHit hitInfo, _raycastMaxDistance))
             {
                 GameModelSetupInteractive gameFromRay = hitInfo.transform.GetComponent<GameModelSetupInteractive>();
-                if (_currentGame != gameFromRay)
-                    _currentGame = gameFromRay;
+                if (CurrentGame != gameFromRay)
+                    CurrentGame = gameFromRay;
             }
             else
-                _currentGame = null;
+                CurrentGame = null;
 
-            return _currentGame;
+            return CurrentGame;
         }
     }
 }
