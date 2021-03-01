@@ -54,6 +54,9 @@ namespace SK.Examples
         public bool AnalogToDigitalInput { get; private set; } = false;
         public bool RewindEnabled { get; private set; } = false;
 
+        protected static int _playerLayer     = -1;
+        protected static bool _playerLayerSet = false;
+
         private const string REWIND_ON_STRING                   = "Rewind: On";
         private const string REWIND_OFF_STRING                  = "Rewind: Off";
         private const string ANALOG_TO_DIGITAL_INPUT_ON_STRING  = "Analog To Digital: On";
@@ -63,6 +66,12 @@ namespace SK.Examples
 
         private void Awake()
         {
+            if (!_playerLayerSet)
+            {
+                _playerLayer    = LayerMask.NameToLayer("Player");
+                _playerLayerSet = true;
+            }
+
             if (_viewer == null)
                 _viewer = Camera.main.transform;
 

@@ -35,6 +35,18 @@ namespace SK.Examples
             public ConfigFileContentList(int length) => Entries = new ConfigFileContent[length];
         }
 
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.gameObject.layer == _playerLayer)
+                InputEnabled = true;
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (other.gameObject.layer == _playerLayer)
+                InputEnabled = false;
+        }
+
         protected override void OnLateStart()
         {
             if (_menu != null)
