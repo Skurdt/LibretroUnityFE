@@ -37,14 +37,20 @@ namespace SK.Examples
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject.layer == _playerLayer)
-                InputEnabled = true;
+            if (other.TryGetComponent(out CameraTriggerObject camera))
+            {
+                camera.HeadSync = false;
+                InputEnabled    = true;
+            }
         }
 
         private void OnTriggerExit(Collider other)
         {
-            if (other.gameObject.layer == _playerLayer)
-                InputEnabled = false;
+            if (other.TryGetComponent(out CameraTriggerObject camera))
+            {
+                camera.HeadSync = true;
+                InputEnabled    = false;
+            }
         }
 
         protected override void OnLateStart()
