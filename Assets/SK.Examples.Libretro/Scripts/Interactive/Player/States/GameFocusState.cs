@@ -50,7 +50,7 @@ namespace SK.Examples.Player
                 _interactions.CurrentGame.InputEnabled = !_interactions.CurrentGame.InputEnabled;
             }
 
-            if (!Cursor.visible)
+            if (Cursor.lockState == CursorLockMode.Locked)
             {
                 if ((Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame) || (Gamepad.current != null && Gamepad.current.rightStickButton.wasPressedThisFrame))
                     _stateController.TransitionTo<NormalState>();

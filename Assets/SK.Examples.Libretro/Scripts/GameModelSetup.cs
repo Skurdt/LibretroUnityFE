@@ -171,11 +171,11 @@ namespace SK.Examples
                 return;
             }
 
-            ScreenNode screen = GetComponentInChildren<ScreenNode>();
+            LibretroScreenNode screen = GetComponentInChildren<LibretroScreenNode>();
             if (screen == null)
             {
                 Debug.LogWarning($"ScreenNode not found, adding ScreenNode component to the same node this script is attached to ({name})");
-                screen = gameObject.AddComponent<ScreenNode>();
+                screen = gameObject.AddComponent<LibretroScreenNode>();
             }
 
             if (screen.GetComponent<Renderer>() == null)
