@@ -243,9 +243,9 @@ namespace SK.Examples
             if (game == null)
                 return;
 
-            CoreName                  = game.Core;
-            GameDirectory             = game.Directory;
-            GameName                  = game.Name;
+            CoreName             = game.Core;
+            GameDirectory        = game.Directory;
+            GameName             = game.Name;
             AnalogToDigitalInput = game.AnalogDirectionsToDigital;
         }
 
@@ -258,7 +258,9 @@ namespace SK.Examples
         }
 
         protected abstract string ConfigFilePath { get; }
+
         protected abstract ConfigFileContent LoadJsonConfig(string json);
+
         protected abstract string GetJsonConfig();
     }
 }
