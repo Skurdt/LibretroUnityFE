@@ -4,7 +4,7 @@
 
 This is not meant to be a features rich frontend by itself, but rather example scene(s) showing how to use the SK.Libretro package.
 
-The official/main application that uses these implemented features can be found here: [3DArcade (develop)](https://github.com/3DArcade/3DArcade/tree/develop)
+The official/main application that uses these implemented features can be found here: [3DArcade](https://github.com/Skurdt/3DArcade)
 
 It mainly depends on the [SK.Libretro](https://github.com/Skurdt/SK.Libretro) package.
 Other dependencies include:
