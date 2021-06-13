@@ -41,13 +41,13 @@ namespace SK.Examples
         public string CoreName { get; set; }
         public string GameDirectory { get; set; }
         public string GameName { get; set; }
-        public bool Running => _libretro != null && _libretro.Running;
+        public bool Running => !(_libretro is null) && _libretro.Running;
         public bool InputEnabled
         {
-            get => _libretro != null && _libretro.InputEnabled;
+            get => !(_libretro is null) && _libretro.InputEnabled;
             set
             {
-                if (_libretro != null)
+                if (!(_libretro is null))
                     _libretro.InputEnabled = value;
             }
         }
@@ -91,24 +91,27 @@ namespace SK.Examples
 
             StartGame();
 
-            if (_libretro != null && _libretro.Running)
-                OnLateStart();
+            if (_libretro is null)
+                return;
+
+            OnLateStart();
+
+            Cursor.lockState = CursorLockMode.Locked;
         }
 
         private void Update()
         {
-            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+            if (!(Keyboard.current is null) && Keyboard.current.escapeKey.wasPressedThisFrame)
             {
                 StopGame();
                 ApplicationUtils.ExitApp();
                 return;
             }
 
-            if (_libretro != null && _libretro.Running)
-            {
-                OnUpdate();
-                _libretro.Update();
-            }
+            if (_libretro is null)
+                return;
+
+            OnUpdate();
         }
 
         private void OnEnable() => Application.focusChanged += OnApplicationFocusChanged;
@@ -119,19 +122,27 @@ namespace SK.Examples
             StopGame();
         }
 
-        public void Pause() => _libretro?.Pause();
+        public void Pause()
+        {
+            Cursor.lockState = CursorLockMode.None;
+            _libretro?.Pause();
+        }
 
-        public void Resume() => _libretro?.Resume();
+        public void Resume()
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            _libretro?.Resume();
+        }
 
-        public bool SaveState(int index, bool saveScreenshot = true) => _libretro != null && _libretro.SaveState(index, saveScreenshot);
+        public bool SaveState(int index, bool saveScreenshot = true) => !(_libretro is null) && _libretro.SaveState(index, saveScreenshot);
 
-        public bool LoadState(int index) => _libretro != null && _libretro.LoadState(index);
+        public bool LoadState(int index) => !(_libretro is null) && _libretro.LoadState(index);
 
-        public void Rewind(bool rewind) => _libretro.Rewind(rewind);
+        public void Rewind(bool rewind) => _libretro?.Rewind(rewind);
 
         public void UI_ToggleAnalogToDigitalInput()
         {
-            if (_libretro == null)
+            if (_libretro is null)
                 return;
 
             AnalogToDigitalInput = !AnalogToDigitalInput;
@@ -144,7 +155,7 @@ namespace SK.Examples
 
         public void UI_ToggleRewind()
         {
-            if (_libretro == null)
+            if (_libretro is null)
                 return;
 
             RewindEnabled = !RewindEnabled;
@@ -240,7 +251,7 @@ namespace SK.Examples
                 return;
 
             ConfigFileContent game = LoadJsonConfig(json);
-            if (game == null)
+            if (game is null)
                 return;
 
             CoreName             = game.Core;

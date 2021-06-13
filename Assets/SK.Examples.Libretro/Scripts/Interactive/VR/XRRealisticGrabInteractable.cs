@@ -33,8 +33,7 @@ namespace SK.Examples
         private void MatchAttachmentPoint(XRBaseInteractor interactor)
         {
             bool hasAttach = attachTransform != null;
-            interactor.attachTransform.position = hasAttach ? attachTransform.position : transform.position;
-            interactor.attachTransform.rotation = hasAttach ? attachTransform.rotation : transform.rotation;
+            interactor.attachTransform.SetPositionAndRotation(hasAttach ? attachTransform.position : transform.position, hasAttach ? attachTransform.rotation : transform.rotation);
 
         }
 

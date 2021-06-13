@@ -67,7 +67,7 @@ namespace SK.Examples
         protected override ConfigFileContent LoadJsonConfig(string json)
         {
             ConfigFileContentList gameList = JsonUtility.FromJson<ConfigFileContentList>(json);
-            return gameList.Entries == null || gameList.Entries.Length == 0 || transform.GetSiblingIndex() > gameList.Entries.Length - 1
+            return gameList.Entries is null || gameList.Entries.Length == 0 || transform.GetSiblingIndex() > gameList.Entries.Length - 1
                 ? null
                 : gameList.Entries[transform.GetSiblingIndex()];
         }

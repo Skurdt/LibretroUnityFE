@@ -46,19 +46,18 @@ namespace SK.Examples.Player
         public void TransitionTo<T>() where T : State
         {
             State newState = _allStates.Find(x => x.GetType() == typeof(T));
-            if (newState != null)
-            {
-                if (CurrentState != newState)
-                {
-                    CurrentState?.OnExit();
-                    CurrentState = newState;
-                    CurrentState.OnEnter();
-                }
-            }
-            else
+            if (newState is null)
             {
                 _allStates.Add(System.Activator.CreateInstance(typeof(T), this, _controls, Interactions) as State);
                 TransitionTo<T>();
+                return;
+            }
+
+            if (CurrentState != newState)
+            {
+                CurrentState?.OnExit();
+                CurrentState = newState;
+                CurrentState.OnEnter();
             }
         }
     }

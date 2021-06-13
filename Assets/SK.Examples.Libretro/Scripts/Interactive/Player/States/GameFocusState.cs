@@ -44,7 +44,7 @@ namespace SK.Examples.Player
 
         public override void OnUpdate(float dt)
         {
-            if (Mouse.current != null && Mouse.current.middleButton.wasPressedThisFrame)
+            if (!(Mouse.current is null) && Mouse.current.middleButton.wasPressedThisFrame)
             {
                 CursorUtils.ToggleMouseCursor();
                 _interactions.CurrentGame.InputEnabled = !_interactions.CurrentGame.InputEnabled;
@@ -52,10 +52,10 @@ namespace SK.Examples.Player
 
             if (Cursor.lockState == CursorLockMode.Locked)
             {
-                if ((Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame) || (Gamepad.current != null && Gamepad.current.rightStickButton.wasPressedThisFrame))
+                if ((!(Keyboard.current is null) && Keyboard.current.eKey.wasPressedThisFrame) || (!(Gamepad.current is null) && Gamepad.current.rightStickButton.wasPressedThisFrame))
                     _stateController.TransitionTo<NormalState>();
 
-                if (Keyboard.current != null)
+                if (!(Keyboard.current is null))
                 {
                     if (Keyboard.current.pKey.wasPressedThisFrame)
                     {

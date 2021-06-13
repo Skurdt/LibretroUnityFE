@@ -37,7 +37,7 @@ namespace SK.Examples
 
         protected override void OnUpdate()
         {
-            if (Keyboard.current == null)
+            if (Keyboard.current is null)
                 return;
 
             if (Keyboard.current.pKey.wasPressedThisFrame)
