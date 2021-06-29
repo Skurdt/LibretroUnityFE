@@ -40,7 +40,7 @@ namespace SK.Examples
             if (other.TryGetComponent(out CameraTriggerObject camera))
             {
                 camera.HeadSync = false;
-                InputEnabled    = true;
+                //InputEnabled    = true;
             }
         }
 
@@ -49,7 +49,7 @@ namespace SK.Examples
             if (other.TryGetComponent(out CameraTriggerObject camera))
             {
                 camera.HeadSync = true;
-                InputEnabled    = false;
+                //InputEnabled    = false;
             }
         }
 

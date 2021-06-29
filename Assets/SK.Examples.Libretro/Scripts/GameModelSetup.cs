@@ -41,28 +41,28 @@ namespace SK.Examples
         public string CoreName { get; set; }
         public string GameDirectory { get; set; }
         public string GameName { get; set; }
-        public bool Running => !(_libretro is null) && _libretro.Running;
-        public bool InputEnabled
-        {
-            get => !(_libretro is null) && _libretro.InputEnabled;
-            set
-            {
-                if (!(_libretro is null))
-                    _libretro.InputEnabled = value;
-            }
-        }
+        public bool Paused => !(_libretro is null) && _libretro.Paused;
+        //public bool InputEnabled
+        //{
+        //    get => !(_libretro is null) && _libretro.InputEnabled;
+        //    set
+        //    {
+        //        if (!(_libretro is null))
+        //            _libretro.InputEnabled = value;
+        //    }
+        //}
         public bool AnalogToDigitalInput { get; private set; } = false;
-        public bool RewindEnabled { get; private set; } = false;
+        //public bool RewindEnabled { get; private set; } = false;
 
         protected static int _playerLayer     = -1;
         protected static bool _playerLayerSet = false;
 
-        private const string REWIND_ON_STRING                   = "Rewind: On";
-        private const string REWIND_OFF_STRING                  = "Rewind: Off";
+        protected LibretroBridge _libretro = null;
+
+        //private const string REWIND_ON_STRING                   = "Rewind: On";
+        //private const string REWIND_OFF_STRING                  = "Rewind: Off";
         private const string ANALOG_TO_DIGITAL_INPUT_ON_STRING  = "Analog To Digital: On";
         private const string ANALOG_TO_DIGITAL_INPUT_OFF_STRING = "Analog To Digital: Off";
-
-        private LibretroBridge _libretro = null;
 
         private void Awake()
         {
@@ -78,8 +78,8 @@ namespace SK.Examples
             if (_menu == null)
                 _menu = FindObjectOfType<MainMenuUI>();
 
-            if (_rewindText != null)
-                _rewindText.text = REWIND_OFF_STRING;
+            //if (_rewindText != null)
+            //    _rewindText.text = REWIND_OFF_STRING;
 
             if (_analogToDigitalInputText != null)
                 _analogToDigitalInputText.text = ANALOG_TO_DIGITAL_INPUT_OFF_STRING;
@@ -90,9 +90,6 @@ namespace SK.Examples
             LoadConfig();
 
             StartGame();
-
-            if (_libretro is null)
-                return;
 
             OnLateStart();
 
@@ -134,11 +131,11 @@ namespace SK.Examples
             _libretro?.Resume();
         }
 
-        public bool SaveState(int index, bool saveScreenshot = true) => !(_libretro is null) && _libretro.SaveState(index, saveScreenshot);
+        public void SaveState(int index, bool saveScreenshot = true) => _libretro?.SaveState(index, saveScreenshot);
 
-        public bool LoadState(int index) => !(_libretro is null) && _libretro.LoadState(index);
+        public void LoadState(int index) => _libretro?.LoadState(index);
 
-        public void Rewind(bool rewind) => _libretro?.Rewind(rewind);
+        //public void Rewind(bool rewind) => _libretro?.Rewind(rewind);
 
         public void UI_ToggleAnalogToDigitalInput()
         {
@@ -150,20 +147,20 @@ namespace SK.Examples
             if (_analogToDigitalInputText != null)
                 _analogToDigitalInputText.text = AnalogToDigitalInput ? ANALOG_TO_DIGITAL_INPUT_ON_STRING : ANALOG_TO_DIGITAL_INPUT_OFF_STRING;
 
-            _libretro.SetAnalogToDigitalInput(AnalogToDigitalInput);
+           //_libretro.SetAnalogToDigitalInput(AnalogToDigitalInput);
         }
 
         public void UI_ToggleRewind()
         {
-            if (_libretro is null)
-                return;
+            //if (_libretro is null)
+            //    return;
 
-            RewindEnabled = !RewindEnabled;
+            //RewindEnabled = !RewindEnabled;
 
-            if (_rewindText != null)
-                _rewindText.text = RewindEnabled ? REWIND_ON_STRING : REWIND_OFF_STRING;
+            //if (_rewindText != null)
+            //    _rewindText.text = RewindEnabled ? REWIND_ON_STRING : REWIND_OFF_STRING;
 
-            _libretro.SetRewindEnabled(RewindEnabled);
+            //_libretro.SetRewindEnabled(RewindEnabled);
         }
 
         protected virtual void OnLateStart()
@@ -200,11 +197,7 @@ namespace SK.Examples
                 AnalogDirectionsToDigital = AnalogToDigitalInput
             };
             _libretro = new LibretroBridge(screen, _viewer, settings);
-            if (!_libretro.Start(CoreName, GameDirectory, GameName))
-            {
-                StopGame();
-                return;
-            }
+            _libretro.Start(CoreName, GameDirectory, GameName);
         }
 
         protected void StopGame()

@@ -36,7 +36,7 @@ namespace SK.Examples.Player
         public override void OnEnter()
         {
             _controls.InputEnabled                 = false;
-            _interactions.CurrentGame.InputEnabled = true;
+            //_interactions.CurrentGame.InputEnabled = true;
 
             if (_stateController.Interactions.MainMenuUI != null)
                 _stateController.Interactions.MainMenuUI.ShowCoreSpecificOptions();
@@ -47,7 +47,7 @@ namespace SK.Examples.Player
             if (!(Mouse.current is null) && Mouse.current.middleButton.wasPressedThisFrame)
             {
                 CursorUtils.ToggleMouseCursor();
-                _interactions.CurrentGame.InputEnabled = !_interactions.CurrentGame.InputEnabled;
+                //_interactions.CurrentGame.InputEnabled = !_interactions.CurrentGame.InputEnabled;
             }
 
             if (Cursor.lockState == CursorLockMode.Locked)
@@ -59,39 +59,63 @@ namespace SK.Examples.Player
                 {
                     if (Keyboard.current.pKey.wasPressedThisFrame)
                     {
-                        if (_interactions.CurrentGame.Running)
-                            _interactions.CurrentGame.Pause();
-                        else
+                        if (_interactions.CurrentGame.Paused)
                             _interactions.CurrentGame.Resume();
+                        else
+                            _interactions.CurrentGame.Pause();
                     }
 
-                    if (Keyboard.current.f5Key.wasPressedThisFrame && _interactions.CurrentGame.SaveState(0))
+                    if (Keyboard.current.f5Key.wasPressedThisFrame)
+                    {
+                        _interactions.CurrentGame.SaveState(0);
                         Debug.Log("State saved to slot 0");
-                    if (Keyboard.current.f6Key.wasPressedThisFrame && _interactions.CurrentGame.SaveState(1))
+                    }
+                    if (Keyboard.current.f6Key.wasPressedThisFrame)
+                    {
+                        _interactions.CurrentGame.SaveState(1);
                         Debug.Log("State saved to slot 1");
-                    if (Keyboard.current.f7Key.wasPressedThisFrame && _interactions.CurrentGame.SaveState(2))
+                    }
+                    if (Keyboard.current.f7Key.wasPressedThisFrame)
+                    {
+                        _interactions.CurrentGame.SaveState(2);
                         Debug.Log("State saved to slot 2");
-                    if (Keyboard.current.f8Key.wasPressedThisFrame && _interactions.CurrentGame.SaveState(3))
+                    }
+                    if (Keyboard.current.f8Key.wasPressedThisFrame)
+                    {
+                        _interactions.CurrentGame.SaveState(3);
                         Debug.Log("State saved to slot 3");
+                    }
 
-                    if (Keyboard.current.f9Key.wasPressedThisFrame && _interactions.CurrentGame.LoadState(0))
-                        Debug.Log("State loaded from slot 0");
-                    if (Keyboard.current.f10Key.wasPressedThisFrame && _interactions.CurrentGame.LoadState(1))
-                        Debug.Log("State loaded from slot 1");
-                    if (Keyboard.current.f11Key.wasPressedThisFrame && _interactions.CurrentGame.LoadState(2))
-                        Debug.Log("State loaded from slot 2");
-                    if (Keyboard.current.f12Key.wasPressedThisFrame && _interactions.CurrentGame.LoadState(3))
-                        Debug.Log("State loaded from slot 3");
+                    if (Keyboard.current.f9Key.wasPressedThisFrame)
+                    {
+                        _interactions.CurrentGame.LoadState(0);
+                        Debug.Log("State saved to slot 0");
+                    }
+                    if (Keyboard.current.f10Key.wasPressedThisFrame)
+                    {
+                        _interactions.CurrentGame.LoadState(1);
+                        Debug.Log("State saved to slot 1");
+                    }
+                    if (Keyboard.current.f11Key.wasPressedThisFrame)
+                    {
+                        _interactions.CurrentGame.LoadState(2);
+                        Debug.Log("State saved to slot 2");
+                    }
+                    if (Keyboard.current.f12Key.wasPressedThisFrame)
+                    {
+                        _interactions.CurrentGame.LoadState(3);
+                        Debug.Log("State saved to slot 3");
+                    }
 
-                    _interactions.CurrentGame.Rewind(Keyboard.current.backspaceKey.isPressed);
+                    //_interactions.CurrentGame.Rewind(Keyboard.current.backspaceKey.isPressed);
                 }
             }
         }
 
         public override void OnExit()
         {
-            _interactions.CurrentGame.InputEnabled = false;
-            _controls.InputEnabled                 = true;
+            //_interactions.CurrentGame.InputEnabled = false;
+            _controls.InputEnabled = true;
             if (_stateController.Interactions.MainMenuUI != null)
                 _stateController.Interactions.MainMenuUI.HideCoreSpecificOptions();
         }

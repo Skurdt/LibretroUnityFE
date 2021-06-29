@@ -30,7 +30,7 @@ namespace SK.Examples
     {
         protected override void OnLateStart()
         {
-            InputEnabled = true;
+            //InputEnabled = true;
             if (_menu != null)
                 _menu.ShowAll();
         }
@@ -42,31 +42,55 @@ namespace SK.Examples
 
             if (Keyboard.current.pKey.wasPressedThisFrame)
             {
-                if (Running)
-                    Pause();
-                else
+                if (Paused)
                     Resume();
+                else
+                    Pause();
             }
 
-            if (Keyboard.current.f5Key.wasPressedThisFrame && SaveState(0))
+            if (Keyboard.current.f5Key.wasPressedThisFrame)
+            {
+                SaveState(0);
                 Debug.Log("State saved to slot 0");
-            if (Keyboard.current.f6Key.wasPressedThisFrame && SaveState(1))
+            }
+            if (Keyboard.current.f6Key.wasPressedThisFrame)
+            {
+                SaveState(1);
                 Debug.Log("State saved to slot 1");
-            if (Keyboard.current.f7Key.wasPressedThisFrame && SaveState(2))
+            }
+            if (Keyboard.current.f7Key.wasPressedThisFrame)
+            {
+                SaveState(2);
                 Debug.Log("State saved to slot 2");
-            if (Keyboard.current.f8Key.wasPressedThisFrame && SaveState(3))
+            }
+            if (Keyboard.current.f8Key.wasPressedThisFrame)
+            {
+                SaveState(3);
                 Debug.Log("State saved to slot 3");
+            }
 
-            if (Keyboard.current.f9Key.wasPressedThisFrame && LoadState(0))
+            if (Keyboard.current.f9Key.wasPressedThisFrame)
+            {
+                LoadState(0);
                 Debug.Log("State loaded from slot 0");
-            if (Keyboard.current.f10Key.wasPressedThisFrame && LoadState(1))
+            }
+            if (Keyboard.current.f10Key.wasPressedThisFrame)
+            {
+                LoadState(1);
                 Debug.Log("State loaded from slot 1");
-            if (Keyboard.current.f11Key.wasPressedThisFrame && LoadState(2))
+            }
+            if (Keyboard.current.f11Key.wasPressedThisFrame)
+            {
+                LoadState(2);
                 Debug.Log("State loaded from slot 2");
-            if (Keyboard.current.f12Key.wasPressedThisFrame && LoadState(3))
+            }
+            if (Keyboard.current.f12Key.wasPressedThisFrame)
+            {
+                LoadState(3);
                 Debug.Log("State loaded from slot 3");
+            }
 
-            Rewind(Keyboard.current.backspaceKey.isPressed);
+            //Rewind(Keyboard.current.backspaceKey.isPressed);
         }
 
         protected override string ConfigFilePath => Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "config_basic.json"));
