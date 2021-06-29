@@ -99,6 +99,7 @@
                 "mame2003-plus_machine_timing;enabled;enabled|disabled;",
                 "mame2003-plus_mame_remapping;enabled;enabled|disabled;",
                 "mame2003-plus_mouse_device;mouse;mouse|pointer|disabled;",
+                "mame2003-plus_nvram_bootstraps;enabled;enabled|disabled;",
                 "mame2003-plus_sample_rate;48000;48000|8000|11025|22050|30000|44100|;",
                 "mame2003-plus_skip_disclaimer;enabled;disabled|enabled;",
                 "mame2003-plus_skip_warnings;enabled;disabled|enabled;",
