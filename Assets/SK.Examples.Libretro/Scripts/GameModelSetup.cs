@@ -98,7 +98,7 @@ namespace SK.Examples
 
         private void Update()
         {
-            if (!(Keyboard.current is null) && Keyboard.current.escapeKey.wasPressedThisFrame)
+            if (!(Keyboard.current is null) && Keyboard.current.leftCtrlKey.isPressed && Keyboard.current.xKey.wasPressedThisFrame)
             {
                 StopGame();
                 ApplicationUtils.ExitApp();
@@ -192,12 +192,21 @@ namespace SK.Examples
                 return;
             }
 
-            LibretroBridge.Settings settings = new LibretroBridge.Settings
+            try
             {
-                AnalogDirectionsToDigital = AnalogToDigitalInput
-            };
-            _libretro = new LibretroBridge(screen, _viewer, settings);
-            _libretro.Start(CoreName, GameDirectory, GameName);
+                LibretroBridge.Settings settings = new LibretroBridge.Settings
+                {
+                    AnalogDirectionsToDigital = AnalogToDigitalInput
+                };
+
+                _libretro = new LibretroBridge(screen, _viewer, settings);
+                _libretro.Start(CoreName, GameDirectory, GameName);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e, this);
+                _libretro = null;
+            }
         }
 
         protected void StopGame()
