@@ -22,7 +22,7 @@
 
 using System.Collections.Generic;
 
-namespace SK.Examples.Player
+namespace SK.Examples
 {
     public sealed class StateController
     {

@@ -31,8 +31,6 @@ namespace SK.Examples
         protected override void OnLateStart()
         {
             //InputEnabled = true;
-            if (_menu != null)
-                _menu.ShowAll();
         }
 
         protected override void OnUpdate()
@@ -93,7 +91,7 @@ namespace SK.Examples
             //Rewind(Keyboard.current.backspaceKey.isPressed);
         }
 
-        protected override string ConfigFilePath => Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "config_basic.json"));
+        protected override string ConfigFilePath { get; } = Application.streamingAssetsPath + "/config_basic.json";
         protected override ConfigFileContent LoadJsonConfig(string json) => JsonUtility.FromJson<ConfigFileContent>(json);
         protected override string GetJsonConfig() => JsonUtility.ToJson(new ConfigFileContent(this), true);
     }

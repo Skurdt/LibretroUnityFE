@@ -1,13 +1,16 @@
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
-public sealed class CustomCharacterControllerDriver : CharacterControllerDriver
+namespace SK.Examples
 {
-    [SerializeField] private CameraTriggerObject _camera;
-
-    private void Update()
+    public sealed class CustomCharacterControllerDriver : CharacterControllerDriver
     {
-        if (_camera.HeadSync)
-            UpdateCharacterController();
+        [SerializeField] private CameraTriggerObject _camera;
+
+        private void Update()
+        {
+            if (_camera.HeadSync)
+                UpdateCharacterController();
+        }
     }
 }

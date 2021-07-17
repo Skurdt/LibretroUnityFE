@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public sealed class CameraTriggerObject : MonoBehaviour
+namespace SK.Examples
 {
-    public bool HeadSync = true;
+    public sealed class CameraTriggerObject : MonoBehaviour
+    {
+        public bool HeadSync = true;
+    }
 }

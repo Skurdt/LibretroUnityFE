@@ -24,7 +24,6 @@ using SK.Libretro.Unity;
 using SK.Utilities.Unity;
 using System;
 using System.IO;
-using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -33,10 +32,7 @@ namespace SK.Examples
     [SelectionBase, DisallowMultipleComponent]
     public abstract class GameModelSetup : MonoBehaviour
     {
-        [SerializeField] protected Transform _viewer                  = default;
-        [SerializeField] protected MainMenuUI _menu                   = default;
-        [SerializeField] protected TMP_Text _rewindText               = default;
-        [SerializeField] protected TMP_Text _analogToDigitalInputText = default;
+        [SerializeField] protected Transform _viewer = default;
 
         public string CoreName { get; set; }
         public string GameDirectory { get; set; }
@@ -74,15 +70,6 @@ namespace SK.Examples
 
             if (_viewer == null)
                 _viewer = Camera.main.transform;
-
-            if (_menu == null)
-                _menu = FindObjectOfType<MainMenuUI>();
-
-            //if (_rewindText != null)
-            //    _rewindText.text = REWIND_OFF_STRING;
-
-            if (_analogToDigitalInputText != null)
-                _analogToDigitalInputText.text = ANALOG_TO_DIGITAL_INPUT_OFF_STRING;
         }
 
         private void Start()
@@ -93,7 +80,7 @@ namespace SK.Examples
 
             OnLateStart();
 
-            Cursor.lockState = CursorLockMode.Locked;
+            //Cursor.lockState = CursorLockMode.Locked;
         }
 
         private void Update()
@@ -121,13 +108,13 @@ namespace SK.Examples
 
         public void Pause()
         {
-            Cursor.lockState = CursorLockMode.None;
+            //Cursor.lockState = CursorLockMode.None;
             _libretro?.Pause();
         }
 
         public void Resume()
         {
-            Cursor.lockState = CursorLockMode.Locked;
+            //Cursor.lockState = CursorLockMode.Locked;
             _libretro?.Resume();
         }
 
@@ -143,9 +130,6 @@ namespace SK.Examples
                 return;
 
             AnalogToDigitalInput = !AnalogToDigitalInput;
-
-            if (_analogToDigitalInputText != null)
-                _analogToDigitalInputText.text = AnalogToDigitalInput ? ANALOG_TO_DIGITAL_INPUT_ON_STRING : ANALOG_TO_DIGITAL_INPUT_OFF_STRING;
 
            //_libretro.SetAnalogToDigitalInput(AnalogToDigitalInput);
         }
@@ -179,27 +163,20 @@ namespace SK.Examples
                 return;
             }
 
-            LibretroScreenNode screen = GetComponentInChildren<LibretroScreenNode>();
-            if (screen == null)
+            if (!TryGetComponent(out Renderer renderer))
             {
-                Debug.LogWarning($"ScreenNode not found, adding ScreenNode component to the same node this script is attached to ({name})");
-                screen = gameObject.AddComponent<LibretroScreenNode>();
-            }
-
-            if (screen.GetComponent<Renderer>() == null)
-            {
-                Debug.LogError("Component of type Renderer not found");
+                Debug.LogError("Required Renderer Component not found");
                 return;
             }
 
             try
             {
-                LibretroBridge.Settings settings = new LibretroBridge.Settings
+                LibretroSettings settings = new LibretroSettings
                 {
-                    AnalogDirectionsToDigital = AnalogToDigitalInput
+                    AnalogToDigital = AnalogToDigitalInput
                 };
 
-                _libretro = new LibretroBridge(screen, _viewer, settings);
+                _libretro = new LibretroBridge(renderer, _viewer, settings);
                 _libretro.Start(CoreName, GameDirectory, GameName);
             }
             catch (Exception e)

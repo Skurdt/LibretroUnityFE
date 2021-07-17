@@ -24,12 +24,12 @@ using SK.Libretro.Unity;
 using SK.Utilities.Unity;
 using UnityEngine;
 
-namespace SK.Examples.Player
+namespace SK.Examples
 {
     [RequireComponent(typeof(Controls))]
     public sealed class Interactions : MonoBehaviour
     {
-        public MainMenuUI MainMenuUI;
+        public UIMainMenu MainMenuUI;
 
         [SerializeField] private float _raycastMaxDistance = 1.2f;
 
@@ -47,7 +47,7 @@ namespace SK.Examples.Player
             _stateController = new StateController(_controls, this);
 
             if (MainMenuUI == null)
-                MainMenuUI = FindObjectOfType<MainMenuUI>();
+                MainMenuUI = FindObjectOfType<UIMainMenu>();
         }
 
         private void Start()

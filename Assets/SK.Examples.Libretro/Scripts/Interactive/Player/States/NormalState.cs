@@ -23,7 +23,7 @@
 using SK.Utilities.Unity;
 using UnityEngine.InputSystem;
 
-namespace SK.Examples.Player
+namespace SK.Examples
 {
     public sealed class NormalState : State
     {

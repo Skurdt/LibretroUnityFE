@@ -24,7 +24,7 @@ using SK.Utilities.Unity;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace SK.Examples.Player
+namespace SK.Examples
 {
     public sealed class GameFocusState : State
     {
@@ -37,9 +37,6 @@ namespace SK.Examples.Player
         {
             _controls.InputEnabled                 = false;
             //_interactions.CurrentGame.InputEnabled = true;
-
-            if (_stateController.Interactions.MainMenuUI != null)
-                _stateController.Interactions.MainMenuUI.ShowCoreSpecificOptions();
         }
 
         public override void OnUpdate(float dt)
@@ -116,8 +113,6 @@ namespace SK.Examples.Player
         {
             //_interactions.CurrentGame.InputEnabled = false;
             _controls.InputEnabled = true;
-            if (_stateController.Interactions.MainMenuUI != null)
-                _stateController.Interactions.MainMenuUI.HideCoreSpecificOptions();
         }
     }
 }
