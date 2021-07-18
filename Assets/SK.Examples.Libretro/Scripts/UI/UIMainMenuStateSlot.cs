@@ -11,14 +11,18 @@ namespace SK.Examples
         [SerializeField] private TMP_InputField _stateSlotInputField;
         [SerializeField] private TMP_Text _saveStateButtonText;
         [SerializeField] private TMP_Text _loadStateButtonText;
-
-        public int CurrentSlot { get; private set; } = MIN_SLOT;
+        [SerializeField] private UIMainMenu _uiMainmenu;
 
         private const int MIN_SLOT = 0;
         private const int MAX_SLOT = 9999;
 
+        private int _currentSlot = MIN_SLOT;
+
         private void Awake()
         {
+            if (_uiMainmenu == null)
+                _uiMainmenu = FindObjectOfType<UIMainMenu>();
+
             _stateSlotInputField.characterValidation = TMP_InputField.CharacterValidation.Integer;
             _stateSlotInputField.characterLimit      = MAX_SLOT.ToString().Length;
         }
@@ -42,24 +46,25 @@ namespace SK.Examples
             if (string.IsNullOrEmpty(value) || !int.TryParse(value, out int intValue))
                 intValue = MIN_SLOT;
 
-            CurrentSlot = intValue;
-            CurrentSlot = Mathf.Clamp(CurrentSlot, MIN_SLOT, MAX_SLOT);
-            _saveStateButtonText.SetText($"Save State ({CurrentSlot})");
-            _loadStateButtonText.SetText($"Load State ({CurrentSlot})");
+            _currentSlot = intValue;
+            _currentSlot = Mathf.Clamp(_currentSlot, MIN_SLOT, MAX_SLOT);
+            _saveStateButtonText.SetText($"Save State ({_currentSlot})");
+            _loadStateButtonText.SetText($"Load State ({_currentSlot})");
+            _uiMainmenu.SetStateSlot(_currentSlot);
         }
 
         private void OnDecreaseButtonClicked()
         {
-            --CurrentSlot;
-            CurrentSlot = Mathf.Max(MIN_SLOT, CurrentSlot);
-            _stateSlotInputField.text = CurrentSlot.ToString();
+            --_currentSlot;
+            _currentSlot = Mathf.Max(MIN_SLOT, _currentSlot);
+            _stateSlotInputField.text = _currentSlot.ToString();
         }
 
         private void OnIncreaseButtonClicked()
         {
-            ++CurrentSlot;
-            CurrentSlot = Mathf.Min(CurrentSlot, MAX_SLOT);
-            _stateSlotInputField.text = CurrentSlot.ToString();
+            ++_currentSlot;
+            _currentSlot = Mathf.Min(_currentSlot, MAX_SLOT);
+            _stateSlotInputField.text = _currentSlot.ToString();
         }
     }
 }

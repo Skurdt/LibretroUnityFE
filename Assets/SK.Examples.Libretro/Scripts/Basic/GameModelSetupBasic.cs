@@ -28,11 +28,6 @@ namespace SK.Examples
 {
     public sealed class GameModelSetupBasic : GameModelSetup
     {
-        protected override void OnLateStart()
-        {
-            //InputEnabled = true;
-        }
-
         protected override void OnUpdate()
         {
             if (Keyboard.current is null)
@@ -40,51 +35,59 @@ namespace SK.Examples
 
             if (Keyboard.current.pKey.wasPressedThisFrame)
             {
-                if (Paused)
-                    Resume();
+                if (LibretroInstance.Paused)
+                    LibretroInstance.ResumeContent();
                 else
-                    Pause();
+                    LibretroInstance.PauseContent();
             }
 
             if (Keyboard.current.f5Key.wasPressedThisFrame)
             {
-                SaveState(0);
+                LibretroInstance.SetStateSlot(0);
+                LibretroInstance.SaveStateWithScreenshot();
                 Debug.Log("State saved to slot 0");
             }
             if (Keyboard.current.f6Key.wasPressedThisFrame)
             {
-                SaveState(1);
+                LibretroInstance.SetStateSlot(1);
+                LibretroInstance.SaveStateWithScreenshot();
                 Debug.Log("State saved to slot 1");
             }
             if (Keyboard.current.f7Key.wasPressedThisFrame)
             {
-                SaveState(2);
+                LibretroInstance.SetStateSlot(2);
+                LibretroInstance.SaveStateWithScreenshot();
                 Debug.Log("State saved to slot 2");
             }
             if (Keyboard.current.f8Key.wasPressedThisFrame)
             {
-                SaveState(3);
+                LibretroInstance.SetStateSlot(3);
+                LibretroInstance.SaveStateWithScreenshot();
                 Debug.Log("State saved to slot 3");
             }
 
             if (Keyboard.current.f9Key.wasPressedThisFrame)
             {
-                LoadState(0);
+                LibretroInstance.SetStateSlot(0);
+                LibretroInstance.LoadState();
                 Debug.Log("State loaded from slot 0");
             }
             if (Keyboard.current.f10Key.wasPressedThisFrame)
             {
-                LoadState(1);
+                LibretroInstance.SetStateSlot(1);
+                LibretroInstance.LoadState();
                 Debug.Log("State loaded from slot 1");
             }
             if (Keyboard.current.f11Key.wasPressedThisFrame)
             {
-                LoadState(2);
+                LibretroInstance.SetStateSlot(2);
+                LibretroInstance.LoadState();
                 Debug.Log("State loaded from slot 2");
             }
             if (Keyboard.current.f12Key.wasPressedThisFrame)
             {
-                LoadState(3);
+                LibretroInstance.SetStateSlot(3);
+                LibretroInstance.LoadState();
                 Debug.Log("State loaded from slot 3");
             }
 

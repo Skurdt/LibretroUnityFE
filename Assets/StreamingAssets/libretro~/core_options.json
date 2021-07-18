@@ -426,6 +426,13 @@
             ]
         },
         {
+            "CoreName": "handy",
+            "Options": [
+                "handy_gfx_colors;16bit;16bit|24bit;",
+                "handy_rot;None;None|270|90;"
+            ]
+        },
+        {
             "CoreName": "mame",
             "Options": [
                 "mame_alternate_renderer;disabled;disabled|enabled;",

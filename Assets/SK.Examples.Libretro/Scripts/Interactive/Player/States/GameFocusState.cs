@@ -49,60 +49,60 @@ namespace SK.Examples
 
             if (Cursor.lockState == CursorLockMode.Locked)
             {
-                if ((!(Keyboard.current is null) && Keyboard.current.eKey.wasPressedThisFrame) || (!(Gamepad.current is null) && Gamepad.current.rightStickButton.wasPressedThisFrame))
-                    _stateController.TransitionTo<NormalState>();
-
                 if (!(Keyboard.current is null))
                 {
-                    if (Keyboard.current.pKey.wasPressedThisFrame)
-                    {
-                        if (_interactions.CurrentGame.Paused)
-                            _interactions.CurrentGame.Resume();
-                        else
-                            _interactions.CurrentGame.Pause();
-                    }
+                    if (Keyboard.current.eKey.wasPressedThisFrame || (!(Gamepad.current is null) && Gamepad.current.rightStickButton.wasPressedThisFrame))
+                        _stateController.TransitionTo<NormalState>();
 
-                    if (Keyboard.current.f5Key.wasPressedThisFrame)
-                    {
-                        _interactions.CurrentGame.SaveState(0);
-                        Debug.Log("State saved to slot 0");
-                    }
-                    if (Keyboard.current.f6Key.wasPressedThisFrame)
-                    {
-                        _interactions.CurrentGame.SaveState(1);
-                        Debug.Log("State saved to slot 1");
-                    }
-                    if (Keyboard.current.f7Key.wasPressedThisFrame)
-                    {
-                        _interactions.CurrentGame.SaveState(2);
-                        Debug.Log("State saved to slot 2");
-                    }
-                    if (Keyboard.current.f8Key.wasPressedThisFrame)
-                    {
-                        _interactions.CurrentGame.SaveState(3);
-                        Debug.Log("State saved to slot 3");
-                    }
+                    //if (Keyboard.current.pKey.wasPressedThisFrame)
+                    //{
+                    //    if (_interactions.CurrentGame.Paused)
+                    //        _interactions.CurrentGame.Resume();
+                    //    else
+                    //        _interactions.CurrentGame.Pause();
+                    //}
 
-                    if (Keyboard.current.f9Key.wasPressedThisFrame)
-                    {
-                        _interactions.CurrentGame.LoadState(0);
-                        Debug.Log("State saved to slot 0");
-                    }
-                    if (Keyboard.current.f10Key.wasPressedThisFrame)
-                    {
-                        _interactions.CurrentGame.LoadState(1);
-                        Debug.Log("State saved to slot 1");
-                    }
-                    if (Keyboard.current.f11Key.wasPressedThisFrame)
-                    {
-                        _interactions.CurrentGame.LoadState(2);
-                        Debug.Log("State saved to slot 2");
-                    }
-                    if (Keyboard.current.f12Key.wasPressedThisFrame)
-                    {
-                        _interactions.CurrentGame.LoadState(3);
-                        Debug.Log("State saved to slot 3");
-                    }
+                    //if (Keyboard.current.f5Key.wasPressedThisFrame)
+                    //{
+                    //    _interactions.CurrentGame.SaveState(0);
+                    //    Debug.Log("State saved to slot 0");
+                    //}
+                    //if (Keyboard.current.f6Key.wasPressedThisFrame)
+                    //{
+                    //    _interactions.CurrentGame.SaveState(1);
+                    //    Debug.Log("State saved to slot 1");
+                    //}
+                    //if (Keyboard.current.f7Key.wasPressedThisFrame)
+                    //{
+                    //    _interactions.CurrentGame.SaveState(2);
+                    //    Debug.Log("State saved to slot 2");
+                    //}
+                    //if (Keyboard.current.f8Key.wasPressedThisFrame)
+                    //{
+                    //    _interactions.CurrentGame.SaveState(3);
+                    //    Debug.Log("State saved to slot 3");
+                    //}
+
+                    //if (Keyboard.current.f9Key.wasPressedThisFrame)
+                    //{
+                    //    _interactions.CurrentGame.LoadState(0);
+                    //    Debug.Log("State saved to slot 0");
+                    //}
+                    //if (Keyboard.current.f10Key.wasPressedThisFrame)
+                    //{
+                    //    _interactions.CurrentGame.LoadState(1);
+                    //    Debug.Log("State saved to slot 1");
+                    //}
+                    //if (Keyboard.current.f11Key.wasPressedThisFrame)
+                    //{
+                    //    _interactions.CurrentGame.LoadState(2);
+                    //    Debug.Log("State saved to slot 2");
+                    //}
+                    //if (Keyboard.current.f12Key.wasPressedThisFrame)
+                    //{
+                    //    _interactions.CurrentGame.LoadState(3);
+                    //    Debug.Log("State saved to slot 3");
+                    //}
 
                     //_interactions.CurrentGame.Rewind(Keyboard.current.backspaceKey.isPressed);
                 }

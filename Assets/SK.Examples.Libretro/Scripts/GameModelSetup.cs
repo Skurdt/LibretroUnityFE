@@ -32,67 +32,32 @@ namespace SK.Examples
     [SelectionBase, DisallowMultipleComponent]
     public abstract class GameModelSetup : MonoBehaviour
     {
-        [SerializeField] protected Transform _viewer = default;
-
-        public string CoreName { get; set; }
-        public string GameDirectory { get; set; }
-        public string GameName { get; set; }
-        public bool Paused => !(_libretro is null) && _libretro.Paused;
-        //public bool InputEnabled
-        //{
-        //    get => !(_libretro is null) && _libretro.InputEnabled;
-        //    set
-        //    {
-        //        if (!(_libretro is null))
-        //            _libretro.InputEnabled = value;
-        //    }
-        //}
-        public bool AnalogToDigitalInput { get; private set; } = false;
-        //public bool RewindEnabled { get; private set; } = false;
-
-        protected static int _playerLayer     = -1;
-        protected static bool _playerLayerSet = false;
-
-        protected LibretroBridge _libretro = null;
-
-        //private const string REWIND_ON_STRING                   = "Rewind: On";
-        //private const string REWIND_OFF_STRING                  = "Rewind: Off";
-        private const string ANALOG_TO_DIGITAL_INPUT_ON_STRING  = "Analog To Digital: On";
-        private const string ANALOG_TO_DIGITAL_INPUT_OFF_STRING = "Analog To Digital: Off";
+        public LibretroInstance LibretroInstance;
 
         private void Awake()
         {
-            if (!_playerLayerSet)
-            {
-                _playerLayer    = LayerMask.NameToLayer("Player");
-                _playerLayerSet = true;
-            }
-
-            if (_viewer == null)
-                _viewer = Camera.main.transform;
+            if (LibretroInstance == null)
+                LibretroInstance = GetComponent<LibretroInstance>();
         }
 
         private void Start()
         {
             LoadConfig();
-
             StartGame();
-
             OnLateStart();
-
-            //Cursor.lockState = CursorLockMode.Locked;
         }
 
         private void Update()
         {
             if (!(Keyboard.current is null) && Keyboard.current.leftCtrlKey.isPressed && Keyboard.current.xKey.wasPressedThisFrame)
             {
-                StopGame();
+                if (LibretroInstance != null)
+                    LibretroInstance.StopContent();
                 ApplicationUtils.ExitApp();
                 return;
             }
 
-            if (_libretro is null)
+            if (LibretroInstance == null)
                 return;
 
             OnUpdate();
@@ -103,48 +68,8 @@ namespace SK.Examples
         private void OnDisable()
         {
             Application.focusChanged -= OnApplicationFocusChanged;
-            StopGame();
-        }
-
-        public void Pause()
-        {
-            //Cursor.lockState = CursorLockMode.None;
-            _libretro?.Pause();
-        }
-
-        public void Resume()
-        {
-            //Cursor.lockState = CursorLockMode.Locked;
-            _libretro?.Resume();
-        }
-
-        public void SaveState(int index, bool saveScreenshot = true) => _libretro?.SaveState(index, saveScreenshot);
-
-        public void LoadState(int index) => _libretro?.LoadState(index);
-
-        //public void Rewind(bool rewind) => _libretro?.Rewind(rewind);
-
-        public void UI_ToggleAnalogToDigitalInput()
-        {
-            if (_libretro is null)
-                return;
-
-            AnalogToDigitalInput = !AnalogToDigitalInput;
-
-           //_libretro.SetAnalogToDigitalInput(AnalogToDigitalInput);
-        }
-
-        public void UI_ToggleRewind()
-        {
-            //if (_libretro is null)
-            //    return;
-
-            //RewindEnabled = !RewindEnabled;
-
-            //if (_rewindText != null)
-            //    _rewindText.text = RewindEnabled ? REWIND_ON_STRING : REWIND_OFF_STRING;
-
-            //_libretro.SetRewindEnabled(RewindEnabled);
+            if (LibretroInstance != null)
+                LibretroInstance.StopContent();
         }
 
         protected virtual void OnLateStart()
@@ -157,47 +82,21 @@ namespace SK.Examples
 
         protected void StartGame()
         {
-            if (string.IsNullOrEmpty(CoreName))
-            {
-                Debug.LogWarning("Core not set");
+            if (LibretroInstance == null)
                 return;
-            }
 
-            if (!TryGetComponent(out Renderer renderer))
-            {
-                Debug.LogError("Required Renderer Component not found");
-                return;
-            }
-
-            try
-            {
-                LibretroSettings settings = new LibretroSettings
-                {
-                    AnalogToDigital = AnalogToDigitalInput
-                };
-
-                _libretro = new LibretroBridge(renderer, _viewer, settings);
-                _libretro.Start(CoreName, GameDirectory, GameName);
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e, this);
-                _libretro = null;
-            }
-        }
-
-        protected void StopGame()
-        {
-            _libretro?.Stop();
-            _libretro = null;
+            LibretroInstance.StartContent();
         }
 
         private void OnApplicationFocusChanged(bool focus)
         {
+            if (LibretroInstance == null)
+                return;
+
             if (!focus)
-                _libretro?.Pause();
+                LibretroInstance.PauseContent();
             else
-                _libretro?.Resume();
+                LibretroInstance.ResumeContent();
         }
 
         /***********************************************************************************************************************
@@ -208,20 +107,23 @@ namespace SK.Examples
         {
             public string Core;
             public string Directory;
-            public string Name;
-            public bool AnalogDirectionsToDigital;
+            public string[] Names;
             public ConfigFileContent(GameModelSetup gameModelSetup)
             {
-                Core                      = gameModelSetup.CoreName;
-                Directory                 = gameModelSetup.GameDirectory;
-                Name                      = gameModelSetup.GameName;
-                AnalogDirectionsToDigital = gameModelSetup.AnalogToDigitalInput;
+                if (gameModelSetup.LibretroInstance == null)
+                    return;
+                Core      = gameModelSetup.LibretroInstance.CoreName;
+                Directory = gameModelSetup.LibretroInstance.GamesDirectory;
+                Names     = gameModelSetup.LibretroInstance.GameNames;
             }
         }
 
         [ContextMenu("Load configuration")]
         public void LoadConfig()
         {
+            if (LibretroInstance == null)
+                return;
+
             if (!File.Exists(ConfigFilePath))
                 return;
 
@@ -233,15 +135,17 @@ namespace SK.Examples
             if (game is null)
                 return;
 
-            CoreName             = game.Core;
-            GameDirectory        = game.Directory;
-            GameName             = game.Name;
-            AnalogToDigitalInput = game.AnalogDirectionsToDigital;
+            LibretroInstance.CoreName      = game.Core;
+            LibretroInstance.GamesDirectory = game.Directory;
+            LibretroInstance.GameNames     = game.Names;
         }
 
         [ContextMenu("Save configuration")]
         public void SaveConfig()
         {
+            if (LibretroInstance == null)
+                return;
+
             string json = GetJsonConfig();
             if (!string.IsNullOrEmpty(json))
                 File.WriteAllText(ConfigFilePath, json);
