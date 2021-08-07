@@ -1,10 +1,25 @@
 {
     "Entries": [
         {
-            "CoreName": "mame2003_plus",
-            "GamesDirectory": "D:/__Roms/mame2003-plus",
+            "CoreName": "pcsx_rearmed",
+            "GamesDirectory": "D:/__Roms/Sony - Playstation",
             "GameNames": [
-                "ssf2"
+                "Time Crisis (USA)"
+            ]
+        },
+        {
+            "CoreName": "puae",
+            "GamesDirectory": "D:/__Roms",
+            "GameNames": [
+                "Wings (1990)(Cinemaware)[cr Power Group](Disk 1 of 2)(Reel 1)",
+                "Wings (1990)(Cinemaware)[cr Power Group](Disk 2 of 2)(Reel 2)"
+            ]
+        },
+        {
+            "CoreName": "pcsx_rearmed",
+            "GamesDirectory": "D:/__Roms/Sony - Playstation",
+            "GameNames": [
+                "Dino Crisis 2 (USA)"
             ]
         }
     ]
