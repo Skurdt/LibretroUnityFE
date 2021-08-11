@@ -46,23 +46,32 @@ namespace SK.Examples
         private void OnDisable()
         {
             _inputActions.Enable();
+
             for (int i = _instantiatedObjects.Count - 1; i >= 0; --i)
                 Destroy(_instantiatedObjects[i]);
+
+            _instantiatedObjects.Clear();
         }
 
         private void GenerateOptionsList()
         {
+            _instantiatedObjects.Clear();
+
             string coreName = _uiRoot.Libretro.Current.CoreName;
             if (!CoreInstances.Instance.Contains(coreName))
                 return;
 
-            foreach (CoreOption option in CoreInstances.Instance[coreName])
+            (CoreOptions coreOptions, CoreOptions gameOptions) = CoreInstances.Instance[coreName];
+
+            int optionIndex = 0;
+            foreach (CoreOption coreOption in coreOptions)
             {
-                if (!option.Visible)
+                if (!coreOption.Visible)
                     continue;
                 UICoreOptionDropdown optionInstance = Instantiate(_dropdownTemplatePrefab, _listContent);
-                optionInstance.Init(coreName, option);
+                optionInstance.Init(coreName, coreOption, gameOptions?[optionIndex]?.CurrentValue);
                 _instantiatedObjects.Add(optionInstance.gameObject);
+                ++optionIndex;
             }
         }
     }

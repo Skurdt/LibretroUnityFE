@@ -29,7 +29,7 @@ using UnityEngine;
 
 namespace SK.Examples
 {
-    [ExecuteAlways]
+    [ExecuteAlways, DefaultExecutionOrder(-3)]
     public sealed class JsonConfigLoader : MonoBehaviour
     {
         public Transform InstancesParent;

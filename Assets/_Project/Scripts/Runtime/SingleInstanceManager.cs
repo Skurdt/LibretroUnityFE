@@ -25,11 +25,11 @@ using UnityEngine;
 
 namespace SK.Examples
 {
-    [DefaultExecutionOrder(-2)]
+    [DefaultExecutionOrder(-1)]
     public sealed class SingleInstanceManager : MonoBehaviour
     {
         [SerializeField] private LibretroInstanceVariable _libretroInstanceVariable;
 
-        private void Awake() => _libretroInstanceVariable.Current = GetComponent<LibretroInstance>();
+        private void OnEnable() => _libretroInstanceVariable.Current = GetComponent<LibretroInstance>();
     }
 }

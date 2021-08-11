@@ -20,13 +20,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using UnityEngine;
-using UnityEngine.UI;
+using System;
+using System.Reflection;
+using UnityEditor;
 
-namespace SK.Examples
+namespace SK.Examples.Editor
 {
-    public sealed class UICoreOptionToggle : UICoreOption
+    public static class UnityBugs
     {
-        [SerializeField] private Toggle _toggle;
+        [MenuItem("UnityBugs/Resync VS")]
+        public static void FixSolution()
+        {
+            Type editor = Type.GetType("UnityEditor.SyncVS, UnityEditor");
+            MethodInfo SyncSolution = editor.GetMethod("SyncSolution", BindingFlags.Public | BindingFlags.Static);
+            _ = SyncSolution?.Invoke(null, null);
+        }
     }
 }
