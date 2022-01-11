@@ -23,7 +23,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace SK.Examples
+namespace SK.Libretro.Examples
 {
     [DisallowMultipleComponent]
     public abstract class UICoreOption : MonoBehaviour

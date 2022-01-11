@@ -24,7 +24,7 @@ using SK.Libretro;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SK.Examples
+namespace SK.Libretro.Examples
 {
     [DisallowMultipleComponent]
     public sealed class UIInputDevices : MonoBehaviour
@@ -32,7 +32,7 @@ namespace SK.Examples
         [SerializeField] private UIRoot _uiRoot;
         [SerializeField] private UIInputDevice _uiInputDevicePrefab;
 
-        private readonly List<UIInputDevice> _uiInputDevices = new List<UIInputDevice>();
+        private readonly List<UIInputDevice> _uiInputDevices = new();
 
         private void OnEnable()
         {

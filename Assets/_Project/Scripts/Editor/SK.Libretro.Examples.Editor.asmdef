@@ -1,0 +1,19 @@
+{
+    "name": "SK.Libretro.Examples.Editor",
+    "rootNamespace": "SK.Libretro.Examples.Editor",
+    "references": [
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:142c1569b5477f54bb5102277266ef6c"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

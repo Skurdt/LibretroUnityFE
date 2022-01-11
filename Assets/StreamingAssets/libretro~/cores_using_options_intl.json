@@ -1,0 +1,10 @@
+{
+    "Cores": [
+        "vecx",
+        "snes9x",
+        "genesis_plus_gx",
+        "nestopia",
+        "pcsx_rearmed",
+        "mednafen_psx"
+    ]
+}

@@ -25,7 +25,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-namespace SK.Examples
+namespace SK.Libretro.Examples
 {
     public sealed class GamepadIconsExample : MonoBehaviour
     {

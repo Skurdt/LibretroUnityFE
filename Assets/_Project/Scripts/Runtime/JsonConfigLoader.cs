@@ -27,7 +27,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-namespace SK.Examples
+namespace SK.Libretro.Examples
 {
     [ExecuteAlways, DefaultExecutionOrder(-3)]
     public sealed class JsonConfigLoader : MonoBehaviour
@@ -88,16 +88,12 @@ namespace SK.Examples
 
                 if (contentList.Entries.Count <= i)
                 {
-                    libretroInstance.CoreName       = null;
-                    libretroInstance.GamesDirectory = null;
-                    libretroInstance.GameNames      = null;
+                    libretroInstance.DeInitialize();
                     continue;
                 }
 
-                ConfigFileContent content       = contentList.Entries[i];
-                libretroInstance.CoreName       = content.CoreName;
-                libretroInstance.GamesDirectory = content.GamesDirectory;
-                libretroInstance.GameNames      = content.GameNames.ToArray();
+                ConfigFileContent content = contentList.Entries[i];
+                libretroInstance.Initialize(content.CoreName, content.GamesDirectory, content.GameNames.ToArray());
             }
         }
 
@@ -108,7 +104,7 @@ namespace SK.Examples
             if (libretroInstances.Count == 0)
                 return;
 
-            ConfigFileContentList contentList = new ConfigFileContentList();
+            ConfigFileContentList contentList = new();
             if (File.Exists(_configFilePath))
             {
                 string loadedJson = File.ReadAllText(_configFilePath);
@@ -121,7 +117,7 @@ namespace SK.Examples
                 if (contentList.Entries.Count > i)
                     contentList.Entries[i].Update(libretroInstances[i]);
                 else
-                    contentList.Entries.Add(new ConfigFileContent(libretroInstances[i]));
+                    contentList.Entries.Add(new (libretroInstances[i]));
             }
 
             string json = JsonUtility.ToJson(contentList, true);
@@ -133,7 +129,7 @@ namespace SK.Examples
 
         private static List<LibretroInstance> GetLibretroInstances(Transform parent)
         {
-            List<LibretroInstance> libretroInstances = new List<LibretroInstance>();
+            List<LibretroInstance> libretroInstances = new();
 
             if (parent.TryGetComponent(out LibretroInstance libretroInstance))
                 libretroInstances.Add(libretroInstance);

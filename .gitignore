@@ -130,13 +130,10 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-# TMP assets
-Assets/TextMesh Pro/**
-Assets/TextMesh Pro.meta
-
 # Libretro
 /Assets/StreamingAssets/libretro~/**
-!/Assets/StreamingAssets/libretro~/core_options.json
+!/Assets/StreamingAssets/libretro~/cores_using_options/**
+!/Assets/StreamingAssets/libretro~/cores_using_options_intl.json
 
 # Libretro Packages
 /Packages/**
@@ -148,5 +145,4 @@ Assets/TextMesh Pro.meta
 .vsconfig
 
 CAPSImg.dll
-
 .atari800.cfg

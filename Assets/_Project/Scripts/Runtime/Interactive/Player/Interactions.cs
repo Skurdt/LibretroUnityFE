@@ -23,7 +23,7 @@
 using SK.Libretro.Unity;
 using UnityEngine;
 
-namespace SK.Examples
+namespace SK.Libretro.Examples
 {
     [DisallowMultipleComponent, RequireComponent(typeof(Controls))]
     public sealed class Interactions : MonoBehaviour

@@ -25,7 +25,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace SK.Examples
+namespace SK.Libretro.Examples
 {
     [DisallowMultipleComponent]
     public sealed class UIMenu : MonoBehaviour
@@ -98,13 +98,13 @@ namespace SK.Examples
             _toggleRewindToggle.onValueChanged.AddListener((enabled) => _uiRoot.Libretro.Current.Settings.RewindEnabled = enabled);
 
             EventTrigger eventTrigger = _rewindHoldButton.GetComponent<EventTrigger>();
-            EventTrigger.Entry eventTriggerPointerDown = new EventTrigger.Entry
+            EventTrigger.Entry eventTriggerPointerDown = new()
             {
                 eventID = EventTriggerType.PointerDown
             };
             eventTriggerPointerDown.callback.AddListener((eventData) => _uiRoot.Libretro.Current.Rewind = true);
             eventTrigger.triggers.Add(eventTriggerPointerDown);
-            EventTrigger.Entry eventTriggerPointerUp = new EventTrigger.Entry
+            EventTrigger.Entry eventTriggerPointerUp = new()
             {
                 eventID = EventTriggerType.PointerUp
             };

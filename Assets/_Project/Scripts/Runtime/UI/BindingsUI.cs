@@ -24,7 +24,7 @@
 //using UnityEngine;
 //using UnityEngine.InputSystem;
 
-//namespace SK.Examples
+//namespace SK.Libretro.Examples
 //{
 //    public sealed class BindingsUI : MonoBehaviour
 //    {

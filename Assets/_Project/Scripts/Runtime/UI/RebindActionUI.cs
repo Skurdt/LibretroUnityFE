@@ -27,7 +27,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
-namespace SK.Examples
+namespace SK.Libretro.Examples
 {
     public class RebindActionUI : MonoBehaviour
     {
@@ -160,7 +160,7 @@ namespace SK.Examples
             if (string.IsNullOrEmpty(_bindingId))
                 return false;
 
-            Guid bindingId = new Guid(_bindingId);
+            Guid bindingId = new(_bindingId);
             bindingIndex = action.bindings.IndexOf(x => x.id == bindingId);
             if (bindingIndex == -1)
             {

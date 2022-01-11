@@ -23,7 +23,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace SK.Examples
+namespace SK.Libretro.Examples
 {
     [RequireComponent(typeof(CharacterController))]
     public sealed class Controls : MonoBehaviour

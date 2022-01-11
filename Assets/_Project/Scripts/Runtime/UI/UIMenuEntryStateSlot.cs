@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SK.Examples
+namespace SK.Libretro.Examples
 {
     [DisallowMultipleComponent]
     public sealed class UIMenuEntryStateSlot : MonoBehaviour

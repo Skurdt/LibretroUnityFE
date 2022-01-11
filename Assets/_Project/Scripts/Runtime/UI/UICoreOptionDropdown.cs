@@ -25,7 +25,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
-namespace SK.Examples
+namespace SK.Libretro.Examples
 {
     public sealed class UICoreOptionDropdown : UICoreOption
     {

@@ -25,7 +25,7 @@ using SK.Libretro.Unity;
 using TMPro;
 using UnityEngine;
 
-namespace SK.Examples
+namespace SK.Libretro.Examples
 {
     [DisallowMultipleComponent]
     public sealed class UIInputDevice : MonoBehaviour

@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace SK.Examples
+namespace SK.Libretro.Examples
 {
     [DisallowMultipleComponent]
     public sealed class UICoreOptions : MonoBehaviour
@@ -35,7 +35,7 @@ namespace SK.Examples
         [SerializeField] private RectTransform _listContent;
         [SerializeField] private UICoreOptionDropdown _dropdownTemplatePrefab;
 
-        private readonly List<GameObject> _instantiatedObjects = new List<GameObject>();
+        private readonly List<GameObject> _instantiatedObjects = new();
 
         private void OnEnable()
         {

@@ -22,7 +22,7 @@
 
 using System.Collections.Generic;
 
-namespace SK.Examples
+namespace SK.Libretro.Examples
 {
     public sealed class StateController
     {
@@ -31,7 +31,7 @@ namespace SK.Examples
         public readonly Interactions Interactions;
 
         private readonly Controls _controls;
-        private readonly List<State> _allStates = new List<State>();
+        private readonly List<State> _allStates = new();
 
         public StateController(Controls controls, Interactions interactions)
         {

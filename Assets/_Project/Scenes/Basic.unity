@@ -152,6 +152,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -229,6 +230,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
   m_RenderPostProcessing: 0
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
@@ -274,10 +276,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19ad674c506f99c45add7702b9405239, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Camera>k__BackingField: {fileID: 0}
-  <RaycastLayer>k__BackingField: 9
-  <Renderer>k__BackingField: {fileID: 0}
-  <Collider>k__BackingField: {fileID: 0}
+  <Camera>k__BackingField: {fileID: 116397879}
+  <LightgunRaycastLayer>k__BackingField: 9
+  <Renderer>k__BackingField: {fileID: 662265718}
+  <Collider>k__BackingField: {fileID: 662265722}
   <Viewer>k__BackingField: {fileID: 0}
   <Settings>k__BackingField:
     MainDirectory: D:/_UnityProjects/LibretroUnityFE/Assets/StreamingAssets/libretro~
@@ -288,10 +290,10 @@ MonoBehaviour:
     AudioMaxDistance: 10
     AnalogToDigital: 0
     RewindEnabled: 0
-  <AllowGLCoreInEditor>k__BackingField: 0
-  CoreName: pcsx_rearmed
-  GamesDirectory: D:/__Roms/Sony - Playstation
-  GameNames:
+  <AllowGLCoreInEditor>k__BackingField: 1
+  <CoreName>k__BackingField: pcsx_rearmed
+  <GamesDirectory>k__BackingField: D:/__Roms/Sony - Playstation
+  <GameNames>k__BackingField:
   - Time Crisis (USA)
 --- !u!114 &662265716
 MonoBehaviour:
@@ -380,6 +382,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 1.5, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
@@ -496,6 +499,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3

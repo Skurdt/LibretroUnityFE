@@ -27,7 +27,7 @@ using UnityEngine.InputSystem;
 
 ////TODO: support multi-object editing
 
-namespace SK.Examples.EditorOnly
+namespace SK.Libretro.Examples.Editor
 {
     /// <summary>
     /// A custom inspector for <see cref="RebindActionUI"/> which provides a more convenient way for
@@ -38,7 +38,7 @@ namespace SK.Examples.EditorOnly
     {
         private static class Styles
         {
-            public static GUIStyle boldLabel = new GUIStyle("MiniBoldLabel");
+            public static GUIStyle boldLabel = new("MiniBoldLabel");
         }
 
         private SerializedProperty _actionProperty;
@@ -52,10 +52,10 @@ namespace SK.Examples.EditorOnly
         private SerializedProperty _updateBindingUIEventProperty;
         private SerializedProperty _displayStringOptionsProperty;
 
-        private readonly GUIContent _bindingLabel        = new GUIContent("Binding");
-        private readonly GUIContent _displayOptionsLabel = new GUIContent("Display Options");
-        private readonly GUIContent _uILabel             = new GUIContent("UI");
-        private readonly GUIContent _eventsLabel         = new GUIContent("Events");
+        private readonly GUIContent _bindingLabel        = new("Binding");
+        private readonly GUIContent _displayOptionsLabel = new("Display Options");
+        private readonly GUIContent _uILabel             = new("UI");
+        private readonly GUIContent _eventsLabel         = new("Events");
         private GUIContent[] _bindingOptions;
         private string[] _bindingOptionValues;
         private int _selectedBindingOption;

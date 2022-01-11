@@ -22,7 +22,7 @@
 
 using UnityEngine;
 
-namespace SK.Examples
+namespace SK.Libretro.Examples
 {
     public static class CursorUtils
     {
