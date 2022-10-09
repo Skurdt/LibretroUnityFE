@@ -133,7 +133,6 @@ Temporary Items
 # Libretro
 /Assets/StreamingAssets/libretro~/**
 !/Assets/StreamingAssets/libretro~/cores_using_options/**
-!/Assets/StreamingAssets/libretro~/cores_using_options_intl.json
 
 # Libretro Packages
 /Packages/**

@@ -1,6 +1,6 @@
 ﻿/* MIT License
 
- * Copyright (c) 2020 Skurdt
+ * Copyright (c) 2022 Skurdt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,12 +40,14 @@ namespace SK.Libretro.Examples
             public string CoreName;
             public string GamesDirectory;
             public List<string> GameNames;
+
             public ConfigFileContent(LibretroInstance libretroInstance)
             {
                 CoreName       = libretroInstance.CoreName;
                 GamesDirectory = libretroInstance.GamesDirectory;
                 GameNames      = libretroInstance.GameNames.ToList();
             }
+
             public void Update(LibretroInstance libretroInstance)
             {
                 CoreName       = libretroInstance.CoreName;
@@ -57,7 +59,7 @@ namespace SK.Libretro.Examples
         [Serializable]
         private sealed class ConfigFileContentList
         {
-            public List<ConfigFileContent> Entries;
+            public List<ConfigFileContent> Entries = new();
         }
 
         private static readonly string _configFilePath = Application.streamingAssetsPath + "/GamesSetup.json";

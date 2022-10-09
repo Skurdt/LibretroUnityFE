@@ -1,6 +1,6 @@
 /* MIT License
 
- * Copyright (c) 2020 Skurdt
+ * Copyright (c) 2022 Skurdt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -109,8 +109,7 @@ namespace SK.Libretro.Examples
             if (imageGO == null)
                 return;
 
-            Image imageComponent = imageGO.GetComponent<Image>();
-            if (imageComponent == null)
+            if (!imageGO.TryGetComponent<Image>(out Image imageComponent))
                 return;
 
             if (icon != null)

@@ -1,10 +1,10 @@
 {
     "Entries": [
         {
-            "CoreName": "pcsx_rearmed",
-            "GamesDirectory": "D:/__Roms/Sony - Playstation",
+            "CoreName": "pcsx2",
+            "GamesDirectory": "D:/__Roms",
             "GameNames": [
-                "Time Crisis (USA)"
+                "ps2_shadow_of_the colossus"
             ]
         },
         {
