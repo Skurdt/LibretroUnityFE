@@ -377,7 +377,7 @@ MonoBehaviour:
   <Settings>k__BackingField:
     AllowGLCoresInEditor: 1
     MainDirectory: D:/_UnityProjects/LibretroUnityFE/Assets/StreamingAssets/libretro~
-    ShaderTextureName: _EmissionMap
+    ShaderTextureName: _MainTex
     AudioDistanceControl: 1
     AudioMaxVolume: 1
     AudioMinDistance: 2
@@ -385,10 +385,10 @@ MonoBehaviour:
     AnalogToDigital: 0
     RewindEnabled: 0
   <AllowGLCoreInEditor>k__BackingField: 1
-  <CoreName>k__BackingField: pcsx2
-  <GamesDirectory>k__BackingField: D:/__Roms
+  <CoreName>k__BackingField: mame2003_plus
+  <GamesDirectory>k__BackingField: D:/__Roms/mame2003-plus
   <GameNames>k__BackingField:
-  - ps2_shadow_of_the colossus
+  - ssf2
 --- !u!114 &662265716
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -475,8 +475,8 @@ Transform:
   m_GameObject: {fileID: 662265714}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 1.5, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 3.7, y: 2.775, z: 1.85}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1

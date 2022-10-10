@@ -1,10 +1,10 @@
 {
     "Entries": [
         {
-            "CoreName": "pcsx2",
-            "GamesDirectory": "D:/__Roms",
+            "CoreName": "mame2003_plus",
+            "GamesDirectory": "D:/__Roms/mame2003-plus",
             "GameNames": [
-                "ps2_shadow_of_the colossus"
+                "ssf2"
             ]
         },
         {

@@ -20,7 +20,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using SK.Libretro;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
