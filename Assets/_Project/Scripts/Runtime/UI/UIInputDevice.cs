@@ -37,7 +37,7 @@ namespace SK.Libretro.Examples
         {
             _playerIdLabel.SetText($"Player {port}");
             _devicesDropdown.AddOptions(inputDevices.DeviceDescriptions);
-            _devicesDropdown.onValueChanged.AddListener(index => _libretro.Current.SetControllerPortDevice((uint)port, inputDevices[index].Id));
+            _devicesDropdown.onValueChanged.AddListener(index => _libretro.Current.SetControllerPortDevice((uint)port, inputDevices[index].Device));
         }
 
         private void OnDisable()

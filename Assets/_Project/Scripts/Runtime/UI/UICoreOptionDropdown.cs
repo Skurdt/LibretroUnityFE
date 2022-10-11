@@ -20,6 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -32,13 +33,12 @@ namespace SK.Libretro.Examples
         [SerializeField] private TMP_Dropdown _dropdownGame;
 
         private string _coreName;
-        private CoreOption _optionCore;
-        private string _gameValue;
+        private CoreOption _coreOption;
 
         private void OnEnable()
         {
-            _dropdownCore.onValueChanged.AddListener((index) => CoreInstances.Instance.UpdateCoreOptionValue(_coreName, _optionCore?.Key, index, true));
-            _dropdownGame.onValueChanged.AddListener((index) => CoreInstances.Instance.UpdateCoreOptionValue(_coreName, _optionCore?.Key, index, false));
+            _dropdownCore.onValueChanged.AddListener((index) => CoreInstances.Instance.UpdateCoreOptionValue(_coreName, _coreOption?.Key, index, true));
+            _dropdownGame.onValueChanged.AddListener((index) => CoreInstances.Instance.UpdateCoreOptionValue(_coreName, _coreOption?.Key, index, false));
         }
 
         private void OnDisable()
@@ -47,29 +47,31 @@ namespace SK.Libretro.Examples
             _dropdownGame.onValueChanged.RemoveAllListeners();
         }
 
-        public void Init(string coreName, CoreOption optionCore, string gameValue)
+        public void Init(string coreName, CoreOption coreOption, string gameValue)
         {
+            if (coreOption is null)
+                return;
+
             _coreName   = coreName;
-            _optionCore = optionCore;
-            if (optionCore != null)
-            {
-                _dropdownCore.ClearOptions();
-                _dropdownGame.ClearOptions();
+            _coreOption = coreOption;
 
-                _label.SetText(optionCore.Description);
+            _dropdownCore.ClearOptions();
+            _dropdownGame.ClearOptions();
 
-                _dropdownCore.AddOptions(optionCore.PossibleValues.ToList());
-                _dropdownGame.AddOptions(optionCore.PossibleValues.ToList());
+            _label.SetText(coreOption.Description);
 
-                int valueIndex = _dropdownCore.options.FindIndex(x => x.text.Equals(optionCore.CurrentValue, System.StringComparison.OrdinalIgnoreCase));
-                _dropdownCore.SetValueWithoutNotify(valueIndex);
+            List<string> optionValues = coreOption.PossibleValues.ToList();
+            _dropdownCore.AddOptions(optionValues);
+            _dropdownGame.AddOptions(optionValues);
 
-                if (!string.IsNullOrWhiteSpace(gameValue))
-                {
-                    valueIndex = _dropdownCore.options.FindIndex(x => x.text.Equals(gameValue, System.StringComparison.OrdinalIgnoreCase));
-                    _dropdownGame.SetValueWithoutNotify(valueIndex);
-                }
-            }
+            int valueIndex = _dropdownCore.options.FindIndex(x => x.text.Equals(coreOption.CurrentValue, System.StringComparison.OrdinalIgnoreCase));
+            _dropdownCore.SetValueWithoutNotify(valueIndex);
+
+            if (string.IsNullOrWhiteSpace(gameValue))
+                return;
+
+            valueIndex = _dropdownCore.options.FindIndex(x => x.text.Equals(gameValue, System.StringComparison.OrdinalIgnoreCase));
+            _dropdownGame.SetValueWithoutNotify(valueIndex);
         }
     }
 }
