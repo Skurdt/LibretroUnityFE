@@ -50,15 +50,23 @@ namespace SK.Libretro.Examples.Editor
                 if (GUILayout.Button("Load", GUILayout.Height(EditorGUIUtility.singleLineHeight * 2f)))
                 {
                     EditorGUI.FocusTextInControl(null);
+
                     Scene activeScene = SceneManager.GetActiveScene();
-                    _ = EditorSceneManager.MarkSceneDirty(activeScene);
+
+                    if (!EditorApplication.isPlaying)
+                        _ = EditorSceneManager.MarkSceneDirty(activeScene);
+
                     _jsonConfigLoader.LoadConfig();
-                    _ = EditorSceneManager.SaveScene(activeScene);
+
+                    if (!EditorApplication.isPlaying)
+                        _ = EditorSceneManager.SaveScene(activeScene);
                 }
 
                 if (GUILayout.Button("Save", GUILayout.Height(EditorGUIUtility.singleLineHeight * 2f)))
                 {
-                    _ = EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
+                    if (!EditorApplication.isPlaying)
+                        _ = EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
+
                     EditorGUI.FocusTextInControl(null);
                     _jsonConfigLoader.SaveConfig();
                 }
