@@ -1,6 +1,6 @@
 /* MIT License
 
- * Copyright (c) 2022 Skurdt
+ * Copyright (c) 2021-2022 Skurdt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -60,10 +60,10 @@ namespace SK.Libretro.Examples
             if (!CoreInstances.Instance.Contains(coreName))
                 return;
 
-            (CoreOptions coreOptions, CoreOptions gameOptions) = CoreInstances.Instance[coreName];
+            (Options coreOptions, Options gameOptions) = CoreInstances.Instance[coreName];
 
             int optionIndex = 0;
-            foreach (CoreOption coreOption in coreOptions)
+            foreach (Option coreOption in coreOptions)
             {
                 if (!coreOption.Visible)
                     continue;

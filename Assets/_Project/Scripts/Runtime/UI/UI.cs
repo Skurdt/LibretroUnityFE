@@ -7,6 +7,7 @@ namespace SK.Libretro.Examples
     public sealed class UI : MonoBehaviour
     {
         [SerializeField] private UnityEvent _onStartGameClicked;
+        [SerializeField] private UnityEvent _onResetGameClicked;
         [SerializeField] private UnityEvent _onStopGameClicked;
 
         private UIDocument _uiDocument;
@@ -14,6 +15,7 @@ namespace SK.Libretro.Examples
         private VisualElement _toolbarGameButton;
         private VisualElement _toolbarGameMenu;
         private VisualElement _toolbarGameMenuStartButton;
+        private VisualElement _toolbarGameMenuResetButton;
         private VisualElement _toolbarGameMenuStopButton;
 
         private void Awake() => _uiDocument = GetComponent<UIDocument>();
@@ -33,6 +35,9 @@ namespace SK.Libretro.Examples
 
             _toolbarGameMenuStartButton = _toolbarGameMenu.Q("StartPauseResumeButton");
             _toolbarGameMenuStartButton.RegisterCallback<MouseDownEvent>(ToolbarGameMenuStartButtonMouseDownEventCallback);
+            
+            _toolbarGameMenuResetButton = _toolbarGameMenu.Q("ResetButton");
+            _toolbarGameMenuResetButton.RegisterCallback<MouseDownEvent>(ToolbarGameMenuResetButtonMouseDownEventCallback);
 
             _toolbarGameMenuStopButton = _toolbarGameMenu.Q("StopButton");
             _toolbarGameMenuStopButton.RegisterCallback<MouseDownEvent>(ToolbarGameMenuStopButtonMouseDownEventCallback);
@@ -45,6 +50,7 @@ namespace SK.Libretro.Examples
             _centerArea.UnregisterCallback<MouseDownEvent>(CenterAreaMouseDownEventCallback);
 
             _toolbarGameMenuStartButton.UnregisterCallback<MouseDownEvent>(ToolbarGameMenuStartButtonMouseDownEventCallback);
+            _toolbarGameMenuResetButton.UnregisterCallback<MouseDownEvent>(ToolbarGameMenuResetButtonMouseDownEventCallback);
             _toolbarGameMenuStopButton.UnregisterCallback<MouseDownEvent>(ToolbarGameMenuStopButtonMouseDownEventCallback);
         }
 
@@ -56,6 +62,9 @@ namespace SK.Libretro.Examples
 
         private void ToolbarGameMenuStartButtonMouseDownEventCallback(MouseDownEvent evnt) =>
             _onStartGameClicked.Invoke();
+
+        private void ToolbarGameMenuResetButtonMouseDownEventCallback(MouseDownEvent evnt) =>
+            _onResetGameClicked.Invoke();
 
         private void ToolbarGameMenuStopButtonMouseDownEventCallback(MouseDownEvent evnt) =>
             _onStopGameClicked.Invoke();

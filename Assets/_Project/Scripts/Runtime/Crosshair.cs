@@ -20,30 +20,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using SK.Libretro.Unity;
-using TMPro;
 using UnityEngine;
 
 namespace SK.Libretro.Examples
 {
-    [DisallowMultipleComponent]
-    public sealed class UIInputDevice : MonoBehaviour
+    public sealed class Crosshair : MonoBehaviour
     {
-        [SerializeField] private LibretroInstanceVariable _libretro;
-        [SerializeField] private TMP_Text _playerIdLabel;
-        [SerializeField] private TMP_Dropdown _devicesDropdown;
+        [SerializeField] private Texture2D _texture;
 
-        public void Init(int port, Controllers inputDevices)
-        {
-            _playerIdLabel.SetText($"Player {port}");
-            _devicesDropdown.AddOptions(inputDevices.DeviceDescriptions);
-            _devicesDropdown.onValueChanged.AddListener(index => _libretro.Current.SetControllerPortDevice((uint)port, inputDevices[index].Device));
-        }
-
-        private void OnDisable()
-        {
-            _devicesDropdown.onValueChanged.RemoveAllListeners();
-            _devicesDropdown.ClearOptions();
-        }
+        private void Start() => Cursor.SetCursor(_texture, new(8f, 8f), CursorMode.Auto);
     }
 }

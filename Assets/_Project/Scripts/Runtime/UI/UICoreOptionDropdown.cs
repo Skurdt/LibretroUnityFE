@@ -1,6 +1,6 @@
 ﻿/* MIT License
 
- * Copyright (c) 2022 Skurdt
+ * Copyright (c) 2021-2022 Skurdt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ namespace SK.Libretro.Examples
         [SerializeField] private TMP_Dropdown _dropdownGame;
 
         private string _coreName;
-        private CoreOption _coreOption;
+        private Option _coreOption;
 
         private void OnEnable()
         {
@@ -47,7 +47,7 @@ namespace SK.Libretro.Examples
             _dropdownGame.onValueChanged.RemoveAllListeners();
         }
 
-        public void Init(string coreName, CoreOption coreOption, string gameValue)
+        public void Init(string coreName, Option coreOption, string gameValue)
         {
             if (coreOption is null)
                 return;

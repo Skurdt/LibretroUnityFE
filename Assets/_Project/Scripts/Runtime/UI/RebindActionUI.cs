@@ -1,6 +1,6 @@
 /* MIT License
 
- * Copyright (c) 2022 Skurdt
+ * Copyright (c) 2021-2022 Skurdt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -119,8 +119,7 @@ namespace SK.Libretro.Examples
         {
             get
             {
-                if (_updateBindingUIEvent == null)
-                    _updateBindingUIEvent = new UpdateBindingUIEvent();
+                _updateBindingUIEvent ??= new UpdateBindingUIEvent();
                 return _updateBindingUIEvent;
             }
         }
@@ -129,8 +128,7 @@ namespace SK.Libretro.Examples
         {
             get
             {
-                if (_rebindStartEvent == null)
-                    _rebindStartEvent = new InteractiveRebindEvent();
+                _rebindStartEvent ??= new InteractiveRebindEvent();
                 return _rebindStartEvent;
             }
         }
@@ -139,8 +137,7 @@ namespace SK.Libretro.Examples
         {
             get
             {
-                if (_rebindStopEvent == null)
-                    _rebindStopEvent = new InteractiveRebindEvent();
+                _rebindStopEvent ??= new InteractiveRebindEvent();
                 return _rebindStopEvent;
             }
         }
@@ -287,8 +284,7 @@ namespace SK.Libretro.Examples
 
         protected void OnEnable()
         {
-            if (_rebindActionUIs == null)
-                _rebindActionUIs = new List<RebindActionUI>();
+            _rebindActionUIs ??= new List<RebindActionUI>();
             _rebindActionUIs.Add(this);
             if (_rebindActionUIs.Count == 1)
                 InputSystem.onActionChange += OnActionChange;
