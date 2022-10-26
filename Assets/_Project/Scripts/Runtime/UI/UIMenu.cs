@@ -73,7 +73,7 @@ namespace SK.Libretro.Examples
 
         private void OnEnable()
         {
-            bool validInstance = _uiRoot.Libretro.Current != null;
+            bool validInstance = _uiRoot.Libretro.Current;
             if (validInstance)
             {
                 _uiRoot.Libretro.Current.OnInstanceStarted += _uiRoot.LibretroInstanceStartedCallback;
@@ -92,7 +92,7 @@ namespace SK.Libretro.Examples
             _loadStateButton.onClick.AddListener(() => _uiRoot.Libretro.Current.LoadState());
             _saveSRAMButton.onClick.AddListener(() => _uiRoot.Libretro.Current.SaveSRAM());
             _loadSRAMButton.onClick.AddListener(() => _uiRoot.Libretro.Current.LoadSRAM());
-            _diskIndexMenuEntry.NumImages = _uiRoot.Libretro.Current != null ? _uiRoot.Libretro.Current.GameNames.Length : 1;
+            _diskIndexMenuEntry.NumImages = _uiRoot.Libretro.Current ? _uiRoot.Libretro.Current.GameNames.Length : 1;
             _replaceDiskButton.onClick.AddListener(() => _uiRoot.Libretro.Current.SetDiskIndex(_diskIndexMenuEntry.CurrentImageIndex));
             _toggleFastForwardToggle.onValueChanged.AddListener((enabled) => _uiRoot.Libretro.Current.FastForward = enabled);
             _toggleRewindToggle.onValueChanged.AddListener((enabled) => _uiRoot.Libretro.Current.Settings.RewindEnabled = enabled);
@@ -126,7 +126,7 @@ namespace SK.Libretro.Examples
 
         private void OnDisable()
         {
-            bool validInstance = _uiRoot.Libretro.Current != null;
+            bool validInstance = _uiRoot.Libretro.Current;
             if (validInstance)
             {
                 _uiRoot.Libretro.Current.OnInstanceStarted -= _uiRoot.LibretroInstanceStartedCallback;

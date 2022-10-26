@@ -3,7 +3,8 @@
     "rootNamespace": "SK.Libretro.Examples.Editor",
     "references": [
         "GUID:75469ad4d38634e559750d17036d5f7c",
-        "GUID:142c1569b5477f54bb5102277266ef6c"
+        "GUID:142c1569b5477f54bb5102277266ef6c",
+        "GUID:400dc1aee615d994fac34ce04fbb49af"
     ],
     "includePlatforms": [
         "Editor"

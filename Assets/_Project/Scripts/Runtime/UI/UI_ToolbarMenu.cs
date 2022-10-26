@@ -20,16 +20,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using SK.Libretro.Unity;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace SK.Libretro.Examples
 {
-    [DefaultExecutionOrder(-1)]
-    public sealed class SingleInstanceManager : MonoBehaviour
+    [DisallowMultipleComponent]
+    public sealed class UI_ToolbarMenu : MonoBehaviour, IPointerExitHandler
     {
-        [SerializeField] private LibretroInstanceVariable _libretroInstanceVariable;
+        public void SetVisible(bool visible) => gameObject.SetActive(visible);
 
-        private void Awake() => _libretroInstanceVariable.Current = GetComponent<LibretroInstance>();
+        public void OnPointerExit(PointerEventData eventData) => SetVisible(false);
     }
 }

@@ -34,7 +34,7 @@ namespace SK.Libretro.Examples.Editor
     /// picking the binding which to rebind.
     /// </summary>
     [CustomEditor(typeof(RebindActionUI))]
-    public sealed class RebindActionUIEditor : UnityEditor.Editor
+    internal sealed class RebindActionUIEditor : UnityEditor.Editor
     {
         private static class Styles
         {

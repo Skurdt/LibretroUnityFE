@@ -20,16 +20,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using SK.Libretro.Unity;
 using UnityEngine;
 
 namespace SK.Libretro.Examples
 {
-    [DefaultExecutionOrder(-1)]
-    public sealed class SingleInstanceManager : MonoBehaviour
+    public sealed class UI_ToolbarStateDecreaseSlotButton : MonoBehaviour
     {
-        [SerializeField] private LibretroInstanceVariable _libretroInstanceVariable;
+        //private UI_ToolbarMenu _menu;
+        //private Button _button;
+        //private UI_ToolbarStateSlotInputField _inputField;
+        //private LibretroInstanceVariable _libretro;
 
-        private void Awake() => _libretroInstanceVariable.Current = GetComponent<LibretroInstance>();
+        //private void Awake()
+        //{
+        //    _menu       = transform.parent.GetComponentInParent<UI_ToolbarMenu>(true);
+        //    _button     = GetComponent<Button>();
+        //    _inputField = transform.parent.GetComponentInChildren<UI_ToolbarStateSlotInputField>();
+        //    _libretro   = _menu.ToolbarButton.Toolbar.Root.Libretro;
+        //}
+
+        //private void OnEnable() => _button.onClick.AddListener(() => _inputField.DecreaseStateSlot());
+
+        //private void OnDisable() => _button.onClick.RemoveAllListeners();
     }
 }

@@ -25,7 +25,6 @@ using UnityEngine;
 
 namespace SK.Libretro.Examples
 {
-    [DefaultExecutionOrder(-1)]
     [DisallowMultipleComponent]
     public sealed class UIRoot : MonoBehaviour
     {

@@ -13,12 +13,10 @@ namespace SK.Libretro.Examples
         [SerializeField] private TMP_Text _saveStateButtonText;
         [SerializeField] private TMP_Text _loadStateButtonText;
 
-        public event System.Action<int> OnStateSlotChanged;
+        public int CurrentSlot { get; private set; } = MIN_SLOT;
 
         private const int MIN_SLOT = 0;
         private const int MAX_SLOT = 9999;
-
-        private int _currentSlot = MIN_SLOT;
 
         private void Awake()
         {
@@ -45,25 +43,24 @@ namespace SK.Libretro.Examples
             if (string.IsNullOrEmpty(value) || !int.TryParse(value, out int intValue))
                 intValue = MIN_SLOT;
 
-            _currentSlot = intValue;
-            _currentSlot = Mathf.Clamp(_currentSlot, MIN_SLOT, MAX_SLOT);
-            _saveStateButtonText.SetText($"Save State ({_currentSlot})");
-            _loadStateButtonText.SetText($"Load State ({_currentSlot})");
-            OnStateSlotChanged?.Invoke(_currentSlot);
+            CurrentSlot = intValue;
+            CurrentSlot = Mathf.Clamp(CurrentSlot, MIN_SLOT, MAX_SLOT);
+            _saveStateButtonText.SetText($"Save State ({CurrentSlot})");
+            _loadStateButtonText.SetText($"Load State ({CurrentSlot})");
         }
 
         private void OnDecreaseButtonClicked()
         {
-            --_currentSlot;
-            _currentSlot = Mathf.Max(MIN_SLOT, _currentSlot);
-            _stateSlotInputField.text = _currentSlot.ToString();
+            --CurrentSlot;
+            CurrentSlot = Mathf.Max(MIN_SLOT, CurrentSlot);
+            _stateSlotInputField.text = CurrentSlot.ToString();
         }
 
         private void OnIncreaseButtonClicked()
         {
-            ++_currentSlot;
-            _currentSlot = Mathf.Min(_currentSlot, MAX_SLOT);
-            _stateSlotInputField.text = _currentSlot.ToString();
+            ++CurrentSlot;
+            CurrentSlot = Mathf.Min(CurrentSlot, MAX_SLOT);
+            _stateSlotInputField.text = CurrentSlot.ToString();
         }
     }
 }

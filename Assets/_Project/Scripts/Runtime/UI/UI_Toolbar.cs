@@ -20,16 +20,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using SK.Libretro.Unity;
 using UnityEngine;
 
 namespace SK.Libretro.Examples
 {
-    [DefaultExecutionOrder(-1)]
-    public sealed class SingleInstanceManager : MonoBehaviour
+    [DisallowMultipleComponent]
+    public sealed class UI_Toolbar : MonoBehaviour
     {
-        [SerializeField] private LibretroInstanceVariable _libretroInstanceVariable;
-
-        private void Awake() => _libretroInstanceVariable.Current = GetComponent<LibretroInstance>();
+        public void SetVisible(bool visible) => gameObject.SetActive(visible);
     }
 }

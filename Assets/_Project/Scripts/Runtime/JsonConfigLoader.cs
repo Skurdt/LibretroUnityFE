@@ -73,7 +73,7 @@ namespace SK.Libretro.Examples
             if (libretroInstances.Count == 0)
                 return;
 
-            if (!File.Exists(_configFilePath))
+            if (!FileSystem.FileExists(_configFilePath))
                 return;
 
             string json = File.ReadAllText(_configFilePath);
@@ -81,7 +81,7 @@ namespace SK.Libretro.Examples
                 return;
 
             ConfigFileContentList contentList = JsonUtility.FromJson<ConfigFileContentList>(json);
-            if (contentList == null || contentList.Entries == null || contentList.Entries.Count == 0)
+            if (contentList is null || contentList.Entries is null || contentList.Entries.Count == 0)
                 return;
 
             for (int i = 0; i < libretroInstances.Count; ++i)
@@ -107,7 +107,7 @@ namespace SK.Libretro.Examples
                 return;
 
             ConfigFileContentList contentList = new();
-            if (File.Exists(_configFilePath))
+            if (FileSystem.FileExists(_configFilePath))
             {
                 string loadedJson = File.ReadAllText(_configFilePath);
                 if (!string.IsNullOrEmpty(loadedJson))

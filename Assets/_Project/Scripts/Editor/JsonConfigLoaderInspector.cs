@@ -28,7 +28,7 @@ using UnityEngine.SceneManagement;
 namespace SK.Libretro.Examples.Editor
 {
     [CustomEditor(typeof(JsonConfigLoader))]
-    public sealed class JsonConfigLoaderInspector : UnityEditor.Editor
+    internal sealed class JsonConfigLoaderInspector : UnityEditor.Editor
     {
         private JsonConfigLoader _jsonConfigLoader;
         private SerializedProperty _instancesParentProperty;
