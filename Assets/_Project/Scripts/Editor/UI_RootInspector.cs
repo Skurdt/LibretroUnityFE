@@ -29,40 +29,7 @@ namespace SK.Libretro.Examples.Editor
     [CustomEditor(typeof(UI_Root))]
     internal sealed class UI_RootInspector : UnityEditor.Editor
     {
-        private SerializedProperty _libretroInstanceVariableProperty;
-        private SerializedProperty _toolbarProperty;
-        private SerializedProperty _gameButtonProperty;
-        private SerializedProperty _gameMenuProperty;
-        private SerializedProperty _gameStartButtonProperty;
-        private SerializedProperty _gameResetButtonProperty;
-        private SerializedProperty _gameStopButtonProperty;
-        private SerializedProperty _stateButtonProperty;
-        private SerializedProperty _stateMenuProperty;
-        private SerializedProperty _stateSaveButtonProperty;
-        private SerializedProperty _stateLoadButtonProperty;
-
         public override VisualElement CreateInspectorGUI()
-        {
-            GetProperties();
-            return BuildView();
-        }
-
-        private void GetProperties()
-        {
-            _libretroInstanceVariableProperty = serializedObject.FindProperty($"<{nameof(UI_Root.Libretro)}>k__BackingField");
-            _toolbarProperty                  = serializedObject.FindProperty($"<{nameof(UI_Root.Toolbar)}>k__BackingField");
-            _gameButtonProperty               = serializedObject.FindProperty($"<{nameof(UI_Root.GameButton)}>k__BackingField");
-            _gameMenuProperty                 = serializedObject.FindProperty($"<{nameof(UI_Root.GameMenu)}>k__BackingField");
-            _gameStartButtonProperty          = serializedObject.FindProperty($"<{nameof(UI_Root.GameStartButton)}>k__BackingField");
-            _gameResetButtonProperty          = serializedObject.FindProperty($"<{nameof(UI_Root.GameResetButton)}>k__BackingField");
-            _gameStopButtonProperty           = serializedObject.FindProperty($"<{nameof(UI_Root.GameStopButton)}>k__BackingField");
-            _stateButtonProperty              = serializedObject.FindProperty($"<{nameof(UI_Root.StateButton)}>k__BackingField");
-            _stateMenuProperty                = serializedObject.FindProperty($"<{nameof(UI_Root.StateMenu)}>k__BackingField");
-            _stateSaveButtonProperty          = serializedObject.FindProperty($"<{nameof(UI_Root.StateSaveButton)}>k__BackingField");
-            _stateLoadButtonProperty          = serializedObject.FindProperty($"<{nameof(UI_Root.StateLoadButton)}>k__BackingField");
-        }
-
-        private VisualElement BuildView()
         {
             VisualElement root = new();
 
@@ -70,33 +37,28 @@ namespace SK.Libretro.Examples.Editor
             scriptPropertyField.SetEnabled(false);
             root.Add(scriptPropertyField);
 
-            root.Add(new PropertyField(_libretroInstanceVariableProperty));
+            root.Add(new PropertyField(serializedObject.FindProperty("_libretro")));
 
             VisualElement toolbarElement = new();
             root.Add(toolbarElement);
-            toolbarElement.Add(new PropertyField(_toolbarProperty));
+            toolbarElement.Add(new PropertyField(serializedObject.FindProperty("_toolbar")));
 
-            ToolbarAddGameMenu(toolbarElement);
-            ToolbarAddStateMenu(toolbarElement);
+            ToolbarAddMenu("_game", toolbarElement);
+            ToolbarAddMenu("_state", toolbarElement);
+            ToolbarAddMenu("_disk", toolbarElement);
+            ToolbarAddMenu("_memory", toolbarElement);
 
             return root;
         }
 
-        private void ToolbarAddGameMenu(VisualElement toolbar)
+        private void ToolbarAddMenu(string id, VisualElement toolbar)
         {
-            VisualElement button = PaddedPropertyField(_gameButtonProperty, toolbar);
-            VisualElement menu   = PaddedPropertyField(_gameMenuProperty, button);
-            _ = PaddedPropertyField(_gameStartButtonProperty, menu);
-            _ = PaddedPropertyField(_gameResetButtonProperty, menu);
-            _ = PaddedPropertyField(_gameStopButtonProperty, menu);
-        }
-
-        private void ToolbarAddStateMenu(VisualElement toolbar)
-        {
-            VisualElement button = PaddedPropertyField(_stateButtonProperty, toolbar);
-            VisualElement menu   = PaddedPropertyField(_stateMenuProperty, button);
-            _ = PaddedPropertyField(_stateSaveButtonProperty, menu);
-            _ = PaddedPropertyField(_stateLoadButtonProperty, menu);
+            VisualElement button = PaddedPropertyField(serializedObject.FindProperty($"{id}Button"), toolbar);
+            SerializedProperty menuProperty = serializedObject.FindProperty($"{id}Menu");
+            VisualElement menu = PaddedPropertyField(menuProperty, button);
+            while (menuProperty.Next(true))
+                if (menuProperty.name.StartsWith(id))
+                    _ = PaddedPropertyField(menuProperty, menu);
         }
 
         private static VisualElement PaddedPropertyField(SerializedProperty serializedProperty, VisualElement parent)

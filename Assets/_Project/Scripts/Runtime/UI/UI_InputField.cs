@@ -23,45 +23,33 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 namespace SK.Libretro.Examples
 {
-    [DisallowMultipleComponent, RequireComponent(typeof(Button))]
-    public sealed class UI_Button : MonoBehaviour
+    [DisallowMultipleComponent, RequireComponent(typeof(TMP_InputField))]
+    public sealed class UI_InputField : MonoBehaviour
     {
-        public string Text { get => _text.text; set => _text.SetText(value); }
+        public string Text => _inputField.text;
 
-        private Button _button;
-        private TMP_Text _text;
-        private Color _textColor;
+        private TMP_InputField _inputField;
 
-        public void Construct(bool visible, bool interactable, UnityAction callback)
+        public void Construct(bool visible, UnityAction<string> callback)
         {
-            _button    = GetComponent<Button>();
-            _text      = GetComponentInChildren<TMP_Text>();
-            _textColor = _text.color;
+            _inputField = GetComponentInChildren<TMP_InputField>();
 
             SetVisible(visible);
-            SetInteractable(interactable);
             SetCallback(callback);
         }
 
-        public void SetCallback(UnityAction action)
+        public void SetCallback(UnityAction<string> action)
         {
             if (action is null)
                 return;
 
-            _button.onClick.RemoveAllListeners();
-            _button.onClick.AddListener(action);
+            _inputField.onValueChanged.RemoveAllListeners();
+            _inputField.onValueChanged.AddListener(action);
         }
 
         public void SetVisible(bool visible) => gameObject.SetActive(visible);
-
-        public void SetInteractable(bool interactable)
-        {
-            _button.interactable = interactable;
-            _text.color          = interactable ? _textColor : _text.color * 0.5f;
-        }
     }
 }

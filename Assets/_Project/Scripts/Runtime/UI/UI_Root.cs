@@ -21,6 +21,7 @@
  * SOFTWARE. */
 
 using SK.Libretro.Unity;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace SK.Libretro.Examples
@@ -28,74 +29,98 @@ namespace SK.Libretro.Examples
     [DisallowMultipleComponent, DefaultExecutionOrder(1000)]
     public sealed class UI_Root : MonoBehaviour
     {
-        [field: SerializeField] public LibretroInstanceVariable Libretro { get; private set; }
-        [field: SerializeField] public UI_Toolbar Toolbar                { get; private set; }
-        [field: SerializeField] public UI_Button GameButton              { get; private set; }
-        [field: SerializeField] public UI_ToolbarMenu GameMenu           { get; private set; }
-        [field: SerializeField] public UI_Button GameStartButton         { get; private set; }
-        [field: SerializeField] public UI_Button GameResetButton         { get; private set; }
-        [field: SerializeField] public UI_Button GameStopButton          { get; private set; }
-        [field: SerializeField] public UI_Button StateButton             { get; private set; }
-        [field: SerializeField] public UI_ToolbarMenu StateMenu          { get; private set; }
-        [field: SerializeField] public UI_Button StateSaveButton         { get; private set; }
-        [field: SerializeField] public UI_Button StateLoadButton         { get; private set; }
+        [SerializeField] private LibretroInstanceVariable _libretro;
+        [SerializeField] private UI_Toolbar _toolbar;
+        [SerializeField] private UI_Button _gameButton;
+        [SerializeField] private UI_ToolbarMenu _gameMenu;
+        [SerializeField] private UI_Button _gameStartButton;
+        [SerializeField] private UI_Button _gameResetButton;
+        [SerializeField] private UI_Button _gameStopButton;
+        [SerializeField] private UI_Button _stateButton;
+        [SerializeField] private UI_ToolbarMenu _stateMenu;
+        [SerializeField] private UI_Button _stateDecreaseSlotButton;
+        [SerializeField] private UI_Button _stateIncreaseSlotButton;
+        [SerializeField] private UI_Button _stateSaveButton;
+        [SerializeField] private UI_Button _stateLoadButton;
+        [SerializeField] private UI_Button _diskButton;
+        [SerializeField] private UI_ToolbarMenu _diskMenu;
+        [SerializeField] private UI_Button _diskDecreaseIndexButton;
+        [SerializeField] private UI_Button _diskIncreaseIndexButton;
+        [SerializeField] private UI_Button _diskReplaceButton;
+        [SerializeField] private UI_Button _memoryButton;
+        [SerializeField] private UI_ToolbarMenu _memoryMenu;
+        [SerializeField] private UI_Button _memorySaveSRAMButton;
+        [SerializeField] private UI_Button _memoryLoadSRAMButton;
+
+        private int _stateSlot;
+        private int _diskIndex;
 
         private void OnEnable()
         {
-            Libretro.OnInstanceChanged += LibretroInstanceChangedCallback;
-            LibretroInstanceChangedCallback(Libretro.Current);
+            _libretro.OnInstanceChanged += LibretroInstanceChangedCallback;
+            LibretroInstanceChangedCallback(_libretro.Current);
 
-            Toolbar.SetVisible(true);
+            _toolbar.SetVisible(true);
 
-            GameButton.Construct(true, true, () => GameMenu.SetVisible(true));
-            GameMenu.SetVisible(false);
-            GameStartButton.Construct(true, true, () => Libretro.StartContent());
-            GameResetButton.Construct(true, false, () => Libretro.ResetContent());
-            GameStopButton.Construct(true, false, () => Libretro.StopContent());
+            _gameButton.Construct(true, true, () => _gameMenu.SetVisible(true));
+            _gameMenu.SetVisible(false);
+            _gameStartButton.Construct(true, true, () => _libretro.StartContent());
+            _gameResetButton.Construct(true, false, () => _libretro.ResetContent());
+            _gameStopButton.Construct(true, false, () => _libretro.StopContent());
 
-            StateButton.Construct(true, false, () => StateMenu.SetVisible(true));
-            StateMenu.SetVisible(false);
-            StateSaveButton.Construct(true, true, null);
-            StateLoadButton.Construct(true, true, null);
+            _stateButton.Construct(true, false, () => _stateMenu.SetVisible(true));
+            _stateMenu.SetVisible(false);
+            _stateDecreaseSlotButton.Construct(true, false, () =>
+            {
+                _stateSlot = math.max(0, --_stateSlot);
+                _stateSaveButton.Text = $"Save ({_stateSlot})";
+                _stateLoadButton.Text = $"Load ({_stateSlot})";
+                _stateDecreaseSlotButton.SetInteractable(_stateSlot > 0);
+                _stateIncreaseSlotButton.SetInteractable(_stateSlot < 999999);
+            });
+            _stateIncreaseSlotButton.Construct(true, true, () =>
+            {
+                _stateSlot = math.min(++_stateSlot, 999999);
+                _stateSaveButton.Text = $"Save ({_stateSlot})";
+                _stateLoadButton.Text = $"Load ({_stateSlot})";
+                _stateDecreaseSlotButton.SetInteractable(_stateSlot > 0);
+                _stateIncreaseSlotButton.SetInteractable(_stateSlot < 999999);
+            });
+            _stateSaveButton.Construct(true, true, () => _libretro.SaveState(_stateSlot));
+            _stateLoadButton.Construct(true, true, () => _libretro.LoadState(_stateSlot));
+
+            _diskButton.Construct(true, false, () => _diskMenu.SetVisible(true));
+            _diskMenu.SetVisible(false);
+            _diskDecreaseIndexButton.Construct(true, false, () =>
+            {
+                _diskIndex = math.max(0, --_diskIndex);
+                _diskReplaceButton.Text = $"Replace ({_diskIndex})";
+                _diskDecreaseIndexButton.SetInteractable(_diskIndex > 0);
+                _diskIncreaseIndexButton.SetInteractable(_diskIndex < 999999);
+            });
+            _diskIncreaseIndexButton.Construct(true, true, () =>
+            {
+                _diskIndex = math.min(++_diskIndex, 999999);
+                _diskReplaceButton.Text = $"Replace ({_diskIndex})";
+                _diskDecreaseIndexButton.SetInteractable(_diskIndex > 0);
+                _diskIncreaseIndexButton.SetInteractable(_diskIndex < 999999);
+            });
+            _diskReplaceButton.Construct(true, true, () => _libretro.SetDiskIndex(_diskIndex));
+
+            _memoryButton.Construct(true, false, () => _memoryMenu.SetVisible(true));
+            _memoryMenu.SetVisible(false);
+            _memorySaveSRAMButton.Construct(true, true, () => _libretro.SaveSRAM());
+            _memoryLoadSRAMButton.Construct(true, true, () => _libretro.LoadSRAM());
         }
 
         private void OnDisable()
         {
-            Libretro.OnInstanceChanged -= LibretroInstanceChangedCallback;
-            if (Libretro.Current != null)
+            _libretro.OnInstanceChanged -= LibretroInstanceChangedCallback;
+            if (_libretro.Current != null)
             {
-                Libretro.Current.OnInstanceStarted -= LibretronInstanceStartedCallback;
-                Libretro.Current.OnInstanceStopped -= LibretronInstanceStoppedCallback;
+                _libretro.Current.OnInstanceStarted -= LibretronInstanceStartedCallback;
+                _libretro.Current.OnInstanceStopped -= LibretronInstanceStoppedCallback;
             }
-        }
-
-        private void LibretronInstanceStartedCallback()
-        {
-            GameStartButton.SetText("Pause");
-            GameStartButton.SetCallback(() =>
-            {
-                Libretro.PauseContent();
-                GameStartButton.SetText("Resume");
-                GameStartButton.SetCallback(() =>
-                {
-                    Libretro.ResumeContent();
-                    GameStartButton.SetText("Pause");
-                });
-            });
-
-            GameStopButton.SetInteractable(true);
-
-            StateButton.SetInteractable(true);
-        }
-
-        private void LibretronInstanceStoppedCallback()
-        {
-            GameStartButton.SetText("Start");
-            GameStartButton.SetCallback(() => Libretro.StartContent());
-
-            GameStopButton.SetInteractable(false);
-
-            StateButton.SetInteractable(false);
         }
 
         private void LibretroInstanceChangedCallback(LibretroInstance libretroInstance)
@@ -107,6 +132,39 @@ namespace SK.Libretro.Examples
             libretroInstance.OnInstanceStarted += LibretronInstanceStartedCallback;
             libretroInstance.OnInstanceStopped -= LibretronInstanceStoppedCallback;
             libretroInstance.OnInstanceStopped += LibretronInstanceStoppedCallback;
+        }
+
+        private void LibretronInstanceStartedCallback()
+        {
+            _gameStartButton.Text = "Pause";
+            _gameStartButton.SetCallback(() =>
+            {
+                _libretro.PauseContent();
+                _gameStartButton.Text = "Resume";
+                _gameStartButton.SetCallback(() =>
+                {
+                    _libretro.ResumeContent();
+                    _gameStartButton.Text = "Pause";
+                });
+            });
+
+            _gameStopButton.SetInteractable(true);
+
+            _stateButton.SetInteractable(true);
+            _diskButton.SetInteractable(true);
+            _memoryButton.SetInteractable(true);
+        }
+
+        private void LibretronInstanceStoppedCallback()
+        {
+            _gameStartButton.Text = "Start";
+            _gameStartButton.SetCallback(() => _libretro.StartContent());
+
+            _gameStopButton.SetInteractable(false);
+
+            _stateButton.SetInteractable(false);
+            _diskButton.SetInteractable(false);
+            _memoryButton.SetInteractable(false);
         }
     }
 }
