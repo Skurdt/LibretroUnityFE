@@ -60,8 +60,11 @@ namespace SK.Libretro.Examples
 
         public void SetInteractable(bool interactable)
         {
-            _button.interactable = interactable;
-            _text.color          = interactable ? _textColor : _text.color * 0.5f;
+            if (_button)
+                _button.interactable = interactable;
+
+            if (_text)
+                _text.color = interactable ? _textColor : _text.color * 0.5f;
         }
     }
 }
