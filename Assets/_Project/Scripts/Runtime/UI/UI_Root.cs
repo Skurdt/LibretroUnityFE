@@ -60,16 +60,16 @@ namespace SK.Libretro.Examples
             _libretro.OnInstanceChanged += LibretroInstanceChangedCallback;
             LibretroInstanceChangedCallback(_libretro.Current);
 
-            _toolbar.SetVisible(true);
+            _toolbar.Construct(true, _libretro);
 
             _gameButton.Construct(true, true, () => _gameMenu.SetVisible(true));
-            _gameMenu.SetVisible(false);
+            _gameMenu.Construct(false, _libretro);
             _gameStartButton.Construct(true, true, () => _libretro.StartContent());
             _gameResetButton.Construct(true, false, () => _libretro.ResetContent());
             _gameStopButton.Construct(true, false, () => _libretro.StopContent());
 
             _stateButton.Construct(true, false, () => _stateMenu.SetVisible(true));
-            _stateMenu.SetVisible(false);
+            _stateMenu.Construct(false, _libretro);
             _stateDecreaseSlotButton.Construct(true, false, () =>
             {
                 _stateSlot = math.max(0, --_stateSlot);
@@ -90,7 +90,7 @@ namespace SK.Libretro.Examples
             _stateLoadButton.Construct(true, true, () => _libretro.LoadState(_stateSlot));
 
             _diskButton.Construct(true, false, () => _diskMenu.SetVisible(true));
-            _diskMenu.SetVisible(false);
+            _diskMenu.Construct(false, _libretro);
             _diskDecreaseIndexButton.Construct(true, false, () =>
             {
                 _diskIndex = math.max(0, --_diskIndex);
@@ -108,7 +108,7 @@ namespace SK.Libretro.Examples
             _diskReplaceButton.Construct(true, true, () => _libretro.SetDiskIndex(_diskIndex));
 
             _memoryButton.Construct(true, false, () => _memoryMenu.SetVisible(true));
-            _memoryMenu.SetVisible(false);
+            _memoryMenu.Construct(false, _libretro);
             _memorySaveSRAMButton.Construct(true, true, () => _libretro.SaveSRAM());
             _memoryLoadSRAMButton.Construct(true, true, () => _libretro.LoadSRAM());
         }
@@ -116,7 +116,7 @@ namespace SK.Libretro.Examples
         private void OnDisable()
         {
             _libretro.OnInstanceChanged -= LibretroInstanceChangedCallback;
-            if (_libretro.Current != null)
+            if (_libretro.Current)
             {
                 _libretro.Current.OnInstanceStarted -= LibretronInstanceStartedCallback;
                 _libretro.Current.OnInstanceStopped -= LibretronInstanceStoppedCallback;
@@ -125,7 +125,7 @@ namespace SK.Libretro.Examples
 
         private void LibretroInstanceChangedCallback(LibretroInstance libretroInstance)
         {
-            if (libretroInstance == null)
+            if (!libretroInstance)
                 return;
 
             libretroInstance.OnInstanceStarted -= LibretronInstanceStartedCallback;

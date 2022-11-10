@@ -1827,7 +1827,7 @@ MonoBehaviour:
   <CoreName>k__BackingField: mame2003_plus
   <GamesDirectory>k__BackingField: D:/__Roms/mame2003-plus
   <GameNames>k__BackingField:
-  - outrun
+  - ssf2
 --- !u!114 &662265716
 MonoBehaviour:
   m_ObjectHideFlags: 0
