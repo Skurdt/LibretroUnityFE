@@ -151,7 +151,7 @@ namespace SK.Libretro.Examples
             _gameStopButton.SetInteractable(true);
 
             _stateButton.SetInteractable(true);
-            _diskButton.SetInteractable(true);
+            _diskButton.SetInteractable(_libretro.DiskHandlerEnabled);
             _memoryButton.SetInteractable(true);
         }
 
