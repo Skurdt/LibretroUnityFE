@@ -24,6 +24,7 @@ using UnityEngine;
 
 namespace SK.Libretro.Examples
 {
+    [DisallowMultipleComponent]
     public sealed class Crosshair : MonoBehaviour
     {
         [SerializeField] private Texture2D _texture;

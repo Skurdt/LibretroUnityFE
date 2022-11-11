@@ -51,6 +51,8 @@ namespace SK.Libretro.Examples
         [SerializeField] private UI_ToolbarMenu _memoryMenu;
         [SerializeField] private UI_Button _memorySaveSRAMButton;
         [SerializeField] private UI_Button _memoryLoadSRAMButton;
+        [SerializeField] private UI_Button _coreOptionsButton;
+        [SerializeField] private UI_CoreOptionsMenu _coreOptionsMenu;
 
         private int _stateSlot;
         private int _diskIndex;
@@ -111,6 +113,9 @@ namespace SK.Libretro.Examples
             _memoryMenu.Construct(false, _libretro);
             _memorySaveSRAMButton.Construct(true, true, () => _libretro.SaveSRAM());
             _memoryLoadSRAMButton.Construct(true, true, () => _libretro.LoadSRAM());
+
+            _coreOptionsMenu.Construct(_libretro);
+            _coreOptionsButton.Construct(true, false, () => _coreOptionsMenu.SetVisible(true));
         }
 
         private void OnDisable()
@@ -153,6 +158,7 @@ namespace SK.Libretro.Examples
             _stateButton.SetInteractable(true);
             _diskButton.SetInteractable(_libretro.DiskHandlerEnabled);
             _memoryButton.SetInteractable(true);
+            _coreOptionsButton.SetInteractable(true);
         }
 
         private void LibretronInstanceStoppedCallback()
@@ -165,6 +171,7 @@ namespace SK.Libretro.Examples
             _stateButton.SetInteractable(false);
             _diskButton.SetInteractable(false);
             _memoryButton.SetInteractable(false);
+            _coreOptionsButton.SetInteractable(false);
         }
     }
 }

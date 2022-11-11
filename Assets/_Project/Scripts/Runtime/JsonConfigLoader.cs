@@ -29,7 +29,7 @@ using UnityEngine;
 
 namespace SK.Libretro.Examples
 {
-    [ExecuteAlways, DefaultExecutionOrder(-3)]
+    [ExecuteAlways, DisallowMultipleComponent, DefaultExecutionOrder(-3)]
     public sealed class JsonConfigLoader : MonoBehaviour
     {
         public Transform InstancesParent;

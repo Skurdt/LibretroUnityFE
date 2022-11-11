@@ -25,7 +25,7 @@ using UnityEngine;
 
 namespace SK.Libretro.Examples
 {
-    [DefaultExecutionOrder(-1)]
+    [DisallowMultipleComponent, DefaultExecutionOrder(-1)]
     public sealed class SingleInstanceManager : MonoBehaviour
     {
         [SerializeField] private LibretroInstanceVariable _libretroInstanceVariable;

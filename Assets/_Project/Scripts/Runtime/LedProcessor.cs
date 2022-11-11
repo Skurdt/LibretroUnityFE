@@ -20,27 +20,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+using SK.Libretro.Unity;
+using System.Collections.Concurrent;
 using UnityEngine;
 
 namespace SK.Libretro.Examples
 {
-    public sealed class UI_ToolbarStateIncreaseSlotButton : MonoBehaviour
+    public sealed class LedProcessor : LedProcessorBase
     {
-        //private UI_ToolbarMenu _menu;
-        //private Button _button;
-        //private UI_ToolbarStateSlotInputField _inputField;
-        //private LibretroInstanceVariable _libretro;
+        [SerializeField] private LedObject _ledObjectPrefab;
 
-        //private void Awake()
-        //{
-        //    _menu       = transform.parent.GetComponentInParent<UI_ToolbarMenu>(true);
-        //    _button     = GetComponent<Button>();
-        //    _inputField = transform.parent.GetComponentInChildren<UI_ToolbarStateSlotInputField>();
-        //    _libretro   = _menu.ToolbarButton.Toolbar.Root.Libretro;
-        //}
+        private readonly ConcurrentDictionary<int, LedObject> _ledDictionary = new();
 
-        //private void OnEnable() => _button.onClick.AddListener(() => _inputField.IncreaseStateSlot());
+        protected override void OnSetState(int led, int state)
+        {
+            if (!_ledObjectPrefab)
+                return;
 
-        //private void OnDisable() => _button.onClick.RemoveAllListeners();
+            if (!_ledDictionary.TryGetValue(led, out LedObject ledObject))
+            {
+                ledObject = Instantiate(_ledObjectPrefab, transform);
+                ledObject.name = $"Led_{led:00}";
+                _ = _ledDictionary.TryAdd(led, ledObject);
+            }
+
+            ledObject.SetState(state != 0);
+        }
     }
 }

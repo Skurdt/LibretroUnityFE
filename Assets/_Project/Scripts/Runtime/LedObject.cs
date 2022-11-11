@@ -21,26 +21,17 @@
  * SOFTWARE. */
 
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace SK.Libretro.Examples
 {
-    public sealed class UI_ToolbarStateDecreaseSlotButton : MonoBehaviour
+    [DisallowMultipleComponent]
+    public sealed class LedObject : MonoBehaviour
     {
-        //private UI_ToolbarMenu _menu;
-        //private Button _button;
-        //private UI_ToolbarStateSlotInputField _inputField;
-        //private LibretroInstanceVariable _libretro;
+        [SerializeField] private MaskableGraphic _graphics;
+        [SerializeField] private Color _onColor  = Color.red;
+        [SerializeField] private Color _offColor = Color.black;
 
-        //private void Awake()
-        //{
-        //    _menu       = transform.parent.GetComponentInParent<UI_ToolbarMenu>(true);
-        //    _button     = GetComponent<Button>();
-        //    _inputField = transform.parent.GetComponentInChildren<UI_ToolbarStateSlotInputField>();
-        //    _libretro   = _menu.ToolbarButton.Toolbar.Root.Libretro;
-        //}
-
-        //private void OnEnable() => _button.onClick.AddListener(() => _inputField.DecreaseStateSlot());
-
-        //private void OnDisable() => _button.onClick.RemoveAllListeners();
+        public void SetState(bool on) => _graphics.color = on ? _onColor : _offColor;
     }
 }

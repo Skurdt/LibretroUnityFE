@@ -20,43 +20,57 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+using SK.Libretro.Unity;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace SK.Libretro.Examples
 {
     [DisallowMultipleComponent]
-    public sealed class UICoreOptions : MonoBehaviour
+    public sealed class UI_CoreOptionsMenu : MonoBehaviour
     {
-        [SerializeField] private UIRoot _uiRoot;
-        [SerializeField] private InputActionAsset _inputActions;
+        [SerializeField] private Button _closeButton;
         [SerializeField] private RectTransform _listContent;
         [SerializeField] private UICoreOptionDropdown _dropdownTemplatePrefab;
 
         private readonly List<GameObject> _instantiatedObjects = new();
 
+        private LibretroInstanceVariable _libretro;
+
         private void OnEnable()
         {
-            _inputActions.Disable();
             GenerateOptionsList();
+            _closeButton.onClick.RemoveAllListeners();
+            _closeButton.onClick.AddListener(() => SetVisible(false));
         }
 
         private void OnDisable()
         {
-            _inputActions.Enable();
+            ClearOptionsList();
+            _closeButton.onClick.RemoveAllListeners();
+        }
 
-            for (int i = _instantiatedObjects.Count - 1; i >= 0; --i)
-                Destroy(_instantiatedObjects[i]);
+        public void Construct(LibretroInstanceVariable libretro)
+        {
+            _libretro = libretro;
+            SetVisible(false);
+        }
 
-            _instantiatedObjects.Clear();
+        public void SetVisible(bool visible)
+        {
+            gameObject.SetActive(visible);
+            _libretro.SetInputEnabled(!visible);
         }
 
         private void GenerateOptionsList()
         {
-            _instantiatedObjects.Clear();
+            ClearOptionsList();
 
-            string coreName = _uiRoot.Libretro.Current.CoreName;
+            if (!_libretro.Current)
+                return;
+
+            string coreName = _libretro.Current.CoreName;
             if (!CoreInstances.Instance.Contains(coreName))
                 return;
 
@@ -67,11 +81,19 @@ namespace SK.Libretro.Examples
             {
                 if (!coreOption.Visible)
                     continue;
+
                 UICoreOptionDropdown optionInstance = Instantiate(_dropdownTemplatePrefab, _listContent);
                 optionInstance.Init(coreName, coreOption, gameOptions?[optionIndex]?.CurrentValue);
                 _instantiatedObjects.Add(optionInstance.gameObject);
                 ++optionIndex;
             }
+        }
+
+        private void ClearOptionsList()
+        {
+            for (int i = _instantiatedObjects.Count - 1; i >= 0; --i)
+                Destroy(_instantiatedObjects[i]);
+            _instantiatedObjects.Clear();
         }
     }
 }
