@@ -141,6 +141,8 @@ Temporary Items
 #idea
 .idea
 
+CodeCoverage/
+
 .vsconfig
 
 CAPSImg.dll
