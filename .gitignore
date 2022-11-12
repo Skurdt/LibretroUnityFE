@@ -147,3 +147,4 @@ CodeCoverage/
 
 CAPSImg.dll
 .atari800.cfg
+ProjectSettings/Packages/com.unity.testtools.codecoverage/

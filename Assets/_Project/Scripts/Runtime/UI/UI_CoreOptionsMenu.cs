@@ -70,22 +70,16 @@ namespace SK.Libretro.Examples
             if (!_libretro.Current)
                 return;
 
-            string coreName = _libretro.Current.CoreName;
-            if (!CoreInstances.Instance.Contains(coreName))
-                return;
+            (Options coreOptions, Options gameOptions) = _libretro.Current.Options;
 
-            (Options coreOptions, Options gameOptions) = CoreInstances.Instance[coreName];
-
-            int optionIndex = 0;
-            foreach (Option coreOption in coreOptions)
+            for (int i = 0; i < coreOptions.Count; ++i)
             {
-                if (!coreOption.Visible)
+                if (!coreOptions[i].Visible)
                     continue;
 
                 UICoreOptionDropdown optionInstance = Instantiate(_dropdownTemplatePrefab, _listContent);
-                optionInstance.Init(coreName, coreOption, gameOptions?[optionIndex]?.CurrentValue);
+                optionInstance.Init(coreOptions[i], gameOptions?[i]);
                 _instantiatedObjects.Add(optionInstance.gameObject);
-                ++optionIndex;
             }
         }
 

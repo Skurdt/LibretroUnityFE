@@ -20,7 +20,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -32,13 +31,13 @@ namespace SK.Libretro.Examples
         [SerializeField] private TMP_Dropdown _dropdownCore;
         [SerializeField] private TMP_Dropdown _dropdownGame;
 
-        private string _coreName;
         private Option _coreOption;
+        private Option _gameOption;
 
         private void OnEnable()
         {
-            _dropdownCore.onValueChanged.AddListener((index) => CoreInstances.Instance.UpdateCoreOptionValue(_coreName, _coreOption?.Key, index, true));
-            _dropdownGame.onValueChanged.AddListener((index) => CoreInstances.Instance.UpdateCoreOptionValue(_coreName, _coreOption?.Key, index, false));
+            _dropdownCore.onValueChanged.AddListener((index) => _coreOption?.Update(index));
+            _dropdownGame.onValueChanged.AddListener((index) => _gameOption?.Update(index));
         }
 
         private void OnDisable()
@@ -47,31 +46,29 @@ namespace SK.Libretro.Examples
             _dropdownGame.onValueChanged.RemoveAllListeners();
         }
 
-        public void Init(string coreName, Option coreOption, string gameValue)
+        public void Init(Option coreOption, Option gameOption)
         {
-            if (coreOption is null)
-                return;
-
-            _coreName   = coreName;
             _coreOption = coreOption;
+            _gameOption = gameOption;
 
             _dropdownCore.ClearOptions();
             _dropdownGame.ClearOptions();
 
-            _label.SetText(coreOption.Description);
-
-            List<string> optionValues = coreOption.PossibleValues.ToList();
-            _dropdownCore.AddOptions(optionValues);
-            _dropdownGame.AddOptions(optionValues);
-
-            int valueIndex = _dropdownCore.options.FindIndex(x => x.text.Equals(coreOption.CurrentValue, System.StringComparison.OrdinalIgnoreCase));
-            _dropdownCore.SetValueWithoutNotify(valueIndex);
-
-            if (string.IsNullOrWhiteSpace(gameValue))
+            if (coreOption is null)
                 return;
 
-            valueIndex = _dropdownCore.options.FindIndex(x => x.text.Equals(gameValue, System.StringComparison.OrdinalIgnoreCase));
-            _dropdownGame.SetValueWithoutNotify(valueIndex);
+            _label.SetText(coreOption.Description);
+            AddOptions(_dropdownCore, coreOption);
+
+            if (gameOption is not null)
+                AddOptions(_dropdownGame, gameOption);
+        }
+
+        private static void AddOptions(TMP_Dropdown dropdown, Option option)
+        {
+            dropdown.AddOptions(option.PossibleValues.ToList());
+            int valueIndex = dropdown.options.FindIndex(x => x.text.Equals(option.CurrentValue, System.StringComparison.OrdinalIgnoreCase));
+            dropdown.SetValueWithoutNotify(valueIndex);
         }
     }
 }
