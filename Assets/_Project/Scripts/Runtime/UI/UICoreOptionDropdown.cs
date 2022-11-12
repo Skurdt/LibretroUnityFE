@@ -20,6 +20,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+using SK.Libretro.Unity;
+using System;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -31,13 +33,38 @@ namespace SK.Libretro.Examples
         [SerializeField] private TMP_Dropdown _dropdownCore;
         [SerializeField] private TMP_Dropdown _dropdownGame;
 
+        private LibretroInstance _libretro;
         private Option _coreOption;
         private Option _gameOption;
 
         private void OnEnable()
         {
-            _dropdownCore.onValueChanged.AddListener((index) => _coreOption?.Update(index));
-            _dropdownGame.onValueChanged.AddListener((index) => _gameOption?.Update(index));
+            _dropdownCore.onValueChanged.AddListener((index) =>
+            {
+                if (_coreOption is null)
+                    return;
+
+                string previousValue = _coreOption.CurrentValue;
+                _coreOption.Update(index);
+                if (_gameOption is not null && _gameOption.CurrentValue.Equals(previousValue, StringComparison.OrdinalIgnoreCase))
+                {
+                    _dropdownGame.SetValueWithoutNotify(index);
+                    _gameOption.Update(index);
+                }
+
+                if (_libretro)
+                    _libretro.SaveOptions(true);
+            });
+            _dropdownGame.onValueChanged.AddListener((index) =>
+            {
+                if (_gameOption is null)
+                    return;
+
+                _gameOption.Update(index);
+
+                if (_libretro)
+                    _libretro.SaveOptions(false);
+            });
         }
 
         private void OnDisable()
@@ -46,10 +73,12 @@ namespace SK.Libretro.Examples
             _dropdownGame.onValueChanged.RemoveAllListeners();
         }
 
-        public void Init(Option coreOption, Option gameOption)
+        public void Init(LibretroInstance libretro, Option coreOption, Option gameOption)
         {
-            _coreOption = coreOption;
-            _gameOption = gameOption;
+            if (!libretro)
+                return;
+
+            _libretro = libretro;
 
             _dropdownCore.ClearOptions();
             _dropdownGame.ClearOptions();
@@ -57,11 +86,15 @@ namespace SK.Libretro.Examples
             if (coreOption is null)
                 return;
 
+            _coreOption = coreOption;
             _label.SetText(coreOption.Description);
             AddOptions(_dropdownCore, coreOption);
 
-            if (gameOption is not null)
-                AddOptions(_dropdownGame, gameOption);
+            if (gameOption is null)
+                return;
+
+            _gameOption = gameOption;
+            AddOptions(_dropdownGame, gameOption);
         }
 
         private static void AddOptions(TMP_Dropdown dropdown, Option option)

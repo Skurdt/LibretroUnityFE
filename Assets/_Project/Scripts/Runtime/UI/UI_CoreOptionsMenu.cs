@@ -78,7 +78,7 @@ namespace SK.Libretro.Examples
                     continue;
 
                 UICoreOptionDropdown optionInstance = Instantiate(_dropdownTemplatePrefab, _listContent);
-                optionInstance.Init(coreOptions[i], gameOptions?[i]);
+                optionInstance.Init(_libretro.Current, coreOptions[i], gameOptions?[i]);
                 _instantiatedObjects.Add(optionInstance.gameObject);
             }
         }
