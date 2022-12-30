@@ -2,6 +2,8 @@
   "dependencies": {
     "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
     "com.sk.libretro": "https://github.com/Skurdt/SK.Libretro.git",
+    "org.nuget": "https://github.com/badjano/NuGetForUnity.git",
+    "org.kumas.nuget-importer": "https://github.com/kumaS-nu/NuGet-importer-for-Unity.git?path=NuGetImporterForUnity/Packages/NuGet Importer",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.ai.navigation": "1.1.1",
     "com.unity.burst": "1.7.4",

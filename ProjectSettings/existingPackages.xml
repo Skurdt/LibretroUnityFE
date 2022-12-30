@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<packages xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <package id="HtmlAgilityPack" version="0.0.0" allowedVersions="" />
+  <package id="NAudio.Core" version="0.0.0" allowedVersions="" />
+  <package id="NAudio.WinMM" version="0.0.0" allowedVersions="" />
+  <package id="Newtonsoft.Json" version="0.0.0" allowedVersions="" />
+</packages>
