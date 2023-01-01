@@ -9,6 +9,8 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
+/[Aa]ssets/[Pp]ackages/
+/[Nn]uget/
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
@@ -148,3 +150,4 @@ CodeCoverage/
 CAPSImg.dll
 .atari800.cfg
 ProjectSettings/Packages/com.unity.testtools.codecoverage/
+Assets/Packages.meta

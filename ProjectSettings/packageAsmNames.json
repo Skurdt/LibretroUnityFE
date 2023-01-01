@@ -1,0 +1,22 @@
+{
+    "managedList": [
+        {
+            "packageName": "Microsoft.Win32.Registry",
+            "fileNames": [
+                "Microsoft.Win32.Registry"
+            ]
+        },
+        {
+            "packageName": "System.Security.AccessControl",
+            "fileNames": [
+                "System.Security.AccessControl"
+            ]
+        },
+        {
+            "packageName": "System.Security.Principal.Windows",
+            "fileNames": [
+                "System.Security.Principal.Windows"
+            ]
+        }
+    ]
+}
