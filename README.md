@@ -1,7 +1,5 @@
 # LibretroUnityFE
 
-[![Build project](https://github.com/Skurdt/LibretroUnityFE/actions/workflows/main.yml/badge.svg)](https://github.com/Skurdt/LibretroUnityFE/actions/workflows/main.yml)
-
 [Libretro](https://www.libretro.com/) + [Unity](https://unity.com/) + [SK.Libretro](https://github.com/Skurdt/SK.Libretro).
 
 Contains example scenes showing how to use the SK.Libretro package.
