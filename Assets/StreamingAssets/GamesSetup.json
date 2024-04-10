@@ -2,9 +2,9 @@
     "Entries": [
         {
             "CoreName": "mame2003_plus",
-            "GamesDirectory": "D:/__Roms/mame2003-plus",
+            "GamesDirectory": "E:/Roms/mame2003-plus",
             "GameNames": [
-                "outrun"
+                "ssf2"
             ]
         },
         {
