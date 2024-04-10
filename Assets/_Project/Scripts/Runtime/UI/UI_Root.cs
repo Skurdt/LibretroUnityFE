@@ -123,8 +123,8 @@ namespace SK.Libretro.Examples
             _libretro.OnInstanceChanged -= LibretroInstanceChangedCallback;
             if (_libretro.Current)
             {
-                _libretro.Current.OnInstanceStarted -= LibretronInstanceStartedCallback;
-                _libretro.Current.OnInstanceStopped -= LibretronInstanceStoppedCallback;
+                _libretro.Current.OnInstanceStarted -= LibretroInstanceStartedCallback;
+                _libretro.Current.OnInstanceStopped -= LibretroInstanceStoppedCallback;
             }
         }
 
@@ -133,13 +133,13 @@ namespace SK.Libretro.Examples
             if (!libretroInstance)
                 return;
 
-            libretroInstance.OnInstanceStarted -= LibretronInstanceStartedCallback;
-            libretroInstance.OnInstanceStarted += LibretronInstanceStartedCallback;
-            libretroInstance.OnInstanceStopped -= LibretronInstanceStoppedCallback;
-            libretroInstance.OnInstanceStopped += LibretronInstanceStoppedCallback;
+            libretroInstance.OnInstanceStarted -= LibretroInstanceStartedCallback;
+            libretroInstance.OnInstanceStarted += LibretroInstanceStartedCallback;
+            libretroInstance.OnInstanceStopped -= LibretroInstanceStoppedCallback;
+            libretroInstance.OnInstanceStopped += LibretroInstanceStoppedCallback;
         }
 
-        private void LibretronInstanceStartedCallback()
+        private void LibretroInstanceStartedCallback()
         {
             _gameStartButton.Text = "Pause";
             _gameStartButton.SetCallback(() =>
@@ -161,7 +161,7 @@ namespace SK.Libretro.Examples
             _coreOptionsButton.SetInteractable(true);
         }
 
-        private void LibretronInstanceStoppedCallback()
+        private void LibretroInstanceStoppedCallback()
         {
             _gameStartButton.Text = "Start";
             _gameStartButton.SetCallback(() => _libretro.StartContent());
