@@ -28,7 +28,7 @@
 //{
 //    public sealed class BindingsUI : MonoBehaviour
 //    {
-//        private static readonly string _saveDirectory = $"{Application.streamingAssetsPath}/libretro~/bindings";
+//        private static readonly string _saveDirectory = $"{Application.persistentDataPath}/libretro~/bindings";
 //        private static readonly string _savePath      = $"{_saveDirectory}/default.json";
 
 //        protected override void OnShow() => LoadFromDisk();

@@ -62,7 +62,9 @@ namespace SK.Libretro.Examples
             public List<ConfigFileContent> Entries = new();
         }
 
-        private static readonly string _configFilePath = Application.streamingAssetsPath + "/GamesSetup.json";
+        private static string _configFilePath;
+
+        private void Awake() => _configFilePath = Application.persistentDataPath + "/GamesSetup.json";
 
         private void OnEnable() => LoadConfig();
 
@@ -95,6 +97,8 @@ namespace SK.Libretro.Examples
                 }
 
                 ConfigFileContent content = contentList.Entries[i];
+
+                content.GamesDirectory = !content.GamesDirectory.StartsWith(":") ? content.GamesDirectory : $"{Application.persistentDataPath}/libretro~/roms/{content.GamesDirectory[1..]}";               
                 libretroInstance.Initialize(content.CoreName, content.GamesDirectory, content.GameNames.ToArray());
             }
         }
