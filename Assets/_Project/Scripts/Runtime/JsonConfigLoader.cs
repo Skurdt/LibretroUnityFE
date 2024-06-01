@@ -64,12 +64,12 @@ namespace SK.Libretro.Examples
 
         private static string _configFilePath;
 
-        private void Awake() => _configFilePath = Application.persistentDataPath + "/GamesSetup.json";
-
         private void OnEnable() => LoadConfig();
 
         public void LoadConfig()
         {
+            _configFilePath ??= Application.persistentDataPath + "/GamesSetup.json";
+
             Transform instancesParent = InstancesParent != null ? InstancesParent : transform;
             List<LibretroInstance> libretroInstances = GetLibretroInstances(instancesParent);
             if (libretroInstances.Count == 0)
@@ -105,6 +105,8 @@ namespace SK.Libretro.Examples
 
         public void SaveConfig()
         {
+            _configFilePath ??= Application.persistentDataPath + "/GamesSetup.json";
+
             Transform instancesParent = InstancesParent != null ? InstancesParent : transform;
             List<LibretroInstance> libretroInstances = GetLibretroInstances(instancesParent);
             if (libretroInstances.Count == 0)
