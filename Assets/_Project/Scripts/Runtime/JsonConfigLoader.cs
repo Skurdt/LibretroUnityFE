@@ -98,7 +98,7 @@ namespace SK.Libretro.Examples
 
                 ConfigFileContent content = contentList.Entries[i];
 
-                content.GamesDirectory = !content.GamesDirectory.StartsWith(":") ? content.GamesDirectory : $"{Application.persistentDataPath}/libretro~/roms/{content.GamesDirectory[1..]}";               
+                content.GamesDirectory = !content.GamesDirectory.StartsWith(":") ? content.GamesDirectory : $"{Application.persistentDataPath}/Libretro/roms/{content.GamesDirectory[1..]}";               
                 libretroInstance.Initialize(content.CoreName, content.GamesDirectory, content.GameNames.ToArray());
             }
         }
