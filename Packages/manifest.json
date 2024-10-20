@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
     "com.sk.libretro": "https://github.com/Skurdt/SK.Libretro.git",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.burst": "1.8.18",
