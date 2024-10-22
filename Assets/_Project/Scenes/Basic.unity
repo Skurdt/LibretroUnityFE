@@ -2256,10 +2256,10 @@ MonoBehaviour:
     ReadRtcMemory: 0
     ReadSystemMemory: 0
     ReadVideoMemory: 0
-  <CoreName>k__BackingField: genesis_plus_gx
+  <CoreName>k__BackingField: blastem
   <GamesDirectory>k__BackingField: E:/Roms/No-Intro/Sega - Mega Drive - Genesis
   <GameNames>k__BackingField:
-  - 'Prince of Persia (U) [!]'
+  - Prince of Persia (USA)
 --- !u!114 &662265716
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2508,7 +2508,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 662265714}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 291a92a8703e8914aaf2797f0f6a49dc, type: 3}
   m_Name: 
