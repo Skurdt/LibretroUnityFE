@@ -28,19 +28,19 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 
         [SerializeField]
         [Tooltip("The GameObject containing the interaction group used for direct and distant manipulation.")]
-        XRInteractionGroup m_ManipulationInteractionGroup;
+        UnityEngine.XR.Interaction.Toolkit.Interactors.XRInteractionGroup m_ManipulationInteractionGroup;
 
         [SerializeField]
         [Tooltip("The GameObject containing the interactor used for direct manipulation.")]
-        XRDirectInteractor m_DirectInteractor;
+        UnityEngine.XR.Interaction.Toolkit.Interactors.XRDirectInteractor m_DirectInteractor;
 
         [SerializeField]
         [Tooltip("The GameObject containing the interactor used for distant/ray manipulation.")]
-        XRRayInteractor m_RayInteractor;
+        UnityEngine.XR.Interaction.Toolkit.Interactors.XRRayInteractor m_RayInteractor;
 
         [SerializeField]
         [Tooltip("The GameObject containing the interactor used for teleportation.")]
-        XRRayInteractor m_TeleportInteractor;
+        UnityEngine.XR.Interaction.Toolkit.Interactors.XRRayInteractor m_TeleportInteractor;
 
         [Space]
         [Header("Controller Actions")]
@@ -91,7 +91,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         [Header("Mediation Events")]
         [SerializeField]
         [Tooltip("Event fired when the active ray interactor changes between interaction and teleport.")]
-        UnityEvent<IXRRayProvider> m_RayInteractorChanged;
+        UnityEvent<UnityEngine.XR.Interaction.Toolkit.Interactors.IXRRayProvider> m_RayInteractorChanged;
 
         public bool smoothMotionEnabled
         {
@@ -135,7 +135,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         /// <summary>
         /// Temporary scratch list to populate with the group members of the interaction group.
         /// </summary>
-        static readonly List<IXRGroupMember> s_GroupMembers = new List<IXRGroupMember>();
+        static readonly List<UnityEngine.XR.Interaction.Toolkit.Interactors.IXRGroupMember> s_GroupMembers = new List<UnityEngine.XR.Interaction.Toolkit.Interactors.IXRGroupMember>();
 
         // For our input mediation, we are enforcing a few rules between direct, ray, and teleportation interaction:
         // 1. If the Teleportation Ray is engaged, the Ray interactor is disabled

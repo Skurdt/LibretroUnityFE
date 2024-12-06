@@ -70,7 +70,7 @@ namespace SK.Libretro.Examples
         {
             _configFilePath ??= Application.persistentDataPath + "/GamesSetup.json";
 
-            Transform instancesParent = InstancesParent != null ? InstancesParent : transform;
+            Transform instancesParent = InstancesParent ? InstancesParent : transform;
             List<LibretroInstance> libretroInstances = GetLibretroInstances(instancesParent);
             if (libretroInstances.Count == 0)
                 return;
@@ -107,7 +107,7 @@ namespace SK.Libretro.Examples
         {
             _configFilePath ??= Application.persistentDataPath + "/GamesSetup.json";
 
-            Transform instancesParent = InstancesParent != null ? InstancesParent : transform;
+            Transform instancesParent = InstancesParent ? InstancesParent : transform;
             List<LibretroInstance> libretroInstances = GetLibretroInstances(instancesParent);
             if (libretroInstances.Count == 0)
                 return;

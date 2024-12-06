@@ -2256,10 +2256,10 @@ MonoBehaviour:
     ReadRtcMemory: 0
     ReadSystemMemory: 0
     ReadVideoMemory: 0
-  <CoreName>k__BackingField: blastem
-  <GamesDirectory>k__BackingField: E:/Roms/No-Intro/Sega - Mega Drive - Genesis
+  <CoreName>k__BackingField: pcsx_rearmed
+  <GamesDirectory>k__BackingField: C:/Users/Skurdt/Downloads
   <GameNames>k__BackingField:
-  - Prince of Persia (USA)
+  - Crash Bandicoot (USA)
 --- !u!114 &662265716
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2508,7 +2508,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 662265714}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 291a92a8703e8914aaf2797f0f6a49dc, type: 3}
   m_Name: 
@@ -5744,6 +5744,55 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb16f2846c06a1946945a17e82c8ba02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1900533993
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1900533995}
+  - component: {fileID: 1900533994}
+  m_Layer: 0
+  m_Name: Global Volume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1900533994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1900533993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: 26e9463e36f22b74fb6d9d585c6ba0a8, type: 2}
+--- !u!4 &1900533995
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1900533993}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1907500181
 GameObject:
   m_ObjectHideFlags: 0
@@ -7045,8 +7094,9 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 116397877}
-  - {fileID: 2085771260}
-  - {fileID: 662265720}
+  - {fileID: 402727339}
+  - {fileID: 1900533995}
   - {fileID: 1131241784}
   - {fileID: 1126702204}
-  - {fileID: 402727339}
+  - {fileID: 2085771260}
+  - {fileID: 662265720}
