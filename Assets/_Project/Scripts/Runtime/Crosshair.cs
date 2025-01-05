@@ -29,6 +29,8 @@ namespace SK.Libretro.Examples
     {
         [SerializeField] private Texture2D _texture;
 
-        private void Start() => Cursor.SetCursor(_texture, new(8f, 8f), CursorMode.Auto);
+        private void OnEnable() => Cursor.SetCursor(_texture, new(8f, 8f), CursorMode.Auto);
+
+        private void OnDisable() => Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
     }
 }
