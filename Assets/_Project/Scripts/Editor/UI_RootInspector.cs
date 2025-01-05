@@ -47,8 +47,12 @@ namespace SK.Libretro.Examples.Editor
             ToolbarAddMenu("_state", toolbarElement);
             ToolbarAddMenu("_disk", toolbarElement);
             ToolbarAddMenu("_memory", toolbarElement);
+
             VisualElement coreOptionsButton = PaddedPropertyField(serializedObject.FindProperty("_coreOptionsButton"), toolbarElement);
             _ = PaddedPropertyField(serializedObject.FindProperty("_coreOptionsMenu"), coreOptionsButton);
+
+            VisualElement inputDevicesButton = PaddedPropertyField(serializedObject.FindProperty("_inputDevicesButton"), toolbarElement);
+            _ = PaddedPropertyField(serializedObject.FindProperty("_inputDevicesMenu"), inputDevicesButton);
 
             return root;
         }

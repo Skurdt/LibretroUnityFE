@@ -53,6 +53,8 @@ namespace SK.Libretro.Examples
         [SerializeField] private UI_Button _memoryLoadSRAMButton;
         [SerializeField] private UI_Button _coreOptionsButton;
         [SerializeField] private UI_CoreOptionsMenu _coreOptionsMenu;
+        [SerializeField] private UI_Button _inputDevicesButton;
+        [SerializeField] private UI_InputDevicesMenu _inputDevicesMenu;
 
         private int _stateSlot;
         private int _diskIndex;
@@ -66,7 +68,11 @@ namespace SK.Libretro.Examples
 
             _gameButton.Construct(true, true, () => _gameMenu.SetVisible(true));
             _gameMenu.Construct(false, _libretro);
-            _gameStartButton.Construct(true, true, () => _libretro.StartContent());
+            _gameStartButton.Construct(true, true, () =>
+            {
+                _libretro.StartContent();
+                _libretro.AddPlayer(0);
+            });
             _gameResetButton.Construct(true, false, () => _libretro.ResetContent());
             _gameStopButton.Construct(true, false, () => _libretro.StopContent());
 
@@ -116,6 +122,9 @@ namespace SK.Libretro.Examples
 
             _coreOptionsMenu.Construct(_libretro);
             _coreOptionsButton.Construct(true, false, () => _coreOptionsMenu.SetVisible(true));
+
+            _inputDevicesMenu.Construct(_libretro);
+            _inputDevicesButton.Construct(true, false, () => _inputDevicesMenu.SetVisible(true));
         }
 
         private void OnDisable()
@@ -159,6 +168,7 @@ namespace SK.Libretro.Examples
             _diskButton.SetInteractable(_libretro.DiskHandlerEnabled);
             _memoryButton.SetInteractable(true);
             _coreOptionsButton.SetInteractable(true);
+            _inputDevicesButton.SetInteractable(true);
         }
 
         private void LibretroInstanceStoppedCallback()
@@ -172,6 +182,7 @@ namespace SK.Libretro.Examples
             _diskButton.SetInteractable(false);
             _memoryButton.SetInteractable(false);
             _coreOptionsButton.SetInteractable(false);
+            _inputDevicesButton.SetInteractable(false);
         }
     }
 }
