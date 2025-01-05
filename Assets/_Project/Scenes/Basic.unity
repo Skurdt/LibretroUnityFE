@@ -711,8 +711,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 116397876}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.17549682, y: -0.26028842, z: 0.04818205, w: -0.9482243}
-  m_LocalPosition: {x: -1.612679, y: 1.1439028, z: -2.52494}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2638,6 +2638,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Camera>k__BackingField: {fileID: 116397879}
   <LightgunRaycastLayer>k__BackingField: 9
+  <LightgunSource>k__BackingField: {fileID: 0}
   <Renderer>k__BackingField: {fileID: 662265718}
   <Collider>k__BackingField: {fileID: 662265722}
   <Viewer>k__BackingField: {fileID: 0}
@@ -2654,10 +2655,10 @@ MonoBehaviour:
     ReadRtcMemory: 0
     ReadSystemMemory: 0
     ReadVideoMemory: 0
-  <CoreName>k__BackingField: mame
-  <GamesDirectory>k__BackingField: E:/Roms/mame-merged/mame-merged
+  <CoreName>k__BackingField: pcsx_rearmed
+  <GamesDirectory>k__BackingField: E:/Roms/PS1/Time Crisis (Europe) (En,Fr,De)
   <GameNames>k__BackingField:
-  - timecris
+  - Time Crisis (Europe) (En,Fr,De)
 --- !u!114 &662265716
 MonoBehaviour:
   m_ObjectHideFlags: 0

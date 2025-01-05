@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.sk.libretro": "https://github.com/Skurdt/SK.Libretro.git",
+    "com.sk.libretro": "https://github.com/Skurdt/SK.Libretro.git#Singleton",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.burst": "1.8.18",
     "com.unity.collections": "2.5.1",

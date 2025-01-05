@@ -20,7 +20,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using SK.Libretro.Header;
 using SK.Libretro.Unity;
 using System.Collections.Generic;
 using UnityEngine;
@@ -41,7 +40,6 @@ namespace SK.Libretro.Examples
 
         private void OnEnable()
         {
-            GeneratePlayersList();
             _closeButton.onClick.RemoveAllListeners();
             _closeButton.onClick.AddListener(() => SetVisible(false));
         }
@@ -60,6 +58,8 @@ namespace SK.Libretro.Examples
 
         public void SetVisible(bool visible)
         {
+            if (visible)
+                GeneratePlayersList();
             gameObject.SetActive(visible);
             _libretro.SetInputEnabled(!visible);
         }

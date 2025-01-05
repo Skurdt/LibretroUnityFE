@@ -23,6 +23,7 @@
 using SK.Libretro.Header;
 using SK.Libretro.Unity;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -35,31 +36,54 @@ namespace SK.Libretro.Examples
         [SerializeField] private TMP_Dropdown _dropdown;
 
         private LibretroInstance _libretro;
-        private int _index;
+        private int _port;
 
-        private void OnEnable() => _dropdown.onValueChanged.AddListener((index) =>
+        private void OnEnable() => _dropdown.onValueChanged.AddListener((device) =>
         {
-            if (_libretro)
-                _libretro.SetControllerPortDevice((uint)_index, (RETRO_DEVICE)index);
+            if (!_libretro)
+                return;
+
+            if (_libretro.ControllersMap[_port] is null)
+            {
+                _libretro.SetControllerPortDevice((uint)_port, (uint)device);
+                return;
+            }
+
+            Controllers controllers = _libretro.ControllersMap[_port];
+            Controller controller = controllers.FirstOrDefault(x => x.Description.Equals(_dropdown.options[device].text, StringComparison.OrdinalIgnoreCase));
+            if (controller is not null)
+                _libretro.SetControllerPortDevice((uint)_port, controller.Device);
         });
 
         private void OnDisable() => _dropdown.onValueChanged.RemoveAllListeners();
 
-        public void Init(LibretroInstance libretro, int index, RETRO_DEVICE device)
+        public void Init(LibretroInstance libretro, int port, uint device)
         {
             if (!libretro)
                 return;
 
             _libretro = libretro;
-            _index    = index;
+            _port     = port;
+
+            _label.SetText($"Player{_port}");
 
             _dropdown.ClearOptions();
+            int currentValueIndex;
 
-            _label.SetText($"Player{_index}");
+            Controllers controllers = _libretro.ControllersMap[port];
+            if (controllers is null)
+            {
+                _dropdown.AddOptions(Enum.GetNames(typeof(RETRO_DEVICE)).ToList());
+                currentValueIndex = _dropdown.options.FindIndex(x => x.text.Equals(device.ToString(), StringComparison.OrdinalIgnoreCase));
+                _dropdown.SetValueWithoutNotify(currentValueIndex);
+                return;
+            }
 
-            _dropdown.AddOptions(Enum.GetNames(typeof(RETRO_DEVICE)).ToList());
-            int valueIndex = _dropdown.options.FindIndex(x => x.text.Equals(device.ToString(), StringComparison.OrdinalIgnoreCase));
-            _dropdown.SetValueWithoutNotify(valueIndex);
+            List<string> dropdownChoices = controllers.Select(x => x.Description).ToList();
+            _dropdown.AddOptions(dropdownChoices);
+            string currentValueString = controllers.FirstOrDefault(x => x.Device == device)?.Description;
+            currentValueIndex = _dropdown.options.FindIndex(x => x.text.Equals(currentValueString, StringComparison.OrdinalIgnoreCase));
+            _dropdown.SetValueWithoutNotify(currentValueIndex);
         }
     }
 }
