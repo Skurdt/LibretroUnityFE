@@ -166,15 +166,6 @@ namespace SK.Libretro.Examples
             _memoryButton.SetInteractable(true);
             _coreOptionsButton.SetInteractable(true);
             _inputDevicesButton.SetInteractable(true);
-
-            int deviceCount = InputSystem.devices.Count;
-            for (int deviceIndex = 0; deviceIndex < InputSystem.devices.Count; deviceIndex++)
-            {
-                InputDevice device = InputSystem.devices[deviceIndex];
-                Debug.Log($"Device: {device} DisplayName: {device.displayName} Name: {device.name}");
-            }
-
-            _libretro.AddPlayer(0, deviceCount > 3 ? 3 : 0);
         }
 
         private void LibretroInstanceStoppedCallback()
@@ -189,8 +180,6 @@ namespace SK.Libretro.Examples
             _memoryButton.SetInteractable(false);
             _coreOptionsButton.SetInteractable(false);
             _inputDevicesButton.SetInteractable(false);
-
-            _libretro.RemovePlayer(0);
         }
     }
 }
