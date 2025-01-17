@@ -2655,9 +2655,9 @@ MonoBehaviour:
   <CoreName>k__BackingField: mame2003_plus
   <GamesDirectory>k__BackingField: E:/Roms/mame2003-plus
   <GameNames>k__BackingField:
-  - 1942
+  - 1941
   _camera: {fileID: 116397879}
-  _lightgunRaycastSource: {fileID: 0}
+  _lightgunRaycastSource: {fileID: 116397876}
 --- !u!114 &662265716
 MonoBehaviour:
   m_ObjectHideFlags: 0
