@@ -23,7 +23,6 @@
 using SK.Libretro.Unity;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace SK.Libretro.Examples
 {

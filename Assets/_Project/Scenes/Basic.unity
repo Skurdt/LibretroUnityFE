@@ -712,7 +712,7 @@ Transform:
   m_GameObject: {fileID: 116397876}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -2}
+  m_LocalPosition: {x: 0, y: 0, z: -2.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2612,8 +2612,8 @@ GameObject:
   - component: {fileID: 662265718}
   - component: {fileID: 662265722}
   - component: {fileID: 662265723}
-  - component: {fileID: 662265717}
-  - component: {fileID: 662265716}
+  - component: {fileID: 662265727}
+  - component: {fileID: 662265726}
   - component: {fileID: 662265715}
   - component: {fileID: 662265724}
   - component: {fileID: 662265725}
@@ -2646,45 +2646,18 @@ MonoBehaviour:
     AudioMaxVolume: 1
     AudioMinDistance: 2
     AudioMaxDistance: 10
-    LeftStickBehaviour: 2
+    LeftStickBehaviour: 0
     RewindEnabled: 0
     ReadSaveMemory: 0
     ReadRtcMemory: 0
     ReadSystemMemory: 0
     ReadVideoMemory: 0
-  <CoreName>k__BackingField: mame2003_plus
-  <GamesDirectory>k__BackingField: E:/Roms/mame2003-plus
+  <CoreName>k__BackingField: dosbox_core
+  <GamesDirectory>k__BackingField: C:/Users/Skurdt/Downloads
   <GameNames>k__BackingField:
-  - 1941
+  - DOSBOX_DOOM
   _camera: {fileID: 116397879}
   _lightgunRaycastSource: {fileID: 116397876}
---- !u!114 &662265716
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 662265714}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d17462c6a2785444a80188f430c6770, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  InstancesParent: {fileID: 0}
---- !u!114 &662265717
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 662265714}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 357860570e38a834a96d1b4898fb2de9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _libretroInstanceVariable: {fileID: 11400000, guid: 18fb6a4ce326c4d48922f876229e625a,
-    type: 2}
 --- !u!23 &662265718
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2749,7 +2722,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 1.5, z: 1}
-  m_ConstrainProportionsScale: 1
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2911,6 +2884,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 291a92a8703e8914aaf2797f0f6a49dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &662265726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 662265714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d17462c6a2785444a80188f430c6770, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InstancesParent: {fileID: 0}
+--- !u!114 &662265727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 662265714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 357860570e38a834a96d1b4898fb2de9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _libretroInstanceVariable: {fileID: 11400000, guid: 18fb6a4ce326c4d48922f876229e625a,
+    type: 2}
 --- !u!1 &693732093
 GameObject:
   m_ObjectHideFlags: 0
