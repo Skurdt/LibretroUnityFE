@@ -2652,10 +2652,10 @@ MonoBehaviour:
     ReadRtcMemory: 0
     ReadSystemMemory: 0
     ReadVideoMemory: 0
-  <CoreName>k__BackingField: dosbox_core
+  <CoreName>k__BackingField: snes9x
   <GamesDirectory>k__BackingField: C:/Users/Skurdt/Downloads
   <GameNames>k__BackingField:
-  - DOSBOX_DOOM
+  - Aladdin
   _camera: {fileID: 116397879}
   _lightgunRaycastSource: {fileID: 116397876}
 --- !u!23 &662265718
