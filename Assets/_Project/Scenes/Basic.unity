@@ -2652,10 +2652,10 @@ MonoBehaviour:
     ReadRtcMemory: 0
     ReadSystemMemory: 0
     ReadVideoMemory: 0
-  <CoreName>k__BackingField: snes9x
-  <GamesDirectory>k__BackingField: C:/Users/Skurdt/Downloads
+  <CoreName>k__BackingField: mame2003_plus
+  <GamesDirectory>k__BackingField: E:/Roms/mame2003-plus
   <GameNames>k__BackingField:
-  - Aladdin
+  - captcomm
   _camera: {fileID: 116397879}
   _lightgunRaycastSource: {fileID: 116397876}
 --- !u!23 &662265718
