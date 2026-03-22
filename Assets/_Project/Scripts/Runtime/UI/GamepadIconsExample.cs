@@ -82,8 +82,8 @@ namespace SK.Libretro.Examples
 
         private void OnEnable()
         {
-            RebindActionUI[] rebindUIComponents = transform.GetComponentsInChildren<RebindActionUI>();
-            foreach (RebindActionUI component in rebindUIComponents)
+            var rebindUIComponents = transform.GetComponentsInChildren<RebindActionUI>();
+            foreach (var component in rebindUIComponents)
             {
                 component.OnUpdateBindingUI.AddListener(OnUpdateBindingDisplay);
                 component.UpdateBindingDisplay();
@@ -101,15 +101,15 @@ namespace SK.Libretro.Examples
             else if (InputSystem.IsFirstLayoutBasedOnSecond(deviceLayoutName, "Gamepad"))
                 icon = _xbox.GetSprite(controlPath);
 
-            TMPro.TMP_Text textComponent = component.BindingText;
+            var textComponent = component.BindingText;
             if (textComponent == null)
                 return;
 
-            Transform imageGO = textComponent.transform.parent.Find("ActionBindingIcon");
+            var imageGO = textComponent.transform.parent.Find("ActionBindingIcon");
             if (imageGO == null)
                 return;
 
-            if (!imageGO.TryGetComponent<Image>(out Image imageComponent))
+            if (!imageGO.TryGetComponent<Image>(out var imageComponent))
                 return;
 
             if (icon != null)

@@ -44,7 +44,7 @@ namespace SK.Libretro.Examples
                 if (_coreOption is null)
                     return;
 
-                string previousValue = _coreOption.CurrentValue;
+                var previousValue = _coreOption.CurrentValue;
                 _coreOption.Update(index);
                 if (_gameOption is not null && _gameOption.CurrentValue.Equals(previousValue, StringComparison.OrdinalIgnoreCase))
                 {
@@ -100,7 +100,7 @@ namespace SK.Libretro.Examples
         private static void AddOptions(TMP_Dropdown dropdown, Option option)
         {
             dropdown.AddOptions(option.PossibleValues.ToList());
-            int valueIndex = dropdown.options.FindIndex(x => x.text.Equals(option.CurrentValue, System.StringComparison.OrdinalIgnoreCase));
+            var valueIndex = dropdown.options.FindIndex(x => x.text.Equals(option.CurrentValue, System.StringComparison.OrdinalIgnoreCase));
             dropdown.SetValueWithoutNotify(valueIndex);
         }
     }

@@ -12,7 +12,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
     {
         [SerializeField]
         [Tooltip("The interactor that drives the display and placement of the pointer object.")]
-        ClimbTeleportInteractor m_ClimbTeleportInteractor;
+        private ClimbTeleportInteractor m_ClimbTeleportInteractor;
 
         /// <summary>
         /// The interactor that drives the display and placement of the pointer object.
@@ -26,7 +26,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         [SerializeField]
         [Tooltip("The prefab to spawn when a teleport destination is chosen. The instance will spawn next to the " +
             "destination and point its forward vector at the destination and its up vector at the camera.")]
-        GameObject m_PointerPrefab;
+        private GameObject m_PointerPrefab;
 
         /// <summary>
         /// The prefab to spawn when a teleport destination is chosen. The instance will spawn next to the destination
@@ -40,7 +40,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 
         [SerializeField]
         [Tooltip("The distance from the destination at which the pointer object spawns.")]
-        float m_PointerDistance = 0.3f;
+        private float m_PointerDistance = 0.3f;
 
         /// <summary>
         /// The distance from the destination at which the pointer object spawns.
@@ -51,8 +51,8 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             set => m_PointerDistance = value;
         }
 
-        TeleportationMultiAnchorVolume m_ActiveTeleportVolume;
-        Transform m_PointerInstance;
+        private TeleportationMultiAnchorVolume m_ActiveTeleportVolume;
+        private Transform m_PointerInstance;
 
         /// <summary>
         /// See <see cref="MonoBehaviour"/>.
@@ -93,7 +93,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             }
         }
 
-        void OnInteractorHoverEntered(HoverEnterEventArgs args)
+        private void OnInteractorHoverEntered(HoverEnterEventArgs args)
         {
             if (m_ActiveTeleportVolume != null || !(args.interactableObject is TeleportationMultiAnchorVolume teleportVolume))
                 return;
@@ -105,7 +105,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             m_ActiveTeleportVolume.destinationAnchorChanged += OnClimbTeleportDestinationAnchorChanged;
         }
 
-        void OnInteractorHoverExited(HoverExitEventArgs args)
+        private void OnInteractorHoverExited(HoverExitEventArgs args)
         {
             if (!(args.interactableObject is TeleportationMultiAnchorVolume teleportVolume) || teleportVolume != m_ActiveTeleportVolume)
                 return;
@@ -115,7 +115,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             m_ActiveTeleportVolume = null;
         }
 
-        void OnClimbTeleportDestinationAnchorChanged(TeleportationMultiAnchorVolume teleportVolume)
+        private void OnClimbTeleportDestinationAnchorChanged(TeleportationMultiAnchorVolume teleportVolume)
         {
             HideIndicator();
 
@@ -134,7 +134,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             m_PointerInstance.rotation = Quaternion.LookRotation(pointerDirection, -cameraTrans.forward);
         }
 
-        void HideIndicator()
+        private void HideIndicator()
         {
             if (m_PointerInstance != null)
                 Destroy(m_PointerInstance.gameObject);

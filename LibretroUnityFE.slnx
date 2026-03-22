@@ -1,0 +1,9 @@
+﻿<Solution>
+  <Project Path="SK.Libretro.Unity.Editor.csproj" />
+  <Project Path="SK.Libretro.Examples.csproj" />
+  <Project Path="SK.Libretro.Unity.csproj" />
+  <Project Path="SK.Libretro.csproj" />
+  <Project Path="Unity.XR.Interaction.Toolkit.Samples.StarterAssets.csproj" />
+  <Project Path="SK.Libretro.Examples.Editor.csproj" />
+  <Project Path="Unity.XR.Interaction.Toolkit.Samples.StarterAssets.Editor.csproj" />
+</Solution>

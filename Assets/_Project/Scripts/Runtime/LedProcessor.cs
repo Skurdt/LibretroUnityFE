@@ -37,7 +37,7 @@ namespace SK.Libretro.Examples
             if (!_ledObjectPrefab)
                 return;
 
-            if (!_ledDictionary.TryGetValue(led, out LedObject ledObject))
+            if (!_ledDictionary.TryGetValue(led, out var ledObject))
             {
                 ledObject = Instantiate(_ledObjectPrefab, transform);
                 ledObject.name = $"Led_{led:00}";

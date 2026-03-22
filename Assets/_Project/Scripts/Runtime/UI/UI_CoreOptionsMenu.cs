@@ -70,14 +70,14 @@ namespace SK.Libretro.Examples
             if (!_libretro.Current)
                 return;
 
-            (Options coreOptions, Options gameOptions) = _libretro.Current.Options;
+            (var coreOptions, var gameOptions) = _libretro.Current.Options;
 
-            for (int i = 0; i < coreOptions.Count; ++i)
+            for (var i = 0; i < coreOptions.Count; ++i)
             {
                 if (!coreOptions[i].Visible)
                     continue;
 
-                UICoreOptionDropdown optionInstance = Instantiate(_dropdownTemplatePrefab, _listContent);
+                var optionInstance = Instantiate(_dropdownTemplatePrefab, _listContent);
                 optionInstance.Init(_libretro.Current, coreOptions[i], gameOptions?[i]);
                 _instantiatedObjects.Add(optionInstance.gameObject);
             }
@@ -85,7 +85,7 @@ namespace SK.Libretro.Examples
 
         private void ClearOptionsList()
         {
-            for (int i = _instantiatedObjects.Count - 1; i >= 0; --i)
+            for (var i = _instantiatedObjects.Count - 1; i >= 0; --i)
                 Destroy(_instantiatedObjects[i]);
             _instantiatedObjects.Clear();
         }

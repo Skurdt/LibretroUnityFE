@@ -71,9 +71,9 @@ namespace SK.Libretro.Examples
             if (!_libretro.Current)
                 return;
 
-            for (int i = 0; i < 4; i++)
+            for (var i = 0; i < 4; i++)
             {
-                UI_InputDeviceDropdown playerInstance = Instantiate(_dropdownTemplatePrefab, _listContent);
+                var playerInstance = Instantiate(_dropdownTemplatePrefab, _listContent);
                 playerInstance.Init(_libretro.Current, i, _libretro.Current.GetControllerPortDevice(i));
                 _instantiatedObjects.Add(playerInstance.gameObject);
             }
@@ -81,7 +81,7 @@ namespace SK.Libretro.Examples
 
         private void ClearPlayersList()
         {
-            for (int i = _instantiatedObjects.Count - 1; i >= 0; --i)
+            for (var i = _instantiatedObjects.Count - 1; i >= 0; --i)
                 Destroy(_instantiatedObjects[i]);
             _instantiatedObjects.Clear();
         }

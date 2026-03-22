@@ -51,7 +51,7 @@ namespace SK.Libretro.Examples.Editor
                 {
                     EditorGUI.FocusTextInControl(null);
 
-                    Scene activeScene = SceneManager.GetActiveScene();
+                    var activeScene = SceneManager.GetActiveScene();
 
                     if (!EditorApplication.isPlaying)
                         _ = EditorSceneManager.MarkSceneDirty(activeScene);

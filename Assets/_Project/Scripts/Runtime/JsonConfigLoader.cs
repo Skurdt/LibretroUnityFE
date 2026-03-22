@@ -70,25 +70,25 @@ namespace SK.Libretro.Examples
         {
             _configFilePath ??= Application.persistentDataPath + "/GamesSetup.json";
 
-            Transform instancesParent = InstancesParent ? InstancesParent : transform;
-            List<LibretroInstance> libretroInstances = GetLibretroInstances(instancesParent);
+            var instancesParent = InstancesParent ? InstancesParent : transform;
+            var libretroInstances = GetLibretroInstances(instancesParent);
             if (libretroInstances.Count == 0)
                 return;
 
             if (!FileSystem.FileExists(_configFilePath))
                 return;
 
-            string json = File.ReadAllText(_configFilePath);
+            var json = File.ReadAllText(_configFilePath);
             if (string.IsNullOrEmpty(json))
                 return;
 
-            ConfigFileContentList contentList = JsonUtility.FromJson<ConfigFileContentList>(json);
+            var contentList = JsonUtility.FromJson<ConfigFileContentList>(json);
             if (contentList is null || contentList.Entries is null || contentList.Entries.Count == 0)
                 return;
 
-            for (int i = 0; i < libretroInstances.Count; ++i)
+            for (var i = 0; i < libretroInstances.Count; ++i)
             {
-                LibretroInstance libretroInstance = libretroInstances[i];
+                var libretroInstance = libretroInstances[i];
 
                 if (contentList.Entries.Count <= i)
                 {
@@ -96,7 +96,7 @@ namespace SK.Libretro.Examples
                     continue;
                 }
 
-                ConfigFileContent content = contentList.Entries[i];
+                var content = contentList.Entries[i];
 
                 content.GamesDirectory = !content.GamesDirectory.StartsWith(":") ? content.GamesDirectory : $"{Application.persistentDataPath}/Libretro/roms/{content.GamesDirectory[1..]}";               
                 libretroInstance.Initialize(content.CoreName, content.GamesDirectory, content.GameNames.ToArray());
@@ -107,20 +107,20 @@ namespace SK.Libretro.Examples
         {
             _configFilePath ??= Application.persistentDataPath + "/GamesSetup.json";
 
-            Transform instancesParent = InstancesParent ? InstancesParent : transform;
-            List<LibretroInstance> libretroInstances = GetLibretroInstances(instancesParent);
+            var instancesParent = InstancesParent ? InstancesParent : transform;
+            var libretroInstances = GetLibretroInstances(instancesParent);
             if (libretroInstances.Count == 0)
                 return;
 
             ConfigFileContentList contentList = new();
             if (FileSystem.FileExists(_configFilePath))
             {
-                string loadedJson = File.ReadAllText(_configFilePath);
+                var loadedJson = File.ReadAllText(_configFilePath);
                 if (!string.IsNullOrEmpty(loadedJson))
                     contentList = JsonUtility.FromJson<ConfigFileContentList>(loadedJson);
             }
 
-            for (int i = 0; i < libretroInstances.Count; ++i)
+            for (var i = 0; i < libretroInstances.Count; ++i)
             {
                 if (contentList.Entries.Count > i)
                     contentList.Entries[i].Update(libretroInstances[i]);
@@ -128,7 +128,7 @@ namespace SK.Libretro.Examples
                     contentList.Entries.Add(new (libretroInstances[i]));
             }
 
-            string json = JsonUtility.ToJson(contentList, true);
+            var json = JsonUtility.ToJson(contentList, true);
             if (string.IsNullOrEmpty(json))
                 return;
 

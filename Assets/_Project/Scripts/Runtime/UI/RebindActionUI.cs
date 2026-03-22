@@ -46,8 +46,8 @@ namespace SK.Libretro.Examples
         [SerializeField] private InputBinding.DisplayStringOptions _displayStringOptions;
         [SerializeField] private TMP_Text _actionLabel;
         [SerializeField] private TMP_Text _bindingText;
-        [SerializeField] private GameObject _rebindOverlay;
-        [SerializeField] private TMP_Text _rebindText;
+        [field:SerializeField] public GameObject RebindOverlay { get; private set; }
+        [field: SerializeField] public TMP_Text RebindText { get; private set; }
         [SerializeField] private UpdateBindingUIEvent _updateBindingUIEvent;
         [SerializeField] private InteractiveRebindEvent _rebindStartEvent;
         [SerializeField] private InteractiveRebindEvent _rebindStopEvent;
@@ -101,18 +101,6 @@ namespace SK.Libretro.Examples
                 _bindingText = value;
                 UpdateBindingDisplay();
             }
-        }
-
-        public TMP_Text RebindPrompt
-        {
-            get => _rebindText;
-            set => _rebindText = value;
-        }
-
-        public GameObject RebindOverlay
-        {
-            get => _rebindOverlay;
-            set => _rebindOverlay = value;
         }
 
         public UpdateBindingUIEvent OnUpdateBindingUI
@@ -170,14 +158,14 @@ namespace SK.Libretro.Examples
 
         public void UpdateBindingDisplay()
         {
-            string displayString = string.Empty;
+            var displayString = string.Empty;
             string deviceLayoutName = default;
             string controlPath = default;
 
-            InputAction action = _action != null ? _action.action : null;
+            var action = _action != null ? _action.action : null;
             if (action != null)
             {
-                int bindingIndex = action.bindings.IndexOf(x => x.id.ToString() == _bindingId);
+                var bindingIndex = action.bindings.IndexOf(x => x.id.ToString() == _bindingId);
                 if (bindingIndex != -1)
                     displayString = action.GetBindingDisplayString(bindingIndex, out deviceLayoutName, out controlPath, DisplayStringOptions);
             }
@@ -190,12 +178,12 @@ namespace SK.Libretro.Examples
 
         public void ResetToDefault()
         {
-            if (!ResolveActionAndBinding(out InputAction action, out int bindingIndex))
+            if (!ResolveActionAndBinding(out var action, out var bindingIndex))
                 return;
 
             if (action.bindings[bindingIndex].isComposite)
             {
-                for (int i = bindingIndex + 1; i < action.bindings.Count && action.bindings[i].isPartOfComposite; ++i)
+                for (var i = bindingIndex + 1; i < action.bindings.Count && action.bindings[i].isPartOfComposite; ++i)
                     action.RemoveBindingOverride(i);
             }
             else
@@ -207,12 +195,12 @@ namespace SK.Libretro.Examples
 
         public void StartInteractiveRebind()
         {
-            if (!ResolveActionAndBinding(out InputAction action, out int bindingIndex))
+            if (!ResolveActionAndBinding(out var action, out var bindingIndex))
                 return;
 
             if (action.bindings[bindingIndex].isComposite)
             {
-                int firstPartIndex = bindingIndex + 1;
+                var firstPartIndex = bindingIndex + 1;
                 if (firstPartIndex < action.bindings.Count && action.bindings[firstPartIndex].isPartOfComposite)
                     PerformInteractiveRebind(action, firstPartIndex, allCompositeParts: true);
             }
@@ -238,23 +226,23 @@ namespace SK.Libretro.Examples
                     operation =>
                     {
                         _rebindStopEvent?.Invoke(this, operation);
-                        if (_rebindOverlay != null)
-                            _rebindOverlay.SetActive(false);
+                        if (RebindOverlay != null)
+                            RebindOverlay.SetActive(false);
                         UpdateBindingDisplay();
                         CleanUp();
                     })
                 .OnComplete(
                     operation =>
                     {
-                        if (_rebindOverlay != null)
-                            _rebindOverlay.SetActive(false);
+                        if (RebindOverlay != null)
+                            RebindOverlay.SetActive(false);
                         _rebindStopEvent?.Invoke(this, operation);
                         UpdateBindingDisplay();
                         CleanUp();
 
                         if (allCompositeParts)
                         {
-                            int nextBindingIndex = bindingIndex + 1;
+                            var nextBindingIndex = bindingIndex + 1;
                             if (nextBindingIndex < action.bindings.Count && action.bindings[nextBindingIndex].isPartOfComposite)
                                 PerformInteractiveRebind(action, nextBindingIndex, true);
                         }
@@ -264,17 +252,17 @@ namespace SK.Libretro.Examples
             if (action.bindings[bindingIndex].isPartOfComposite)
                 partName = $"Binding '{action.bindings[bindingIndex].name}'. ";
 
-            if (_rebindOverlay != null)
-                _rebindOverlay.SetActive(true);
-            if (_rebindText != null)
+            if (RebindOverlay != null)
+                RebindOverlay.SetActive(true);
+            if (RebindText != null)
             {
-                string text = !string.IsNullOrEmpty(OngoingRebind.expectedControlType)
+                var text = !string.IsNullOrEmpty(OngoingRebind.expectedControlType)
                     ? $"{partName}Waiting for {OngoingRebind.expectedControlType} input..."
                     : $"{partName}Waiting for input...";
-                _rebindText.text = text;
+                RebindText.text = text;
             }
 
-            if (_rebindOverlay == null && _rebindText == null && _rebindStartEvent == null && _bindingText != null)
+            if (RebindOverlay == null && RebindText == null && _rebindStartEvent == null && _bindingText != null)
                 _bindingText.text = "<Waiting...>";
 
             _rebindStartEvent?.Invoke(this, OngoingRebind);
@@ -310,14 +298,14 @@ namespace SK.Libretro.Examples
             if (change != InputActionChange.BoundControlsChanged)
                 return;
 
-            InputAction action = obj as InputAction;
-            InputActionMap actionMap = action != null ? action.actionMap ?? obj as InputActionMap : null;
-            InputActionAsset actionAsset = actionMap?.asset != null ? obj as InputActionAsset : null;
+            var action = obj as InputAction;
+            var actionMap = action != null ? action.actionMap ?? obj as InputActionMap : null;
+            var actionAsset = actionMap?.asset != null ? obj as InputActionAsset : null;
 
-            for (int i = 0; i < _rebindActionUIs.Count; ++i)
+            for (var i = 0; i < _rebindActionUIs.Count; ++i)
             {
-                RebindActionUI component = _rebindActionUIs[i];
-                InputAction referencedAction = component.ActionReference != null ? component.ActionReference.action : null;
+                var component = _rebindActionUIs[i];
+                var referencedAction = component.ActionReference != null ? component.ActionReference.action : null;
                 if (referencedAction == null)
                     continue;
 
@@ -340,7 +328,7 @@ namespace SK.Libretro.Examples
         {
             if (_actionLabel != null)
             {
-                InputAction action = _action != null ? _action.action : null;
+                var action = _action != null ? _action.action : null;
                 _actionLabel.text  = action != null ? action.name : string.Empty;
             }
         }

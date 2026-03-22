@@ -79,9 +79,9 @@ namespace SK.Libretro.Examples
                 _uiRoot.Libretro.Current.OnInstanceStarted += _uiRoot.LibretroInstanceStartedCallback;
                 _uiRoot.Libretro.Current.OnInstanceStopped += _uiRoot.LibretroInstanceStoppedCallback;
             }
-            bool runningInstance = validInstance && _uiRoot.Libretro.Current.Running;
+            var runningInstance = validInstance && _uiRoot.Libretro.Current.Running;
             _startButton.interactable = !runningInstance;
-            foreach (GameObject menuEntry in _elementsToEnableOnGameStart)
+            foreach (var menuEntry in _elementsToEnableOnGameStart)
                 menuEntry.SetActive(runningInstance);
 
             _startButton.onClick.AddListener(() => _uiRoot.Libretro.Current.StartContent());
@@ -97,7 +97,7 @@ namespace SK.Libretro.Examples
             _toggleFastForwardToggle.onValueChanged.AddListener((enabled) => _uiRoot.Libretro.Current.FastForward = enabled);
             _toggleRewindToggle.onValueChanged.AddListener((enabled) => _uiRoot.Libretro.Current.Settings.RewindEnabled = enabled);
 
-            EventTrigger eventTrigger = _rewindHoldButton.GetComponent<EventTrigger>();
+            var eventTrigger = _rewindHoldButton.GetComponent<EventTrigger>();
             EventTrigger.Entry eventTriggerPointerDown = new()
             {
                 eventID = EventTriggerType.PointerDown
@@ -150,14 +150,14 @@ namespace SK.Libretro.Examples
         public void LibretroInstanceStartedCallback()
         {
             _startButton.interactable = false;
-            foreach (GameObject menuEntry in _elementsToEnableOnGameStart)
+            foreach (var menuEntry in _elementsToEnableOnGameStart)
                 menuEntry.SetActive(true);
         }
 
         public void LibretroInstanceStoppedCallback()
         {
             _startButton.interactable = true;
-            foreach (GameObject menuEntry in _elementsToEnableOnGameStart)
+            foreach (var menuEntry in _elementsToEnableOnGameStart)
                 menuEntry.SetActive(false);
         }
     }

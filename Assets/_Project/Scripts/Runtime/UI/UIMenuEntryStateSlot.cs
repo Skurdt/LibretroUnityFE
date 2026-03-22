@@ -40,7 +40,7 @@ namespace SK.Libretro.Examples
 
         private void OnInputFieldValueChanged(string value)
         {
-            if (string.IsNullOrEmpty(value) || !int.TryParse(value, out int intValue))
+            if (string.IsNullOrEmpty(value) || !int.TryParse(value, out var intValue))
                 intValue = MIN_SLOT;
 
             CurrentSlot = intValue;

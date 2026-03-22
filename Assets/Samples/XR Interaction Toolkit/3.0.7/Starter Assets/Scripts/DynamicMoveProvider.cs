@@ -32,7 +32,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         [Space, Header("Movement Direction")]
         [SerializeField]
         [Tooltip("Directs the XR Origin's movement when using the head-relative mode. If not set, will automatically find and use the XR Origin Camera.")]
-        Transform m_HeadTransform;
+        private Transform m_HeadTransform;
 
         /// <summary>
         /// Directs the XR Origin's movement when using the head-relative mode. If not set, will automatically find and use the XR Origin Camera.
@@ -45,7 +45,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 
         [SerializeField]
         [Tooltip("Directs the XR Origin's movement when using the hand-relative mode with the left hand.")]
-        Transform m_LeftControllerTransform;
+        private Transform m_LeftControllerTransform;
 
         /// <summary>
         /// Directs the XR Origin's movement when using the hand-relative mode with the left hand.
@@ -58,7 +58,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 
         [SerializeField]
         [Tooltip("Directs the XR Origin's movement when using the hand-relative mode with the right hand.")]
-        Transform m_RightControllerTransform;
+        private Transform m_RightControllerTransform;
 
         public Transform rightControllerTransform
         {
@@ -68,7 +68,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 
         [SerializeField]
         [Tooltip("Whether to use the specified head transform or left controller transform to direct the XR Origin's movement for the left hand.")]
-        MovementDirection m_LeftHandMovementDirection;
+        private MovementDirection m_LeftHandMovementDirection;
 
         /// <summary>
         /// Whether to use the specified head transform or controller transform to direct the XR Origin's movement for the left hand.
@@ -82,7 +82,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 
         [SerializeField]
         [Tooltip("Whether to use the specified head transform or right controller transform to direct the XR Origin's movement for the right hand.")]
-        MovementDirection m_RightHandMovementDirection;
+        private MovementDirection m_RightHandMovementDirection;
 
         /// <summary>
         /// Whether to use the specified head transform or controller transform to direct the XR Origin's movement for the right hand.
@@ -94,9 +94,9 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             set => m_RightHandMovementDirection = value;
         }
 
-        Transform m_CombinedTransform;
-        Pose m_LeftMovementPose = Pose.identity;
-        Pose m_RightMovementPose = Pose.identity;
+        private Transform m_CombinedTransform;
+        private Pose m_LeftMovementPose = Pose.identity;
+        private Pose m_RightMovementPose = Pose.identity;
 
         /// <inheritdoc />
         protected override void Awake()

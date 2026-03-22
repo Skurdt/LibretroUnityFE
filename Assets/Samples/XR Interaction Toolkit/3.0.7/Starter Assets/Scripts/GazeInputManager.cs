@@ -9,11 +9,11 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
     public class GazeInputManager : MonoBehaviour
     {
         // This is the name of the layout that is registered by EyeGazeInteraction in the OpenXR Plugin package
-        const string k_EyeGazeLayoutName = "EyeGaze";
+        private const string k_EyeGazeLayoutName = "EyeGaze";
 
         [SerializeField]
         [Tooltip("Enable fallback to head tracking if eye tracking is unavailable.")]
-        bool m_FallbackIfEyeTrackingUnavailable = true;
+        private bool m_FallbackIfEyeTrackingUnavailable = true;
 
         /// <summary>
         /// Enable fallback to head tracking if eye tracking is unavailable.
@@ -25,7 +25,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         }
 
 
-        bool m_EyeTrackingDeviceFound;
+        private bool m_EyeTrackingDeviceFound;
 
         /// <summary>
         /// See <see cref="MonoBehaviour"/>.
@@ -69,7 +69,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             InputSystem.InputSystem.onDeviceChange -= OnDeviceChange;
         }
 
-        void OnDeviceConnected(InputDevice inputDevice)
+        private void OnDeviceConnected(InputDevice inputDevice)
         {
             if (m_EyeTrackingDeviceFound || !inputDevice.characteristics.HasFlag(InputDeviceCharacteristics.EyeTracking))
                 return;
@@ -79,7 +79,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             gameObject.SetActive(true);
         }
 
-        void OnDeviceChange(InputSystem.InputDevice device, InputDeviceChange change)
+        private void OnDeviceChange(InputSystem.InputDevice device, InputDeviceChange change)
         {
             if (m_EyeTrackingDeviceFound || change != InputDeviceChange.Added)
                 return;

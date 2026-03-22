@@ -8,7 +8,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 {
 #if UNITY_EDITOR
     [InitializeOnLoad]
-    static class RenderPipelineValidation
+    internal static class RenderPipelineValidation
     {
         static RenderPipelineValidation()
         {
@@ -16,15 +16,15 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
                 pipelineHandler.AutoRefreshPipelineShaders();
         }
 
-        static List<MaterialPipelineHandler> GetAllInstances()
+        private static List<MaterialPipelineHandler> GetAllInstances()
         {
             var instances = new List<MaterialPipelineHandler>();
 
             // Find all GUIDs for objects that match the type MaterialPipelineHandler
             var guids = AssetDatabase.FindAssets("t:MaterialPipelineHandler");
-            for (int i = 0; i < guids.Length; i++)
+            for (var i = 0; i < guids.Length; i++)
             {
-                string path = AssetDatabase.GUIDToAssetPath(guids[i]);
+                var path = AssetDatabase.GUIDToAssetPath(guids[i]);
                 var asset = AssetDatabase.LoadAssetAtPath<MaterialPipelineHandler>(path);
                 if (asset != null)
                     instances.Add(asset);
@@ -60,14 +60,14 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
     {
         [SerializeField]
         [Tooltip("List of materials and their associated shaders.")]
-        List<ShaderContainer> m_ShaderContainers;
+        private List<ShaderContainer> m_ShaderContainers;
 
         [SerializeField]
         [Tooltip("If true, the shaders will be refreshed automatically when the editor opens and when this scriptable object instance is enabled.")]
-        bool m_AutoRefreshShaders = true;
+        private bool m_AutoRefreshShaders = true;
 
 #if UNITY_EDITOR
-        void OnEnable()
+        private void OnEnable()
         {
             if (Application.isPlaying)
                 return;
@@ -89,7 +89,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             if (m_ShaderContainers == null)
                 return;
 
-            bool isBuiltinRenderPipeline = GraphicsSettings.currentRenderPipeline == null;
+            var isBuiltinRenderPipeline = GraphicsSettings.currentRenderPipeline == null;
 
             foreach (var info in m_ShaderContainers)
             {
@@ -97,11 +97,11 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
                     continue;
 
                 // Find the appropriate shaders based on the toggle
-                Shader birpShader = info.useBuiltinShaderName ? Shader.Find(info.builtInPipelineShaderName) : info.builtInPipelineShader;
-                Shader srpShader = info.useSRPShaderName ? Shader.Find(info.scriptableRenderPipelineShaderName) : info.scriptableRenderPipelineShader;
+                var birpShader = info.useBuiltinShaderName ? Shader.Find(info.builtInPipelineShaderName) : info.builtInPipelineShader;
+                var srpShader = info.useSRPShaderName ? Shader.Find(info.scriptableRenderPipelineShaderName) : info.scriptableRenderPipelineShader;
 
                 // Determine current shader for comparison
-                Shader currentShader = info.material.shader;
+                var currentShader = info.material.shader;
 
                 // Update shader for the current render pipeline only if necessary
                 if (isBuiltinRenderPipeline && birpShader != null && currentShader != birpShader)
@@ -117,7 +117,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             }
         }
 
-        static void MarkMaterialModified(Material material)
+        private static void MarkMaterialModified(Material material)
         {
 #if UNITY_EDITOR
             EditorUtility.SetDirty(material);
@@ -136,16 +136,16 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         {
             EditorGUI.BeginProperty(position, label, property);
 
-            float singleLineHeight = EditorGUIUtility.singleLineHeight;
-            float verticalSpacing = EditorGUIUtility.standardVerticalSpacing;
+            var singleLineHeight = EditorGUIUtility.singleLineHeight;
+            var verticalSpacing = EditorGUIUtility.standardVerticalSpacing;
 
-            SerializedProperty materialProp = property.FindPropertyRelative("material");
-            SerializedProperty useSRPShaderNameProp = property.FindPropertyRelative("useSRPShaderName");
-            SerializedProperty scriptableShaderNameProp = property.FindPropertyRelative("scriptableRenderPipelineShaderName");
-            SerializedProperty scriptableShaderProp = property.FindPropertyRelative("scriptableRenderPipelineShader");
-            SerializedProperty useShaderNameProp = property.FindPropertyRelative("useBuiltinShaderName");
-            SerializedProperty builtInNameProp = property.FindPropertyRelative("builtInPipelineShaderName");
-            SerializedProperty builtInShaderProp = property.FindPropertyRelative("builtInPipelineShader");
+            var materialProp = property.FindPropertyRelative("material");
+            var useSRPShaderNameProp = property.FindPropertyRelative("useSRPShaderName");
+            var scriptableShaderNameProp = property.FindPropertyRelative("scriptableRenderPipelineShaderName");
+            var scriptableShaderProp = property.FindPropertyRelative("scriptableRenderPipelineShader");
+            var useShaderNameProp = property.FindPropertyRelative("useBuiltinShaderName");
+            var builtInNameProp = property.FindPropertyRelative("builtInPipelineShaderName");
+            var builtInShaderProp = property.FindPropertyRelative("builtInPipelineShader");
 
             // Draw Material without the header.
             position.height = singleLineHeight;
@@ -199,19 +199,19 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             const int baseFieldCount = 4; // The Material field, the two toggles, and one for an optional field.
-            int extraLineCount = property.FindPropertyRelative("useBuiltinShaderName").boolValue ? 0 : 1;
+            var extraLineCount = property.FindPropertyRelative("useBuiltinShaderName").boolValue ? 0 : 1;
             extraLineCount += property.FindPropertyRelative("useSRPShaderName").boolValue ? 0 : 1;
 
-            float singleLineHeight = EditorGUIUtility.singleLineHeight;
-            float verticalSpacing = EditorGUIUtility.standardVerticalSpacing;
-            float headerHeight = EditorGUIUtility.singleLineHeight; // No longer need extra height for headers.
+            var singleLineHeight = EditorGUIUtility.singleLineHeight;
+            var verticalSpacing = EditorGUIUtility.standardVerticalSpacing;
+            var headerHeight = EditorGUIUtility.singleLineHeight; // No longer need extra height for headers.
 
             // Calculate height for fields and headers
-            float fieldsHeight = baseFieldCount * singleLineHeight + (baseFieldCount - 1 + extraLineCount) * verticalSpacing;
+            var fieldsHeight = baseFieldCount * singleLineHeight + (baseFieldCount - 1 + extraLineCount) * verticalSpacing;
 
             // Allow space for header, separator line, and a bit of padding before the line.
-            float headersHeight = 2 * (headerHeight + verticalSpacing);
-            float separatorSpace = verticalSpacing / 2 + 1; // Additional vertical spacing and line height.
+            var headersHeight = 2 * (headerHeight + verticalSpacing);
+            var separatorSpace = verticalSpacing / 2 + 1; // Additional vertical spacing and line height.
 
             return fieldsHeight + headersHeight + separatorSpace + singleLineHeight * 1.5f;
         }

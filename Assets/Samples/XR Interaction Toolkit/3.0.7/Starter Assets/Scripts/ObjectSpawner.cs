@@ -11,7 +11,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
     {
         [SerializeField]
         [Tooltip("The camera that objects will face when spawned. If not set, defaults to the main camera.")]
-        Camera m_CameraToFace;
+        private Camera m_CameraToFace;
 
         /// <summary>
         /// The camera that objects will face when spawned. If not set, defaults to the <see cref="Camera.main"/> camera.
@@ -28,7 +28,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 
         [SerializeField]
         [Tooltip("The list of prefabs available to spawn.")]
-        List<GameObject> m_ObjectPrefabs = new List<GameObject>();
+        private List<GameObject> m_ObjectPrefabs = new List<GameObject>();
 
         /// <summary>
         /// The list of prefabs available to spawn.
@@ -42,7 +42,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         [SerializeField]
         [Tooltip("Optional prefab to spawn for each spawned object. Use a prefab with the Destroy Self component to make " +
             "sure the visualization only lives temporarily.")]
-        GameObject m_SpawnVisualizationPrefab;
+        private GameObject m_SpawnVisualizationPrefab;
 
         /// <summary>
         /// Optional prefab to spawn for each spawned object.
@@ -57,7 +57,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         [SerializeField]
         [Tooltip("The index of the prefab to spawn. If outside the range of the list, this behavior will select " +
             "a random object each time it spawns.")]
-        int m_SpawnOptionIndex = -1;
+        private int m_SpawnOptionIndex = -1;
 
         /// <summary>
         /// The index of the prefab to spawn. If outside the range of <see cref="objectPrefabs"/>, this behavior will
@@ -79,7 +79,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 
         [SerializeField]
         [Tooltip("Whether to only spawn an object if the spawn point is within view of the camera.")]
-        bool m_OnlySpawnInView = true;
+        private bool m_OnlySpawnInView = true;
 
         /// <summary>
         /// Whether to only spawn an object if the spawn point is within view of the <see cref="cameraToFace"/>.
@@ -92,7 +92,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 
         [SerializeField]
         [Tooltip("The size, in viewport units, of the periphery inside the viewport that will not be considered in view.")]
-        float m_ViewportPeriphery = 0.15f;
+        private float m_ViewportPeriphery = 0.15f;
 
         /// <summary>
         /// The size, in viewport units, of the periphery inside the viewport that will not be considered in view.
@@ -106,7 +106,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         [SerializeField]
         [Tooltip("When enabled, the object will be rotated about the y-axis when spawned by Spawn Angle Range, " +
             "in relation to the direction of the spawn point to the camera.")]
-        bool m_ApplyRandomAngleAtSpawn = true;
+        private bool m_ApplyRandomAngleAtSpawn = true;
 
         /// <summary>
         /// When enabled, the object will be rotated about the y-axis when spawned by <see cref="spawnAngleRange"/>
@@ -121,7 +121,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         [SerializeField]
         [Tooltip("The range in degrees that the object will randomly be rotated about the y axis when spawned, " +
             "in relation to the direction of the spawn point to the camera.")]
-        float m_SpawnAngleRange = 45f;
+        private float m_SpawnAngleRange = 45f;
 
         /// <summary>
         /// The range in degrees that the object will randomly be rotated about the y axis when spawned, in relation
@@ -135,7 +135,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 
         [SerializeField]
         [Tooltip("Whether to spawn each object as a child of this object.")]
-        bool m_SpawnAsChildren;
+        private bool m_SpawnAsChildren;
 
         /// <summary>
         /// Whether to spawn each object as a child of this object.
@@ -155,12 +155,12 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         /// <summary>
         /// See <see cref="MonoBehaviour"/>.
         /// </summary>
-        void Awake()
+        private void Awake()
         {
             EnsureFacingCamera();
         }
 
-        void EnsureFacingCamera()
+        private void EnsureFacingCamera()
         {
             if (m_CameraToFace == null)
                 m_CameraToFace = Camera.main;

@@ -16,7 +16,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
     {
         [SerializeField]
         [Tooltip("The teleport volume that will drive affordance states when its destination anchor belongs to this interactable.")]
-        TeleportationMultiAnchorVolume m_ContainingTeleportVolume;
+        private TeleportationMultiAnchorVolume m_ContainingTeleportVolume;
 
         /// <summary>
         /// The teleport volume that will drive affordance states when its destination anchor belongs to the
@@ -28,8 +28,8 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             set => m_ContainingTeleportVolume = value;
         }
 
-        XRInteractableAffordanceStateProvider m_AffordanceStateProvider;
-        IXRInteractable m_Interactable;
+        private XRInteractableAffordanceStateProvider m_AffordanceStateProvider;
+        private IXRInteractable m_Interactable;
 
         /// <summary>
         /// See <see cref="MonoBehaviour"/>.
@@ -78,7 +78,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
                 m_AffordanceStateProvider.SetBoundInteractionReceiver(m_Interactable);
         }
 
-        void OnDestinationAnchorChanged(TeleportationMultiAnchorVolume anchorVolume)
+        private void OnDestinationAnchorChanged(TeleportationMultiAnchorVolume anchorVolume)
         {
             var anchor = anchorVolume.destinationAnchor;
             if (anchor == null)

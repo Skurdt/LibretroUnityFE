@@ -48,10 +48,10 @@ namespace SK.Libretro.Examples.Editor
             ToolbarAddMenu("_disk", toolbarElement);
             ToolbarAddMenu("_memory", toolbarElement);
 
-            VisualElement coreOptionsButton = PaddedPropertyField(serializedObject.FindProperty("_coreOptionsButton"), toolbarElement);
+            var coreOptionsButton = PaddedPropertyField(serializedObject.FindProperty("_coreOptionsButton"), toolbarElement);
             _ = PaddedPropertyField(serializedObject.FindProperty("_coreOptionsMenu"), coreOptionsButton);
 
-            VisualElement inputDevicesButton = PaddedPropertyField(serializedObject.FindProperty("_inputDevicesButton"), toolbarElement);
+            var inputDevicesButton = PaddedPropertyField(serializedObject.FindProperty("_inputDevicesButton"), toolbarElement);
             _ = PaddedPropertyField(serializedObject.FindProperty("_inputDevicesMenu"), inputDevicesButton);
 
             return root;
@@ -59,9 +59,9 @@ namespace SK.Libretro.Examples.Editor
 
         private void ToolbarAddMenu(string id, VisualElement toolbar)
         {
-            VisualElement button = PaddedPropertyField(serializedObject.FindProperty($"{id}Button"), toolbar);
-            SerializedProperty menuProperty = serializedObject.FindProperty($"{id}Menu");
-            VisualElement menu = PaddedPropertyField(menuProperty, button);
+            var button = PaddedPropertyField(serializedObject.FindProperty($"{id}Button"), toolbar);
+            var menuProperty = serializedObject.FindProperty($"{id}Menu");
+            var menu = PaddedPropertyField(menuProperty, button);
             while (menuProperty.Next(true))
                 if (menuProperty.name.StartsWith(id))
                     _ = PaddedPropertyField(menuProperty, menu);

@@ -36,10 +36,10 @@ namespace SK.Libretro.Examples
         private void OnEnable()
         {
             _uiInputDevices.Clear();
-            int portIndex = 0;
-            foreach (Controllers controllers in _uiRoot.Libretro.Current.ControllersMap)
+            var portIndex = 0;
+            foreach (var controllers in _uiRoot.Libretro.Current.ControllersMap)
             {
-                UIInputDevice device = Instantiate(_uiInputDevicePrefab, transform);
+                var device = Instantiate(_uiInputDevicePrefab, transform);
                 device.Init(portIndex, controllers);
                 _uiInputDevices.Add(device);
                 ++portIndex;
@@ -48,7 +48,7 @@ namespace SK.Libretro.Examples
 
         private void OnDisable()
         {
-            for (int i = _uiInputDevices.Count - 1; i >= 0; --i)
+            for (var i = _uiInputDevices.Count - 1; i >= 0; --i)
                 Destroy(_uiInputDevices[i].gameObject);
             _uiInputDevices.Clear();
         }

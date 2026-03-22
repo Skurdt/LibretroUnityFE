@@ -10,7 +10,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
     /// Use this class to mediate the controllers and their associated interactors and input actions under different interaction states.
     /// </summary>
     [AddComponentMenu("XR/Action Based Controller Manager")]
-    [DefaultExecutionOrder(k_UpdateOrder)]
+    [DefaultExecutionOrder(UPDATE_ORDER)]
     public class ActionBasedControllerManager : MonoBehaviour
     {
         /// <summary>
@@ -21,137 +21,137 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         /// to input actions and/or bindings before the controller component reads the current
         /// values of the input actions.
         /// </remarks>
-        public const int k_UpdateOrder = XRInteractionUpdateOrder.k_Controllers - 1;
+        public const int UPDATE_ORDER = XRInteractionUpdateOrder.k_Controllers - 1;
 
         [Space]
         [Header("Interactors")]
 
         [SerializeField]
         [Tooltip("The GameObject containing the interaction group used for direct and distant manipulation.")]
-        UnityEngine.XR.Interaction.Toolkit.Interactors.XRInteractionGroup m_ManipulationInteractionGroup;
+        private Interactors.XRInteractionGroup _manipulationInteractionGroup;
 
         [SerializeField]
         [Tooltip("The GameObject containing the interactor used for direct manipulation.")]
-        UnityEngine.XR.Interaction.Toolkit.Interactors.XRDirectInteractor m_DirectInteractor;
+        private Interactors.XRDirectInteractor _directInteractor;
 
         [SerializeField]
         [Tooltip("The GameObject containing the interactor used for distant/ray manipulation.")]
-        UnityEngine.XR.Interaction.Toolkit.Interactors.XRRayInteractor m_RayInteractor;
+        private Interactors.XRRayInteractor _rayInteractor;
 
         [SerializeField]
         [Tooltip("The GameObject containing the interactor used for teleportation.")]
-        UnityEngine.XR.Interaction.Toolkit.Interactors.XRRayInteractor m_TeleportInteractor;
+        private Interactors.XRRayInteractor _teleportInteractor;
 
         [Space]
         [Header("Controller Actions")]
 
         [SerializeField]
         [Tooltip("The reference to the action to start the teleport aiming mode for this controller.")]
-        InputActionReference m_TeleportModeActivate;
+        private InputActionReference _teleportModeActivate;
 
         [SerializeField]
         [Tooltip("The reference to the action to cancel the teleport aiming mode for this controller.")]
-        InputActionReference m_TeleportModeCancel;
+        private InputActionReference _teleportModeCancel;
 
         [SerializeField]
         [Tooltip("The reference to the action of continuous turning the XR Origin with this controller.")]
-        InputActionReference m_Turn;
+        private InputActionReference _turn;
 
         [SerializeField]
         [Tooltip("The reference to the action of snap turning the XR Origin with this controller.")]
-        InputActionReference m_SnapTurn;
+        private InputActionReference _snapTurn;
 
         [SerializeField]
         [Tooltip("The reference to the action of moving the XR Origin with this controller.")]
-        InputActionReference m_Move;
+        private InputActionReference _move;
 
         [SerializeField]
         [Tooltip("The reference to the action of scrolling UI with this controller.")]
-        InputActionReference m_UIScroll;
+        private InputActionReference _uIScroll;
 
         [Space]
         [Header("Locomotion Settings")]
 
         [SerializeField]
         [Tooltip("If true, continuous movement will be enabled. If false, teleport will enabled.")]
-        bool m_SmoothMotionEnabled;
+        private bool _smoothMotionEnabled;
         
         [SerializeField]
         [Tooltip("If true, continuous turn will be enabled. If false, snap turn will be enabled. Note: If smooth motion is enabled and enable strafe is enabled on the continuous move provider, turn will be overriden in favor of strafe.")]
-        bool m_SmoothTurnEnabled;
+        private bool _smoothTurnEnabled;
 
         [Space]
         [Header("UI Settings")]
 
         [SerializeField]
         [Tooltip("If true, UI scrolling will be enabled.")]
-        bool m_UIScrollingEnabled;
+        private bool _uIScrollingEnabled;
 
         [Space]
         [Header("Mediation Events")]
         [SerializeField]
         [Tooltip("Event fired when the active ray interactor changes between interaction and teleport.")]
-        UnityEvent<UnityEngine.XR.Interaction.Toolkit.Interactors.IXRRayProvider> m_RayInteractorChanged;
+        private UnityEvent<Interactors.IXRRayProvider> _rayInteractorChanged;
 
-        public bool smoothMotionEnabled
+        public bool SmoothMotionEnabled
         {
-            get => m_SmoothMotionEnabled;
+            get => _smoothMotionEnabled;
             set
             {
-                m_SmoothMotionEnabled = value;
+                _smoothMotionEnabled = value;
                 UpdateLocomotionActions();
             }
         }
 
-        public bool smoothTurnEnabled
+        public bool SmoothTurnEnabled
         {
-            get => m_SmoothTurnEnabled;
+            get => _smoothTurnEnabled;
             set
             {
-                m_SmoothTurnEnabled = value;
+                _smoothTurnEnabled = value;
                 UpdateLocomotionActions();
             }
         }
 
-        public bool uiScrollingEnabled
+        public bool UiScrollingEnabled
         {
-            get => m_UIScrollingEnabled;
+            get => _uIScrollingEnabled;
             set
             {
-                m_UIScrollingEnabled = value;
+                _uIScrollingEnabled = value;
                 UpdateUIActions();
             }
         }
 
-        bool m_StartCalled;
-        bool m_PostponedDeactivateTeleport;
-        bool m_HoveringScrollableUI;
+        private bool _startCalled;
+        private bool _postponedDeactivateTeleport;
+        private bool _hoveringScrollableUI;
 
-        const int k_InteractorNotInGroup = -1;
+        private const int INTERACT_OR_NOT_IN_GROUP = -1;
 
-        IEnumerator m_AfterInteractionEventsRoutine;
-        HashSet<InputAction> m_LocomotionUsers = new HashSet<InputAction>();
+        private IEnumerator _afterInteractionEventsRoutine;
+        private readonly HashSet<InputAction> _locomotionUsers = new();
 
         /// <summary>
         /// Temporary scratch list to populate with the group members of the interaction group.
         /// </summary>
-        static readonly List<UnityEngine.XR.Interaction.Toolkit.Interactors.IXRGroupMember> s_GroupMembers = new List<UnityEngine.XR.Interaction.Toolkit.Interactors.IXRGroupMember>();
+        private static readonly List<Interactors.IXRGroupMember> _groupMembers = new();
 
         // For our input mediation, we are enforcing a few rules between direct, ray, and teleportation interaction:
         // 1. If the Teleportation Ray is engaged, the Ray interactor is disabled
         // 2. The interaction group ensures that the Direct and Ray interactors cannot interact at the same time, with the Direct interactor taking priority
         // 3. If the Ray interactor is selecting, all locomotion controls are disabled (teleport ray, move, and turn controls) to prevent input collision
-        void SetupInteractorEvents()
+        private void SetupInteractorEvents()
         {
-            if (m_RayInteractor != null)
+            if (_rayInteractor != null)
             {
-                m_RayInteractor.selectEntered.AddListener(OnRaySelectEntered);
-                m_RayInteractor.selectExited.AddListener(OnRaySelectExited);
-                m_RayInteractor.uiHoverEntered.AddListener(OnUIHoverEntered);
-                m_RayInteractor.uiHoverExited.AddListener(OnUIHoverExited);
+                _rayInteractor.selectEntered.AddListener(OnRaySelectEntered);
+                _rayInteractor.selectExited.AddListener(OnRaySelectExited);
+                _rayInteractor.uiHoverEntered.AddListener(OnUIHoverEntered);
+                _rayInteractor.uiHoverExited.AddListener(OnUIHoverExited);
             }
 
-            var teleportModeActivateAction = GetInputAction(m_TeleportModeActivate);
+            var teleportModeActivateAction = GetInputAction(_teleportModeActivate);
             if (teleportModeActivateAction != null)
             {
                 teleportModeActivateAction.performed += OnStartTeleport;
@@ -160,27 +160,27 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
                 teleportModeActivateAction.canceled += OnStopLocomotion;
             }
 
-            var teleportModeCancelAction = GetInputAction(m_TeleportModeCancel);
+            var teleportModeCancelAction = GetInputAction(_teleportModeCancel);
             if (teleportModeCancelAction != null)
             {
                 teleportModeCancelAction.performed += OnCancelTeleport;
             }
 
-            var moveAction = GetInputAction(m_Move);
+            var moveAction = GetInputAction(_move);
             if (moveAction != null)
             {
                 moveAction.started += OnStartLocomotion;
                 moveAction.canceled += OnStopLocomotion;
             }
 
-            var turnAction = GetInputAction(m_Turn);
+            var turnAction = GetInputAction(_turn);
             if (turnAction != null)
             {
                 turnAction.started += OnStartLocomotion;
                 turnAction.canceled += OnStopLocomotion;
             }
 
-            var snapTurnAction = GetInputAction(m_SnapTurn);
+            var snapTurnAction = GetInputAction(_snapTurn);
             if (snapTurnAction != null)
             {
                 snapTurnAction.started += OnStartLocomotion;
@@ -188,15 +188,15 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             }
         }
 
-        void TeardownInteractorEvents()
+        private void TeardownInteractorEvents()
         {
-            if (m_RayInteractor != null)
+            if (_rayInteractor != null)
             {
-                m_RayInteractor.selectEntered.RemoveListener(OnRaySelectEntered);
-                m_RayInteractor.selectExited.RemoveListener(OnRaySelectExited);
+                _rayInteractor.selectEntered.RemoveListener(OnRaySelectEntered);
+                _rayInteractor.selectExited.RemoveListener(OnRaySelectExited);
             }
 
-            var teleportModeActivateAction = GetInputAction(m_TeleportModeActivate);
+            var teleportModeActivateAction = GetInputAction(_teleportModeActivate);
             if (teleportModeActivateAction != null)
             {
                 teleportModeActivateAction.performed -= OnStartTeleport;
@@ -205,27 +205,27 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
                 teleportModeActivateAction.canceled -= OnStopLocomotion;
             }
 
-            var teleportModeCancelAction = GetInputAction(m_TeleportModeCancel);
+            var teleportModeCancelAction = GetInputAction(_teleportModeCancel);
             if (teleportModeCancelAction != null)
             {
                 teleportModeCancelAction.performed -= OnCancelTeleport;
             }
 
-            var moveAction = GetInputAction(m_Move);
+            var moveAction = GetInputAction(_move);
             if (moveAction != null)
             {
                 moveAction.started -= OnStartLocomotion;
                 moveAction.canceled -= OnStopLocomotion;
             }
 
-            var turnAction = GetInputAction(m_Turn);
+            var turnAction = GetInputAction(_turn);
             if (turnAction != null)
             {
                 turnAction.started -= OnStartLocomotion;
                 turnAction.canceled -= OnStopLocomotion;
             }
 
-            var snapTurnAction = GetInputAction(m_SnapTurn);
+            var snapTurnAction = GetInputAction(_snapTurn);
             if (snapTurnAction != null)
             {
                 snapTurnAction.started -= OnStartLocomotion;
@@ -233,97 +233,87 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             }
         }
 
-        void OnStartTeleport(InputAction.CallbackContext context)
+        private void OnStartTeleport(InputAction.CallbackContext context)
         {
-            m_PostponedDeactivateTeleport = false;
+            _postponedDeactivateTeleport = false;
 
-            if (m_TeleportInteractor != null)
-                m_TeleportInteractor.gameObject.SetActive(true);
+            if (_teleportInteractor != null)
+                _teleportInteractor.gameObject.SetActive(true);
 
-            if (m_RayInteractor != null)
-                m_RayInteractor.gameObject.SetActive(false);
+            if (_rayInteractor != null)
+                _rayInteractor.gameObject.SetActive(false);
 
-            m_RayInteractorChanged?.Invoke(m_TeleportInteractor);
+            _rayInteractorChanged?.Invoke(_teleportInteractor);
         }
 
-        void OnCancelTeleport(InputAction.CallbackContext context)
+        private void OnCancelTeleport(InputAction.CallbackContext context)
         {
             // Do not deactivate the teleport interactor in this callback.
             // We delay turning off the teleport interactor in this callback so that
             // the teleport interactor has a chance to complete the teleport if needed.
             // OnAfterInteractionEvents will handle deactivating its GameObject.
-            m_PostponedDeactivateTeleport = true;
+            _postponedDeactivateTeleport = true;
 
-            if (m_RayInteractor != null)
-                m_RayInteractor.gameObject.SetActive(true);
+            if (_rayInteractor != null)
+                _rayInteractor.gameObject.SetActive(true);
 
-            m_RayInteractorChanged?.Invoke(m_RayInteractor);
+            _rayInteractorChanged?.Invoke(_rayInteractor);
 
         }
 
-        void OnStartLocomotion(InputAction.CallbackContext context)
-        {
-            m_LocomotionUsers.Add(context.action);
-        }
+        private void OnStartLocomotion(InputAction.CallbackContext context) => _locomotionUsers.Add(context.action);
 
-        void OnStopLocomotion(InputAction.CallbackContext context)
+        private void OnStopLocomotion(InputAction.CallbackContext context)
         {
-            m_LocomotionUsers.Remove(context.action);
+            _ = _locomotionUsers.Remove(context.action);
 
-            if (m_LocomotionUsers.Count == 0 && m_HoveringScrollableUI)
+            if (_locomotionUsers.Count == 0 && _hoveringScrollableUI)
             {
                 DisableLocomotionActions();
                 UpdateUIActions();
             }
         }
 
-        void OnRaySelectEntered(SelectEnterEventArgs args)
-        {
+        private void OnRaySelectEntered(SelectEnterEventArgs args) =>
             // Disable locomotion and turn actions
             DisableLocomotionActions();
-        }
 
-        void OnRaySelectExited(SelectExitEventArgs args)
-        {
+        private void OnRaySelectExited(SelectExitEventArgs args) =>
             // Re-enable the locomotion and turn actions
             UpdateLocomotionActions();
-        }
 
-        void OnUIHoverEntered(UIHoverEventArgs args)
+        private void OnUIHoverEntered(UIHoverEventArgs args)
         {
-            m_HoveringScrollableUI = m_UIScrollingEnabled && args.deviceModel.isScrollable;
+            _hoveringScrollableUI = _uIScrollingEnabled && args.deviceModel.isScrollable;
             UpdateUIActions();
 
             // If locomotion is occurring, wait
-            if (m_HoveringScrollableUI && m_LocomotionUsers.Count == 0)
+            if (_hoveringScrollableUI && _locomotionUsers.Count == 0)
             {
                 // Disable locomotion and turn actions
                 DisableLocomotionActions();
             }
         }
 
-        void OnUIHoverExited(UIHoverEventArgs args)
+        private void OnUIHoverExited(UIHoverEventArgs args)
         {
-            m_HoveringScrollableUI = false;
+            _hoveringScrollableUI = false;
             UpdateUIActions();
 
             // Re-enable the locomotion and turn actions
             UpdateLocomotionActions();
         }
 
-        protected void Awake()
-        {
-            m_AfterInteractionEventsRoutine = OnAfterInteractionEvents();
-        }
+        protected void Awake() => _afterInteractionEventsRoutine = OnAfterInteractionEvents();
 
         protected void OnEnable()
         {
-            if (m_TeleportInteractor != null)
-                m_TeleportInteractor.gameObject.SetActive(false);
+            if (_teleportInteractor != null)
+                _teleportInteractor.gameObject.SetActive(false);
 
             // Allow the locomotion actions to be refreshed when this is re-enabled.
             // See comments in Start for why we wait until Start to enable/disable locomotion actions.
-            if (m_StartCalled)
+            if (_startCalled)
                 UpdateLocomotionActions();
 
             SetupInteractorEvents();
@@ -331,26 +321,26 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             // Start the coroutine that executes code after the Update phase (during yield null).
             // Since this behavior has an execution order that runs before the XRInteractionManager,
             // we use the coroutine to run after the selection events
-            StartCoroutine(m_AfterInteractionEventsRoutine);
+            _ = StartCoroutine(_afterInteractionEventsRoutine);
         }
 
         protected void OnDisable()
         {
             TeardownInteractorEvents();
 
-            StopCoroutine(m_AfterInteractionEventsRoutine);
+            StopCoroutine(_afterInteractionEventsRoutine);
         }
 
         protected void Start()
         {
-            m_StartCalled = true;
+            _startCalled = true;
 
             // Ensure the enabled state of locomotion and turn actions are properly set up.
             // Called in Start so it is done after the InputActionManager enables all input actions earlier in OnEnable.
             UpdateLocomotionActions();
             UpdateUIActions();
 
-            if (m_ManipulationInteractionGroup == null)
+            if (_manipulationInteractionGroup == null)
             {
                 Debug.LogError("Missing required Manipulation Interaction Group reference. Use the Inspector window to assign the XR Interaction Group component reference.", this);
                 return;
@@ -358,55 +348,55 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 
             // Ensure interactors are properly set up in the interaction group by adding
             // them if necessary and ordering Direct before Ray interactor.
-            var directInteractorIndex = k_InteractorNotInGroup;
-            var rayInteractorIndex = k_InteractorNotInGroup;
-            m_ManipulationInteractionGroup.GetGroupMembers(s_GroupMembers);
-            for (var i = 0; i < s_GroupMembers.Count; ++i)
+            var directInteractorIndex = INTERACT_OR_NOT_IN_GROUP;
+            var rayInteractorIndex = INTERACT_OR_NOT_IN_GROUP;
+            _manipulationInteractionGroup.GetGroupMembers(_groupMembers);
+            for (var i = 0; i < _groupMembers.Count; ++i)
             {
-                var groupMember = s_GroupMembers[i];
-                if (ReferenceEquals(groupMember, m_DirectInteractor))
+                var groupMember = _groupMembers[i];
+                if (ReferenceEquals(groupMember, _directInteractor))
                     directInteractorIndex = i;
-                else if (ReferenceEquals(groupMember, m_RayInteractor))
+                else if (ReferenceEquals(groupMember, _rayInteractor))
                     rayInteractorIndex = i;
             }
 
-            if (directInteractorIndex == k_InteractorNotInGroup)
+            if (directInteractorIndex == INTERACT_OR_NOT_IN_GROUP)
             {
                 // Must add Direct interactor to group, and make sure it is ordered before the Ray interactor
-                if (rayInteractorIndex == k_InteractorNotInGroup)
+                if (rayInteractorIndex == INTERACT_OR_NOT_IN_GROUP)
                 {
                     // Must add Ray interactor to group
-                    if (m_DirectInteractor != null)
-                        m_ManipulationInteractionGroup.AddGroupMember(m_DirectInteractor);
+                    if (_directInteractor != null)
+                        _manipulationInteractionGroup.AddGroupMember(_directInteractor);
 
-                    if (m_RayInteractor != null)
-                        m_ManipulationInteractionGroup.AddGroupMember(m_RayInteractor);
+                    if (_rayInteractor != null)
+                        _manipulationInteractionGroup.AddGroupMember(_rayInteractor);
                 }
-                else if (m_DirectInteractor != null)
+                else if (_directInteractor != null)
                 {
-                    m_ManipulationInteractionGroup.MoveGroupMemberTo(m_DirectInteractor, rayInteractorIndex);
+                    _manipulationInteractionGroup.MoveGroupMemberTo(_directInteractor, rayInteractorIndex);
                 }
             }
             else
             {
-                if (rayInteractorIndex == k_InteractorNotInGroup)
+                if (rayInteractorIndex == INTERACT_OR_NOT_IN_GROUP)
                 {
                     // Must add Ray interactor to group
-                    if (m_RayInteractor != null)
-                        m_ManipulationInteractionGroup.AddGroupMember(m_RayInteractor);
+                    if (_rayInteractor != null)
+                        _manipulationInteractionGroup.AddGroupMember(_rayInteractor);
                 }
                 else
                 {
                     // Must make sure Direct interactor is ordered before the Ray interactor
                     if (rayInteractorIndex < directInteractorIndex)
                     {
-                        m_ManipulationInteractionGroup.MoveGroupMemberTo(m_DirectInteractor, rayInteractorIndex);
+                        _manipulationInteractionGroup.MoveGroupMemberTo(_directInteractor, rayInteractorIndex);
                     }
                 }
             }
         }
 
-        IEnumerator OnAfterInteractionEvents()
+        private IEnumerator OnAfterInteractionEvents()
         {
             while (true)
             {
@@ -414,43 +404,40 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
                 // has a chance to process its select interaction event during Update.
                 yield return null;
 
-                if (m_PostponedDeactivateTeleport)
+                if (_postponedDeactivateTeleport)
                 {
-                    if (m_TeleportInteractor != null)
-                        m_TeleportInteractor.gameObject.SetActive(false);
+                    if (_teleportInteractor != null)
+                        _teleportInteractor.gameObject.SetActive(false);
 
-                    m_PostponedDeactivateTeleport = false;
+                    _postponedDeactivateTeleport = false;
                 }
             }
         }
 
-        void UpdateLocomotionActions()
+        private void UpdateLocomotionActions()
         {
             // Disable/enable Teleport and Turn when Move is enabled/disabled.
-            SetEnabled(m_Move, m_SmoothMotionEnabled);
-            SetEnabled(m_TeleportModeActivate, !m_SmoothMotionEnabled);
-            SetEnabled(m_TeleportModeCancel, !m_SmoothMotionEnabled);
+            SetEnabled(_move, _smoothMotionEnabled);
+            SetEnabled(_teleportModeActivate, !_smoothMotionEnabled);
+            SetEnabled(_teleportModeCancel, !_smoothMotionEnabled);
 
             // Disable ability to turn when using continuous movement
-            SetEnabled(m_Turn, !m_SmoothMotionEnabled && m_SmoothTurnEnabled);
-            SetEnabled(m_SnapTurn, !m_SmoothMotionEnabled && !m_SmoothTurnEnabled);
+            SetEnabled(_turn, !_smoothMotionEnabled && _smoothTurnEnabled);
+            SetEnabled(_snapTurn, !_smoothMotionEnabled && !_smoothTurnEnabled);
         }
 
-        void DisableLocomotionActions()
+        private void DisableLocomotionActions()
         {
-            DisableAction(m_Move);
-            DisableAction(m_TeleportModeActivate);
-            DisableAction(m_TeleportModeCancel);
-            DisableAction(m_Turn);
-            DisableAction(m_SnapTurn);
+            DisableAction(_move);
+            DisableAction(_teleportModeActivate);
+            DisableAction(_teleportModeCancel);
+            DisableAction(_turn);
+            DisableAction(_snapTurn);
         }
 
-        void UpdateUIActions()
-        {
-            SetEnabled(m_UIScroll, m_UIScrollingEnabled && m_HoveringScrollableUI && m_LocomotionUsers.Count == 0);
-        }
+        private void UpdateUIActions() => SetEnabled(_uIScroll, _uIScrollingEnabled && _hoveringScrollableUI && _locomotionUsers.Count == 0);
 
-        static void SetEnabled(InputActionReference actionReference, bool enabled)
+        private static void SetEnabled(InputActionReference actionReference, bool enabled)
         {
             if (enabled)
                 EnableAction(actionReference);
@@ -458,25 +445,24 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
                 DisableAction(actionReference);
         }
 
-        static void EnableAction(InputActionReference actionReference)
+        private static void EnableAction(InputActionReference actionReference)
         {
             var action = GetInputAction(actionReference);
             if (action != null && !action.enabled)
                 action.Enable();
         }
 
-        static void DisableAction(InputActionReference actionReference)
+        private static void DisableAction(InputActionReference actionReference)
         {
             var action = GetInputAction(actionReference);
             if (action != null && action.enabled)
                 action.Disable();
         }
 
-        static InputAction GetInputAction(InputActionReference actionReference)
-        {
+        private static InputAction GetInputAction(InputActionReference actionReference) =>
 #pragma warning disable IDE0031 // Use null propagation -- Do not use for UnityEngine.Object types
-            return actionReference != null ? actionReference.action : null;
+            actionReference != null ? actionReference.action : null;
 #pragma warning restore IDE0031
-        }
+
     }
 }

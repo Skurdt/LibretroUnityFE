@@ -86,16 +86,16 @@ namespace SK.Libretro.Examples.Editor
             {
                 _ = EditorGUILayout.PropertyField(_actionProperty);
 
-                int newSelectedBinding = EditorGUILayout.Popup(_bindingLabel, _selectedBindingOption, _bindingOptions);
+                var newSelectedBinding = EditorGUILayout.Popup(_bindingLabel, _selectedBindingOption, _bindingOptions);
                 if (newSelectedBinding != _selectedBindingOption)
                 {
-                    string bindingId = _bindingOptionValues[newSelectedBinding];
+                    var bindingId = _bindingOptionValues[newSelectedBinding];
                     _bindingIdProperty.stringValue = bindingId;
                     _selectedBindingOption = newSelectedBinding;
                 }
 
-                InputBinding.DisplayStringOptions optionsOld = (InputBinding.DisplayStringOptions)_displayStringOptionsProperty.intValue;
-                InputBinding.DisplayStringOptions optionsNew = (InputBinding.DisplayStringOptions)EditorGUILayout.EnumFlagsField(_displayOptionsLabel, optionsOld);
+                var optionsOld = (InputBinding.DisplayStringOptions)_displayStringOptionsProperty.intValue;
+                var optionsNew = (InputBinding.DisplayStringOptions)EditorGUILayout.EnumFlagsField(_displayOptionsLabel, optionsOld);
                 if (optionsOld != optionsNew)
                     _displayStringOptionsProperty.intValue = (int)optionsNew;
             }
@@ -132,7 +132,7 @@ namespace SK.Libretro.Examples.Editor
         {
             InputAction action = null;
 
-            InputActionReference actionReference = (InputActionReference)_actionProperty.objectReferenceValue;
+            var actionReference = (InputActionReference)_actionProperty.objectReferenceValue;
             if (actionReference != null)
                  action = actionReference.action;
 
@@ -144,30 +144,30 @@ namespace SK.Libretro.Examples.Editor
                 return;
             }
 
-            UnityEngine.InputSystem.Utilities.ReadOnlyArray<InputBinding> bindings = action.bindings;
-            int bindingCount = bindings.Count;
+            var bindings = action.bindings;
+            var bindingCount = bindings.Count;
 
             _bindingOptions        = new GUIContent[bindingCount];
             _bindingOptionValues   = new string[bindingCount];
             _selectedBindingOption = -1;
 
-            string currentBindingId = _bindingIdProperty.stringValue;
-            for (int i = 0; i < bindingCount; ++i)
+            var currentBindingId = _bindingIdProperty.stringValue;
+            for (var i = 0; i < bindingCount; ++i)
             {
-                InputBinding binding   = bindings[i];
-                string bindingId       = binding.id.ToString();
-                bool haveBindingGroups = !string.IsNullOrEmpty(binding.groups);
+                var binding   = bindings[i];
+                var bindingId       = binding.id.ToString();
+                var haveBindingGroups = !string.IsNullOrEmpty(binding.groups);
 
                 // If we don't have a binding groups (control schemes), show the device that if there are, for example,
                 // there are two bindings with the display string "A", the user can see that one is for the keyboard
                 // and the other for the gamepad.
-                InputBinding.DisplayStringOptions displayOptions = InputBinding.DisplayStringOptions.DontUseShortDisplayNames
+                var displayOptions = InputBinding.DisplayStringOptions.DontUseShortDisplayNames
                                                                  | InputBinding.DisplayStringOptions.IgnoreBindingOverrides;
                 if (!haveBindingGroups)
                     displayOptions |= InputBinding.DisplayStringOptions.DontOmitDevice;
 
                 // Create display string.
-                string displayString = action.GetBindingDisplayString(i, displayOptions);
+                var displayString = action.GetBindingDisplayString(i, displayOptions);
 
                 // If binding is part of a composite, include the part name.
                 if (binding.isPartOfComposite)
@@ -180,10 +180,10 @@ namespace SK.Libretro.Examples.Editor
                 // If the binding is part of control schemes, mention them.
                 if (haveBindingGroups)
                 {
-                    InputActionAsset asset = action.actionMap?.asset;
+                    var asset = action.actionMap?.asset;
                     if (asset != null)
                     {
-                        string controlSchemes = string.Join(", ", binding.groups.Split(InputBinding.Separator)
+                        var controlSchemes = string.Join(", ", binding.groups.Split(InputBinding.Separator)
                                                                                 .Select(x => asset.controlSchemes.FirstOrDefault(c => c.bindingGroup == x).name));
                         displayString         = $"{displayString} ({controlSchemes})";
                     }

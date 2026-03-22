@@ -14,7 +14,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
     {
         [SerializeField]
         [Tooltip("Filled image that displays the progress towards evaluating a destination anchor.")]
-        Image m_TimerProgressFilledImage;
+        private Image m_TimerProgressFilledImage;
 
         /// <summary>
         /// <see cref="Image.Type.Filled"/> image that displays the progress towards evaluating a destination anchor.
@@ -27,7 +27,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 
         [SerializeField]
         [Tooltip("Object that is rotated about its Z axis to point at the destination anchor.")]
-        GameObject m_DestinationIndicator;
+        private GameObject m_DestinationIndicator;
 
         /// <summary>
         /// Object that is rotated about its Z axis to point at the destination anchor.
@@ -40,7 +40,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 
         [SerializeField]
         [Tooltip("Object that is rotated about its Z axis to point at the potential destination while still evaluating.")]
-        GameObject m_PotentialDestinationIndicator;
+        private GameObject m_PotentialDestinationIndicator;
 
         /// <summary>
         /// Object that is rotated about its Z axis to point at the potential destination while still evaluating.
@@ -53,7 +53,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
 
         [SerializeField]
         [Tooltip("The amount of time, in seconds, between updates to the indicator pointing at the potential destination.")]
-        float m_PotentialIndicatorUpdateFrequency = 0.1f;
+        private float m_PotentialIndicatorUpdateFrequency = 0.1f;
 
         /// <summary>
         /// The amount of time, in seconds, between updates to the indicator pointing at the potential destination.
@@ -64,8 +64,8 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             set => m_PotentialIndicatorUpdateFrequency = value;
         }
 
-        TeleportationMultiAnchorVolume m_AnchorVolume;
-        float m_LastPotentialIndicatorUpdateTime;
+        private TeleportationMultiAnchorVolume m_AnchorVolume;
+        private float m_LastPotentialIndicatorUpdateTime;
 
         /// <inheritdoc/>
         public void OnReticleAttached(XRBaseInteractable interactable, IXRCustomReticleProvider reticleProvider)
@@ -111,7 +111,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
                 UpdatePotentialDestinationIndicator();
         }
 
-        void UpdatePotentialDestinationIndicator()
+        private void UpdatePotentialDestinationIndicator()
         {
             m_LastPotentialIndicatorUpdateTime = Time.time;
             if (!m_AnchorVolume.destinationEvaluationSettings.Value.pollForDestinationChange)
@@ -139,7 +139,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             PointAtTarget(m_PotentialDestinationIndicator.transform, potentialDestination.position);
         }
 
-        void OnDestinationAnchorChanged(TeleportationMultiAnchorVolume anchorVolume)
+        private void OnDestinationAnchorChanged(TeleportationMultiAnchorVolume anchorVolume)
         {
             var destinationAnchor = anchorVolume.destinationAnchor;
             if (destinationAnchor != null)
@@ -156,7 +156,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             }
         }
 
-        static void PointAtTarget(Transform indicatorTransform, Vector3 targetPosition)
+        private static void PointAtTarget(Transform indicatorTransform, Vector3 targetPosition)
         {
             indicatorTransform.rotation = Quaternion.LookRotation(indicatorTransform.forward, targetPosition - indicatorTransform.position);
         }

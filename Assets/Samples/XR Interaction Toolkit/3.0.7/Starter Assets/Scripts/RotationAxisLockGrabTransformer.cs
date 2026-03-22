@@ -11,12 +11,12 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
     {
         [SerializeField]
         [Tooltip("Defines which rotation axes are allowed when an object is grabbed. Axes not selected will maintain their initial rotation.")]
-        XRGeneralGrabTransformer.ManipulationAxes m_PermittedRotationAxis = XRGeneralGrabTransformer.ManipulationAxes.All;
+        private XRGeneralGrabTransformer.ManipulationAxes m_PermittedRotationAxis = XRGeneralGrabTransformer.ManipulationAxes.All;
 
         /// <inheritdoc />
         protected override RegistrationMode registrationMode => RegistrationMode.SingleAndMultiple;
 
-        Vector3 m_InitialEulerRotation;
+        private Vector3 m_InitialEulerRotation;
 
         /// <inheritdoc />
         public override void OnLink(XRGrabInteractable grabInteractable)
@@ -28,7 +28,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         /// <inheritdoc />
         public override void Process(XRGrabInteractable grabInteractable, XRInteractionUpdateOrder.UpdatePhase updatePhase, ref Pose targetPose, ref Vector3 localScale)
         {
-            Vector3 newRotationEuler = targetPose.rotation.eulerAngles;
+            var newRotationEuler = targetPose.rotation.eulerAngles;
 
             if ((m_PermittedRotationAxis & XRGeneralGrabTransformer.ManipulationAxes.X) == 0)
                 newRotationEuler.x = m_InitialEulerRotation.x;

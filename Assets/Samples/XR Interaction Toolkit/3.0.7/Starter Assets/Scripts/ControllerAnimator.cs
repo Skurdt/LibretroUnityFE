@@ -10,35 +10,35 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
     {
         [Header("Thumbstick")]
         [SerializeField]
-        Transform m_ThumbstickTransform;
+        private Transform m_ThumbstickTransform;
 
         [SerializeField]
-        Vector2 m_StickRotationRange = new Vector2(30f, 30f);
+        private Vector2 m_StickRotationRange = new Vector2(30f, 30f);
 
         [SerializeField]
-        XRInputValueReader<Vector2> m_StickInput = new XRInputValueReader<Vector2>("Thumbstick");
+        private XRInputValueReader<Vector2> m_StickInput = new XRInputValueReader<Vector2>("Thumbstick");
 
         [Header("Trigger")]
         [SerializeField]
-        Transform m_TriggerTransform;
+        private Transform m_TriggerTransform;
 
         [SerializeField]
-        Vector2 m_TriggerXAxisRotationRange = new Vector2(0f, -15f);
+        private Vector2 m_TriggerXAxisRotationRange = new Vector2(0f, -15f);
 
         [SerializeField]
-        XRInputValueReader<float> m_TriggerInput = new XRInputValueReader<float>("Trigger");
+        private XRInputValueReader<float> m_TriggerInput = new XRInputValueReader<float>("Trigger");
 
         [Header("Grip")]
         [SerializeField]
-        Transform m_GripTransform;
+        private Transform m_GripTransform;
 
         [SerializeField]
-        Vector2 m_GripRightRange = new Vector2(-0.0125f, -0.011f);
+        private Vector2 m_GripRightRange = new Vector2(-0.0125f, -0.011f);
 
         [SerializeField]
-        XRInputValueReader<float> m_GripInput = new XRInputValueReader<float>("Grip");
+        private XRInputValueReader<float> m_GripInput = new XRInputValueReader<float>("Grip");
 
-        void OnEnable()
+        private void OnEnable()
         {
             if (m_ThumbstickTransform == null || m_GripTransform == null || m_TriggerTransform == null)
             {
@@ -52,14 +52,14 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             m_GripInput?.EnableDirectActionIfModeUsed();
         }
 
-        void OnDisable()
+        private void OnDisable()
         {
             m_StickInput?.DisableDirectActionIfModeUsed();
             m_TriggerInput?.DisableDirectActionIfModeUsed();
             m_GripInput?.DisableDirectActionIfModeUsed();
         }
 
-        void Update()
+        private void Update()
         {
             if (m_StickInput != null)
             {

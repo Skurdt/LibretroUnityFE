@@ -10,7 +10,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
     {
         [SerializeField]
         [Tooltip("The Text component this behavior uses to display the incremented value.")]
-        Text m_Text;
+        private Text m_Text;
 
         /// <summary>
         /// The Text component this behavior uses to display the incremented value.
@@ -21,7 +21,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             set => m_Text = value;
         }
 
-        int m_Count;
+        private int m_Count;
 
         /// <summary>
         /// See <see cref="MonoBehaviour"/>.

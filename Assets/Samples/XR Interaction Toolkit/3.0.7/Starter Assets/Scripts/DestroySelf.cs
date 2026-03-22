@@ -7,7 +7,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
     {
         [SerializeField]
         [Tooltip("The amount of time, in seconds, to wait after Start before destroying the GameObject.")]
-        float m_Lifetime = 0.25f;
+        private float m_Lifetime = 0.25f;
 
         /// <summary>
         /// The amount of time, in seconds, to wait after Start before destroying the GameObject.
@@ -21,7 +21,7 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
         /// <summary>
         /// See <see cref="MonoBehaviour"/>.
         /// </summary>
-        void Start()
+        private void Start()
         {
             Destroy(gameObject, m_Lifetime);
         }
