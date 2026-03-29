@@ -2666,10 +2666,11 @@ MonoBehaviour:
     ReadRtcMemory: 0
     ReadSystemMemory: 0
     ReadVideoMemory: 0
-  <CoreName>k__BackingField: mupen64plus_next
-  <GamesDirectory>k__BackingField: E:/Roms
+  <CoreName>k__BackingField: snes9x
+  <GamesDirectory>k__BackingField: E:/Roms/No-Intro/Nintendo - Super Nintendo Entertainment
+    System (Combined)
   <GameNames>k__BackingField:
-  - GoldenEye 007 (USA)
+  - Axelay (USA)
   _camera: {fileID: 116397879}
   _lightgunRaycastSource: {fileID: 116397876}
 --- !u!23 &662265718
@@ -2739,7 +2740,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 1.5, z: 1}
+  m_LocalScale: {x: 2, y: 1.125, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
